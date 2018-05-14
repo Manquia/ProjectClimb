@@ -19,7 +19,8 @@ public class Player : FFComponent
 
     public SpriteRenderer fadeScreenMaskSprite;
     public UnityEngine.UI.Image fadeScreenMaskImage;
-    public float fadeTime = 1.5f; 
+    public float fadeTime = 1.5f;
+    FFAction.ActionSequence fadeScreenSeq;
 
     internal Rigidbody myBody;
     internal CapsuleCollider myCol; 
@@ -86,13 +87,12 @@ public class Player : FFComponent
     public RopeConnection OnRope;
 
     [System.Serializable]
-    public class GroundMovement
+    public class Movement
     {
-        public float moveForce = 100.0f;
-        public float redirectForce = 3.25f;
         public float maxSpeed = 2.5f;
+        public float runMultiplier = 2.0f;
+
         public float jumpForce = 1000.0f;
-        public float friction = 0.1f;
         public float maxSlopeAngle = 55.0f;
         public float groundTouchHeight = 0.2f;
         public class Details
@@ -102,48 +102,32 @@ public class Player : FFComponent
         }
         public Details details = new Details();
         public float climbRadius = 0.45f;
-        internal Vector3 up;
-        
-    }
-    public GroundMovement OnGround;
-
-
-    FFAction.ActionSequence fadeScreenSeq;
-    [System.Serializable]
-    public class AirMOvement
-    {
-        public float moveForce = 25.0f;
-        public float redirectForce = 3.25f;
-        public float maxSpeed = 2.5f;
         public float revJumpVel = 1.0f;
-        public float friction = 0.1f;
-        public State state = State.GoingDown;
-
-        // @TODO Set these flags, Currently doesn nothing
-        [Flags]
-        public enum State
-        {
-            None = 0,
-            Launching = 1,
-            GoingUp = 2,
-            Peaking = 4,
-            GoingDown = 8,
-            Grounded = 16,
-        }
+        internal Vector3 up;
     }
-    public AirMOvement OnAir;
+    Movement movement;
+    [System.Serializable]
+    public class MovementData
+    {
+        public AnimationCurve moveForce;
+        public AnimationCurve redirectForce;
+        public float maxSpeed = 2.5f;
+        public float friction = 0.1f;
+    }
+    public MovementData OnGroundData;
+    public MovementData OnAirData;
 
     bool grounded
     {
         // if touched ground this frame by any touches
         get
         {
-            return OnGround.details.groundTouches.Contains((v) => v);
+            return movement.details.groundTouches.Contains((v) => v);
         }
     }
     bool jumping
     {
-        get { return OnGround.details.jumping; }
+        get { return movement.details.jumping; }
     }
 
     // @TODO make this into an annal
@@ -255,11 +239,16 @@ public class Player : FFComponent
     void FixedUpdate()
     {
         if (grounded)
-            UpdateMoveGround(dt);
+        {
+            UpdateMove(dt, OnGroundData);
+            UpdateJump();
+        }
         else
-            UpdateMoveAir(dt);
-        
-        OnGround.details.groundTouches.Wash(false);
+        {
+            UpdateMove(dt, OnAirData);
+        }
+
+        movement.details.groundTouches.Wash(false);
     }
     // Called right after physics, before rendering. Use for Kinimatic player actions
     void Update()
@@ -282,8 +271,8 @@ public class Player : FFComponent
         // grounded && !jumping && spacePressed -> jumping = true
         // grounded && jumping -> jumping = false
         
-        if (grounded && OnGround.details.jumping)
-            OnGround.details.jumping.Record(false);
+        if (grounded && movement.details.jumping)
+            movement.details.jumping.Record(false);
     }
 
     void UpdateGroundRaycast()
@@ -320,47 +309,71 @@ public class Player : FFComponent
         dt = Time.deltaTime;
     }
 
-
-    void UpdateMoveGround(float dt)
+    void UpdateJump()
     {
-        var rotOfPlane = Quaternion.FromToRotation(OnGround.up, Vector3.up);
-        var revRotOfPlane = Quaternion.FromToRotation(Vector3.up, OnGround.up);
+        var rotOfPlane = Quaternion.FromToRotation(movement.up, Vector3.up);
+        var revRotOfPlane = Quaternion.FromToRotation(Vector3.up, movement.up);
 
         // movement in the Y axis (jump), Grounded && space in the last few frames?
         if (grounded && space.Contains((v) => v))
         {
             SnapToGround(maxDistToFloor);
-            OnGround.details.jumping.Record(true);
-            OnGround.details.groundTouches.Wash(false);
+            movement.details.jumping.Record(true);
+            movement.details.groundTouches.Wash(false);
 
-            
+
             var relVel = rotOfPlane * myBody.velocity;
             var relVelXY = new Vector3(relVel.x, 0.0f, relVel.z);
             myBody.velocity = revRotOfPlane * relVelXY;
 
-            myBody.AddForce(transform.up * OnGround.jumpForce);
+            myBody.AddForce(transform.up * movement.jumpForce);
         }
+    }
+    void UpdateMove(float dt, MovementData moveData)
+    {
+        var rotOfPlane = Quaternion.FromToRotation(movement.up, Vector3.up);
+        var revRotOfPlane = Quaternion.FromToRotation(Vector3.up, movement.up);
+
+        var maxSpeed = moveData.maxSpeed;
+        if (modifier)
+        {
+            maxSpeed *= movement.runMultiplier;
+        }
+
 
         // apply friction
         {
-            myBody.velocity = myBody.velocity - (myBody.velocity * OnGround.friction * dt);
+            myBody.velocity = myBody.velocity - (myBody.velocity * moveData.friction * dt);
         }
 
+        // Sample moveForce + redirectForceMulitplier
+        float moveForce;
+        float redirectForceMultiplier;
+        {
+            var relVel = rotOfPlane * myBody.velocity;
+            var relVelXY = new Vector3(relVel.x, 0.0f, relVel.z);
+            float horizontalSpeed = relVelXY.magnitude;
+            float scalar = movement.maxSpeed / 9.0f;
 
+            float mu = horizontalSpeed / (horizontalSpeed + scalar);
+
+            moveForce = moveData.moveForce.Evaluate(mu);
+            redirectForceMultiplier = moveData.redirectForce.Evaluate(mu);
+        }
         // apply move force to rigid body
-        float redirectForce = CalcRedirectForceMultiplier(OnGround.redirectForce);
-        ApplyMoveForce(OnGround.moveForce * redirectForce, dt, OnGround.up);
+        float redirectForce = CalcRedirectForceMultiplier(redirectForceMultiplier);
+        ApplyMoveForce(moveForce * redirectForce, dt, movement.up);
         
         // Clamp Velocity along horizontal plane
         {
-            var maxSpeed = OnGround.maxSpeed;
+            const float slowingSpeed = 10.0f;
             var relVel = rotOfPlane * myBody.velocity;
             var relVelXY = new Vector3(relVel.x, 0.0f, relVel.z);
             var relVelXYNorm = relVelXY.normalized;
-            float horzontalSpeed = relVelXY.magnitude;
+            float horizontalSpeed = relVelXY.magnitude;
 
-            float newSpeed = maxSpeed; // Mathf.Lerp(horzontalSpeed, maxSpeed, 0.8f * dt);
-            if(horzontalSpeed > maxSpeed)
+            float newSpeed = Mathf.Lerp(horizontalSpeed, maxSpeed, slowingSpeed * dt);
+            if(horizontalSpeed > maxSpeed)
             {
                 Vector3 newVel = new Vector3(relVelXYNorm.x * newSpeed, relVel.y, relVelXYNorm.z * newSpeed);
                 myBody.velocity = revRotOfPlane * newVel;
@@ -375,59 +388,6 @@ public class Player : FFComponent
             transform.localRotation = transform.localRotation * rotation;
         }
     }
-    void UpdateMoveAir(float dt)
-    {
-
-        // apply move force to rigid body
-        float redirectForce =  CalcRedirectForceMultiplier(OnAir.redirectForce);
-        ApplyMoveForce(OnAir.moveForce * redirectForce, dt, Vector3.up);
-
-        // Clamp Velocity along horizontal plane
-        {
-            var maxSpeed = OnAir.maxSpeed;
-            var velXZ = new Vector3(myBody.velocity.x, 0.0f, myBody.velocity.z);
-            var velXZNorm = velXZ.normalized;
-            float horzontalSpeed = velXZ.magnitude;
-            
-            if(horzontalSpeed > maxSpeed)
-            {
-                float newSpeed = maxSpeed; // Mathf.Lerp(horzontalSpeed, maxSpeed, 0.9f * dt);
-                myBody.velocity = new Vector3(velXZNorm.x * newSpeed, myBody.velocity.y, velXZNorm.z * newSpeed);
-            }
-        }
-
-        // apply friction
-        {
-            myBody.velocity = myBody.velocity - (myBody.velocity * OnAir.friction * dt);
-        }
-
-        //@TODO JumpStop
-        // Stopped pressing jump && still moving upward
-        if (!space && myBody.velocity.y > 0.0f)
-        {
-            Vector3 revJumpVel = OnAir.revJumpVel * myBody.velocity.y * -Vector3.up;
-            myBody.velocity = myBody.velocity + revJumpVel;
-        }
-
-        // @Placeholder @DoubleJump/AirJump @Idea
-        // movement in the Y axis (jump)
-        //if (grounded && space)
-        //{
-        //    OnGround.details.groundTouches.Wash(false);
-        //    myBody.AddForce(transform.up * OnGround.jumpForce);
-        //}
-
-        // Rotate based on mouse look
-        if (cameraController.lookVec.x != 0)
-        {
-            float turnAmount = cameraController.lookVec.x;
-            var rotation = Quaternion.AngleAxis(turnAmount, Vector3.up);
-            transform.localRotation = transform.localRotation * rotation;
-        }
-        
-    }
-
-    
 
     // @TODO make this work with Vec2 for directional move input
     void UpdateRopeActions(bool up, bool down, bool left, bool right, bool space, bool modifier, float dt)
@@ -566,11 +526,13 @@ public class Player : FFComponent
     }
     float maxDistToFloor
     {
-        get { return distToFloor + OnGround.groundTouchHeight; }
+        get { return distToFloor + movement.groundTouchHeight; }
     }
 
     void ApplyMoveForce(float magnitude, float dt, Vector3 upVec)
     {
+        const float stoppingSpeed = 10.0f;
+
         // used to counter dt so that inspector values are kinda simular for move/jump
         const float fps = 60.0f;
         // forceRot so that we can easily climb hills
@@ -586,9 +548,9 @@ public class Player : FFComponent
         {
             // apply slowing movement
             if (!jumping && velocity.y > 0.0f) // when not jumping and going up
-                myBody.velocity = Vector3.Lerp(velocity, new Vector3(0.0f, 0.0f, 0.0f), 0.9f);
+                myBody.velocity = Vector3.Lerp(velocity, new Vector3(0.0f, 0.0f, 0.0f), stoppingSpeed * dt);
             else
-                myBody.velocity = Vector3.Lerp(velocity, new Vector3(0.0f, velocity.y, 0.0f), 0.9f);
+                myBody.velocity = Vector3.Lerp(velocity, new Vector3(0.0f, velocity.y, 0.0f), stoppingSpeed * dt);
 
         }
     }
@@ -623,7 +585,7 @@ public class Player : FFComponent
             float radius = myCol.radius;
             for (int i = 0; i < layersOfRaycast; ++i)
             {
-                float distFromOrigin = ((float)(i + 1) / (float)layersOfRaycast) * (radius + OnGround.climbRadius);
+                float distFromOrigin = ((float)(i + 1) / (float)layersOfRaycast) * (radius + movement.climbRadius);
                 rayOffset = distFromOrigin * forward;
                 for (int j = 0; j < ringDensity; ++j)
                 {
@@ -637,6 +599,11 @@ public class Player : FFComponent
                         return;
                 }
             }
+
+            // didn't reach any ground
+
+            movement.up = Vector3.up;
+            movement.details.groundTouches.Wash(false);
         }
     }
     bool RaycastGroundCheck(Vector3 raycastOrigin, int mask, out RaycastHit hit, float dist)
@@ -647,11 +614,11 @@ public class Player : FFComponent
             float angleFromUp = Vector3.Angle(-hit.normal.normalized, -Vector3.up);
 
             // Ground not too steep to be considered ground
-            if (angleFromUp <= OnGround.maxSlopeAngle)
+            if (angleFromUp <= movement.maxSlopeAngle)
             {
                 // Set up normal
-                OnGround.up = hit.normal.normalized;
-                OnGround.details.groundTouches.Record(true);
+                movement.up = hit.normal.normalized;
+                movement.details.groundTouches.Record(true);
                 return true;
             }
         }
