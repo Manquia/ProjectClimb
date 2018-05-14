@@ -105,12 +105,12 @@ public class Player : FFComponent
         public float revJumpVel = 1.0f;
         internal Vector3 up;
     }
-    Movement movement;
+    public Movement movement;
     [System.Serializable]
     public class MovementData
     {
         public AnimationCurve moveForce;
-        public AnimationCurve redirectForce;
+        public float redirectForce = 3.25f;
         public float maxSpeed = 2.5f;
         public float friction = 0.1f;
     }
@@ -238,18 +238,25 @@ public class Player : FFComponent
     // Called right before physics, use this for dynamic Player actions
     void FixedUpdate()
     {
+        UpdateCameraTurn();
+
         if (grounded)
         {
             UpdateMove(dt, OnGroundData);
-            UpdateJump();
+            CheckJump();
         }
         else
         {
             UpdateMove(dt, OnAirData);
+            UpdateAir();
         }
+
 
         movement.details.groundTouches.Wash(false);
     }
+
+
+
     // Called right after physics, before rendering. Use for Kinimatic player actions
     void Update()
     {
@@ -289,6 +296,7 @@ public class Player : FFComponent
     Vector3 moveDirRel;
     // history of last 15 freams
     Annal<bool> space = new Annal<bool>(15, false);
+    Annal<bool> spaceHeld = new Annal<bool>(15, false);
     bool modifier;
     float dt;
     void UpdateInput()
@@ -305,11 +313,23 @@ public class Player : FFComponent
         moveDirRel = transform.rotation * moveDir;
 
         space.Record(Input.GetKeyDown(KeyCode.Space));
+        spaceHeld.Record(Input.GetKey(KeyCode.Space));
+
         modifier = Input.GetKey(KeyCode.LeftShift);
         dt = Time.deltaTime;
     }
 
-    void UpdateJump()
+    private void UpdateCameraTurn()
+    {
+        // Rotate based on mouse look
+        if (cameraController.lookVec.x != 0)
+        {
+            float turnAmount = cameraController.lookVec.x;
+            var rotation = Quaternion.AngleAxis(turnAmount, Vector3.up);
+            transform.localRotation = transform.localRotation * rotation;
+        }
+    }
+    void CheckJump()
     {
         var rotOfPlane = Quaternion.FromToRotation(movement.up, Vector3.up);
         var revRotOfPlane = Quaternion.FromToRotation(Vector3.up, movement.up);
@@ -329,6 +349,15 @@ public class Player : FFComponent
             myBody.AddForce(transform.up * movement.jumpForce);
         }
     }
+    private void UpdateAir()
+    {
+        // cancel/reverse jump force
+        if(!spaceHeld && myBody.velocity.y > 0.0f)
+        {
+            Vector3 revJumpVel = movement.revJumpVel * myBody.velocity.y * -Vector3.up;
+            myBody.velocity = myBody.velocity + revJumpVel;
+        }
+    }
     void UpdateMove(float dt, MovementData moveData)
     {
         var rotOfPlane = Quaternion.FromToRotation(movement.up, Vector3.up);
@@ -346,9 +375,8 @@ public class Player : FFComponent
             myBody.velocity = myBody.velocity - (myBody.velocity * moveData.friction * dt);
         }
 
-        // Sample moveForce + redirectForceMulitplier
+        // Sample moveForce
         float moveForce;
-        float redirectForceMultiplier;
         {
             var relVel = rotOfPlane * myBody.velocity;
             var relVelXY = new Vector3(relVel.x, 0.0f, relVel.z);
@@ -358,10 +386,9 @@ public class Player : FFComponent
             float mu = horizontalSpeed / (horizontalSpeed + scalar);
 
             moveForce = moveData.moveForce.Evaluate(mu);
-            redirectForceMultiplier = moveData.redirectForce.Evaluate(mu);
         }
         // apply move force to rigid body
-        float redirectForce = CalcRedirectForceMultiplier(redirectForceMultiplier);
+        float redirectForce = CalcRedirectForceMultiplier(moveData.redirectForce);
         ApplyMoveForce(moveForce * redirectForce, dt, movement.up);
         
         // Clamp Velocity along horizontal plane
@@ -380,13 +407,6 @@ public class Player : FFComponent
             }
         }
 
-        // Rotate based on mouse look
-        if (cameraController.lookVec.x != 0)
-        {
-            float turnAmount = cameraController.lookVec.x;
-            var rotation = Quaternion.AngleAxis(turnAmount, Vector3.up);
-            transform.localRotation = transform.localRotation * rotation;
-        }
     }
 
     // @TODO make this work with Vec2 for directional move input
