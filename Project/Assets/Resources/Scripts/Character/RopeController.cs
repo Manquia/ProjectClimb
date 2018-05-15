@@ -47,6 +47,11 @@ public class RopeController : MonoBehaviour
     {
         path = GetComponent<FFPath>();
         Debug.Assert(path.points.Length == 2);
+
+        // set interaction collider's dimensions
+        {
+            // @TODO
+        }
     }
 
     void FixedUpdate()
