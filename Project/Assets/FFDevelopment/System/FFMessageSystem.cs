@@ -75,7 +75,7 @@ namespace FFPrivate{
             if (system != null)
             {
                 system = null;
-                Debug.Log("FFMessageSystem Destroyed");
+                //Debug.Log("FFMessageSystem Destroyed");
             }
         }
         public static void GetReady()

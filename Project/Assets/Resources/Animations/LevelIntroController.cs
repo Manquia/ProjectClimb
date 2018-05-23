@@ -2,17 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LevelIntroController : MonoBehaviour {
-
-
-    Animator animator;
+public class LevelIntroController : MonoBehaviour
+{
     public Player player;
     public bool animationIsFinished = false;
 
 	// Use this for initialization
 	void Start ()
     {
-        animator = GetComponent<Animator>();
 	}
 	
 	// Update is called once per frame

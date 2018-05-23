@@ -188,7 +188,7 @@ public class GroundCreatorWindow : EditorWindow
         const int planes = 1;
 
         float groundWidth = dimensions;
-        float groundHalfWidth = groundWidth / 2.0f;
+        //float groundHalfWidth = groundWidth / 2.0f;
 
         Transform groundRoot = GameObject.Find("GroundRoot").transform;
 

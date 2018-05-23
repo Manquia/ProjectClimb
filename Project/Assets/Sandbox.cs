@@ -9,11 +9,7 @@ public class Sandbox : MonoBehaviour {
 
 	// Use this for initialization
 	void Start ()
-    {
-
-        var controsl = Instantiate(myControls);
-        
-		
+    {	
 	}
 	
 	// Update is called once per frame
