@@ -23,15 +23,16 @@ public class GrantCoinsOnUse : MonoBehaviour {
         FFMessageBoard<PlayerInteract.Use>.Disconnect(OnUse, gameObject);
     }
 
-    private void OnUse(PlayerInteract.Use e)
+    private int OnUse(PlayerInteract.Use e)
     {
         if (singleUse && used)
-            return;
+            return 0;
 
         if (singleUse)
             used = true;
 
         GrantCoins(e);
+        return 1;
     }
 
 
@@ -41,6 +42,6 @@ public class GrantCoinsOnUse : MonoBehaviour {
         // Send out event to player
         GiveCoins gc;
         gc.coinCount = coinCount + Random.Range(-coinCountVarience, coinCountVarience);
-        FFMessageBoard<GiveCoins>.SendToLocalToAllConnected(gc, e.actor.gameObject);
+        FFMessageBoard<GiveCoins>.SendAllConnected(gc, e.actor.gameObject);
     }
 }

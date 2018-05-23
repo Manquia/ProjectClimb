@@ -185,7 +185,7 @@ public class RopeController : MonoBehaviour
         RopeChange rc;
         rc.controller = this;
         rc.dt = dt;
-        FFMessageBoard<RopeChange>.SendToLocal(rc, gameObject);
+        FFMessageBoard<RopeChange>.Send(rc, gameObject);
     }
 
 

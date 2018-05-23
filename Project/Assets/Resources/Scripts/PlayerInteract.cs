@@ -87,28 +87,28 @@ public class PlayerInteract : MonoBehaviour
         //Debug.Log("PlayerInteract.SendLookAt");
         LookingAt lookAt = new LookingAt();
         lookAt.actor = interactorCamera.transform;
-        FFMessageBoard<LookingAt>.SendToLocalToAllConnected(lookAt, go);
+        FFMessageBoard<LookingAt>.SendAllConnected(lookAt, go);
     }
     void SendLookAway(GameObject go)
     {
         //Debug.Log("PlayerInteract.SendLookAway");
         LookingAway lookAway = new LookingAway();
         lookAway.actor = interactorCamera.transform;
-        FFMessageBoard<LookingAway>.SendToLocalToAllConnected(lookAway, go);
+        FFMessageBoard<LookingAway>.SendAllConnected(lookAway, go);
     }
     void SendLooking(GameObject go)
     {
         //Debug.Log("PlayerInteract.SendLooking");
         Looking looking = new Looking();
         looking.actor = interactorCamera.transform;
-        FFMessageBoard<Looking>.SendToLocalToAllConnected(looking, go);
+        FFMessageBoard<Looking>.SendAllConnected(looking, go);
     }
     void SendUse(GameObject go)
     {
         //Debug.Log("PlayerInteract.SendUse");
         Use u = new Use();
         u.actor = transform;
-        FFMessageBoard<Use>.SendToLocalToAllConnected(u, go);
+        FFMessageBoard<Use>.SendAllConnected(u, go);
     }
 
     bool LookRaycast(out RaycastHit hit)

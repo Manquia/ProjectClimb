@@ -10,6 +10,10 @@ static class FFExtensionMethods
     {
         return new Color(_color.r, _color.g, _color.b, 0.0f);
     }
+    public static Color MakeOpaque(this Color _color)
+    {
+        return new Color(_color.r, _color.g, _color.b, 1.0f);
+    }
 
     #region Gameobject
     public static void Destroy(this GameObject _go)

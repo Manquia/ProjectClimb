@@ -24,15 +24,16 @@ public class PickupOnUse : FFComponent {
         FFMessageBoard<PlayerInteract.Use>.Disconnect(OnUse, gameObject);
     }
 
-    private void OnUse(PlayerInteract.Use e)
+    private int OnUse(PlayerInteract.Use e)
     {
         if (singleUse && used)
-            return;
+            return 0;
 
         if (singleUse)
             used = true;
 
         Pickup(e);
+        return 1;
     }
 
 
@@ -45,7 +46,7 @@ public class PickupOnUse : FFComponent {
         // Send out event to player
         PickupEvent pe;
         pe.name = gameObject.name;
-        FFMessageBoard<PickupEvent>.SendToLocalToAllConnected(pe, e.actor.gameObject);
+        FFMessageBoard<PickupEvent>.SendAllConnected(pe, e.actor.gameObject);
 
         // Destroy self, @TODO Fancy pickup Animation?
         var seq = action.Sequence();

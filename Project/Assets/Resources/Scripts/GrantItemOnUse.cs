@@ -27,15 +27,16 @@ public class GrantItemOnUse : MonoBehaviour {
         FFMessageBoard<PlayerInteract.Use>.Disconnect(OnUse, gameObject);
     }
 
-    private void OnUse(PlayerInteract.Use e)
+    private int OnUse(PlayerInteract.Use e)
     {
         if (singleUse && used)
-            return;
+            return 0;
 
         if (singleUse)
             used = true;
 
         GrantObject(e);
+        return 1;
     }
 
 
@@ -46,6 +47,6 @@ public class GrantItemOnUse : MonoBehaviour {
         GiveObject giveObject;
         giveObject.ObjectName = ObjectName;
         giveObject.objectCount = objectCount + Random.Range(-objectCountVarience, objectCountVarience);
-        FFMessageBoard<GiveObject>.SendToLocalToAllConnected(giveObject, e.actor.gameObject);
+        FFMessageBoard<GiveObject>.SendAllConnected(giveObject, e.actor.gameObject);
     }
 }

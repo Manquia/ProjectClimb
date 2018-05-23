@@ -32,4 +32,19 @@ public class Annal<Type>
     {
         return data[(size + index - recordOffset) % size];
     }
+    // Reset all history to this wash types
+    public void Wash(Type value)
+    {
+        for (int i = 0; i < data.Length; ++i) data[i] = value;
+    }
+    public bool Contains(System.Predicate<Type> pred)
+    {
+        for (uint i = 0; i < size; ++i)
+        {
+            if (pred(Recall(i)))
+                return true;
+        }
+        return false;
+    }
+
 }

@@ -40,16 +40,18 @@ public class Popup : MonoBehaviour
         FFMessageBoard<PlayerInteract.Use>.Disconnect(OnUse, gameObject);
     }
 
-    private void OnUse(PlayerInteract.Use e)
+    private int OnUse(PlayerInteract.Use e)
     {
         if (singleUse && used)
-            return;
+            return 0;
 
         if (singleUse)
             used = true;
+
+        return 1;
     }
 
-    private void OnLookAt(PlayerInteract.LookingAt e)
+    private int OnLookAt(PlayerInteract.LookingAt e)
     {
         if (used)
         {
@@ -59,13 +61,14 @@ public class Popup : MonoBehaviour
         if (needsKey && e.actor.GetComponent<Inventory>().hasKey == false)
         {
             popupRoot.gameObject.SetActive(false);
-            return;
+            return 0;
         }
 
 
         popupRoot.gameObject.SetActive(true);
+        return 0;
     }
-    private void OnLookAway(PlayerInteract.LookingAway e)
+    private int OnLookAway(PlayerInteract.LookingAway e)
     {
         if (used)
         {
@@ -73,8 +76,9 @@ public class Popup : MonoBehaviour
         }
 
         popupRoot.gameObject.SetActive(false);
+        return 0;
     }
-    private void OnLooking(PlayerInteract.Looking e)
+    private int OnLooking(PlayerInteract.Looking e)
     {
         if (used)
         {
@@ -84,13 +88,14 @@ public class Popup : MonoBehaviour
         // look at camera
         var vecToPlayerCamera = e.actor.position - popupRoot.position;
         transform.forward = -vecToPlayerCamera;
+        return 0;
     }
 
 
 
-    private void OnConfiurePopup(ConfigurePopup e)
+    private int OnConfiurePopup(ConfigurePopup e)
     {
-
+        return 0;
     }
 
     public void Display()

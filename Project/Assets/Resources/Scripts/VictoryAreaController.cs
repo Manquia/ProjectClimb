@@ -22,13 +22,14 @@ public class VictoryAreaController : MonoBehaviour {
         FFMessageBoard<PlayerInteract.Use>.Disconnect(OnUse, gameObject);
     }
 
-    private void OnUse(PlayerInteract.Use e)
+    private int OnUse(PlayerInteract.Use e)
     {
         if(playerInventory.hasPowerObject)
         {
             activateOnWin.gameObject.SetActive(true);
             player.LoadVictoryScreen(winDelay);
         }
+        return 1;
     }
 
 }

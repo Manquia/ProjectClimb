@@ -26,10 +26,10 @@ public class BreakOnUse : MonoBehaviour {
         FFMessageBoard<PlayerInteract.Use>.Disconnect(OnUse, gameObject);
     }
 
-    private void OnUse(PlayerInteract.Use e)
+    private int OnUse(PlayerInteract.Use e)
     {
         if (singleUse && used)
-            return;
+            return 0;
 
         if (singleUse)
         {
@@ -48,6 +48,7 @@ public class BreakOnUse : MonoBehaviour {
         // play audio source
         GetComponent<AudioSource>().PlayOneShot(breakSound);
         SpawnBrokenVersion();
+        return 0;
     }
     
     void SpawnBrokenVersion()

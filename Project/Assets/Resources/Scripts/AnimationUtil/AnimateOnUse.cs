@@ -19,19 +19,21 @@ public class AnimateOnUse : MonoBehaviour {
         FFMessageBoard<PlayerInteract.Use>.Disconnect(OnUse, gameObject);
     }
 
-    private void OnUse(PlayerInteract.Use e)
+    private int OnUse(PlayerInteract.Use e)
     {
         if (singleUse && used)
-            return;
+            return 0;
 
         if (needsKey && e.actor.GetComponent<Inventory>().hasKey == false)
-            return;
+            return 0;
             
 
         if (singleUse)
             used = true;
         
         Animate();
+
+        return 0;
     }
     
 

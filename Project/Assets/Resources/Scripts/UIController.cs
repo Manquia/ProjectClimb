@@ -31,7 +31,7 @@ public class UIController : MonoBehaviour {
         FFMessageBoard<GiveObject>.Disconnect(OnGiveObject, gameObject);
     }
 
-    private void OnGiveObject(GiveObject e)
+    private int OnGiveObject(GiveObject e)
     {
         // @Improve! @FIX @HACK
         if (e.ObjectName == "Key")
@@ -41,13 +41,15 @@ public class UIController : MonoBehaviour {
 
 
         UpdateObjects();
+        return 0;
     }
     
 
-    private void OnGiveCoin(GiveCoins e)
+    private int OnGiveCoin(GiveCoins e)
     {
         inventory.coinCount += e.coinCount;
         UpdateCoinText();
+        return 0;
     }
 
 

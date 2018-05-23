@@ -489,9 +489,10 @@ public class Player : FFComponent
         }
 
     }
-    private void OnRopeChange(RopeChange e)
+    private int OnRopeChange(RopeChange e)
     {
         UpdateRope(e.dt);
+        return 0;
     }
     void UpdateRope(float dt)
     {
