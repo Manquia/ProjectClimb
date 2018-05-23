@@ -93,10 +93,11 @@ public struct KeyState
     {
         return !downState && !upState;
     }
+    // transitions between pressed -> down and released -> up. otherwise returns a copy of this.
     public KeyState GetUpdatedState()
     {
         KeyState newKs;
-        
+
         if(this.pressed())
         {
             newKs.upState = false;
@@ -115,7 +116,8 @@ public struct KeyState
         return newKs;
     }
     
-    static public KeyState GetKeyState(KeyCode code) { bool down = Input.GetKey(code);  KeyState ks; ks.upState = !down; ks.downState = down; return ks; }
+    //static public KeyState GetKeyState(KeyCode code) { bool down = Input.GetKey(code);  KeyState ks; ks.upState = !down; ks.downState = down; return ks; }
+    //static public KeyState GetTransitionKeyState(KeyCode code) { bool down = Input.GetKey(code); KeyState ks; ks.upState = down; ks.downState = down; return ks; }
     static public KeyState GetUpKeyState()       { KeyState ks; ks.upState = true; ks.downState = false;  return ks;}
     static public KeyState GetDownKeyState()     { KeyState ks; ks.upState = false; ks.downState = true;  return ks;}
     static public KeyState GetPressedKeyState()  { KeyState ks; ks.upState = true; ks.downState = true;   return ks;}

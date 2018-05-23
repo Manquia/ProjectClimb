@@ -52,15 +52,13 @@ public class Player : FFComponent
     {
         public Vector3 moveDir;
         public Vector3 moveDirRel;
-        public bool modifier;
-        public bool up;
-        public bool down;
-        public bool left;
-        public bool right;
 
-        // @TODO make this into key states instead of bools
-        public Annal<bool> space = new Annal<bool>(15, false);
-        public Annal<bool> spaceHeld = new Annal<bool>(15, false);
+        public Annal<KeyState> modifier = new Annal<KeyState>(15, KeyState.Constructor);
+        public Annal<KeyState> up       = new Annal<KeyState>(15, KeyState.Constructor);
+        public Annal<KeyState> down     = new Annal<KeyState>(15, KeyState.Constructor);
+        public Annal<KeyState> left     = new Annal<KeyState>(15, KeyState.Constructor);
+        public Annal<KeyState> right    = new Annal<KeyState>(15, KeyState.Constructor);
+        public Annal<KeyState> space    = new Annal<KeyState>(15, KeyState.Constructor);
     }
     public InputState input;
 
@@ -349,24 +347,28 @@ public class Player : FFComponent
         input.moveDir.y = 0.0f;
         input.moveDir.z = 0.0f;//Input.GetAxis("Vertical");
 
-        input.up = Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W);
-        input.down = Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S);
-        input.left = Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A);
-        input.right = Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D);
+        UpdateKeyState(input.up, KeyCode.W);
+        UpdateKeyState(input.down, KeyCode.S);
+        UpdateKeyState(input.left, KeyCode.A);
+        UpdateKeyState(input.right, KeyCode.D);
+        UpdateKeyState(input.space, KeyCode.Space);
+        UpdateKeyState(input.modifier, KeyCode.LeftShift);
 
-        input.moveDir.x += input.right ?  1.0f : 0.0f;
-        input.moveDir.x += input.left  ? -1.0f : 0.0f;
-        input.moveDir.z += input.up    ?  1.0f : 0.0f;
-        input.moveDir.z += input.down  ? -1.0f : 0.0f;
+        input.moveDir.x += input.right.Recall(0).down() ? 1.0f : 0.0f;
+        input.moveDir.x += input.left .Recall(0).down() ? -1.0f : 0.0f;
+        input.moveDir.z += input.up   .Recall(0).down() ? 1.0f : 0.0f;
+        input.moveDir.z += input.down .Recall(0).down() ? -1.0f : 0.0f;
 
         input.moveDirRel = transform.rotation * input.moveDir;
 
-        input.space.Record(Input.GetKeyDown(KeyCode.Space));
-        input.spaceHeld.Record(Input.GetKey(KeyCode.Space));
-
-        input.modifier = Input.GetKey(KeyCode.LeftShift);
-
         dt = Time.deltaTime;
+    }
+    static void UpdateKeyState(Annal<KeyState> ks, KeyCode code)
+    {
+        if (Input.GetKeyDown(code)) ks.Record(KeyState.GetPressedKeyState());
+        else if (Input.GetKeyUp(code)) ks.Record(KeyState.GetReleasedKeyState());
+        else if (Input.GetKey(code)) ks.Record(KeyState.GetDownKeyState());
+        else ks.Record(KeyState.GetUpKeyState()); // up = !down && !Pressed && !Released
     }
 
     private void UpdateCameraTurn()
@@ -385,7 +387,7 @@ public class Player : FFComponent
         var revRotOfPlane = Quaternion.FromToRotation(Vector3.up, movement.up);
 
         // movement in the Y axis (jump), Grounded && space in the last few frames?
-        if (grounded && input.space.Contains((v) => v))
+        if (grounded && input.space.Contains((v) => v.down()))
         {
             SnapToGround(maxDistToFloor);
             movement.details.jumping.Record(true);
@@ -402,7 +404,7 @@ public class Player : FFComponent
     private void UpdateAir()
     {
         // cancel/reverse jump force
-        if(!input.spaceHeld && myBody.velocity.y > 0.0f)
+        if(!input.space.Recall(0).down() && myBody.velocity.y > 0.0f)
         {
             Vector3 revJumpVel = movement.revJumpVel * myBody.velocity.y * -Vector3.up;
             myBody.velocity = myBody.velocity + revJumpVel;
@@ -414,7 +416,7 @@ public class Player : FFComponent
         var revRotOfPlane = Quaternion.FromToRotation(Vector3.up, movement.up);
 
         var maxSpeed = moveData.maxSpeed;
-        if (input.modifier)
+        if (input.modifier.Recall(0).down())
         {
             maxSpeed *= movement.runMultiplier;
         }
@@ -470,24 +472,24 @@ public class Player : FFComponent
         Vector3 leanVec = Vector3.zero;
         float climbVec = 0.0f;
 
-        if (input.space)
+        if (input.space.Recall(0).pressed())
         {
             RopePump(pumpAmount);
         }
 
         bool flipClimbMod = false;
         // going up
-        if (input.up)
+        if (input.up.Recall(0).down())
         {
-            if (input.modifier == flipClimbMod)
+            if (input.modifier.Recall(0).down() == flipClimbMod)
                 leanVec += new Vector3(0.0f, 0.0f, 1.0f);
             else
                 climbVec += 1.0f;
         }
         // going down
-        if (input.down)
+        if (input.down.Recall(0).down())
         {
-            if (input.modifier == flipClimbMod)
+            if (input.modifier.Recall(0).down() == flipClimbMod)
                 leanVec += new Vector3(0.0f, 0.0f, -1.0f);
             else
                 climbVec += -1.0f;
@@ -495,20 +497,20 @@ public class Player : FFComponent
 
         bool flipRotateMod = false;
         // going right
-        if (input.right && !input.left)
+        if (input.right.Recall(0).down() && !input.left.Recall(0).down())
         {
-            if (input.modifier == flipRotateMod)
+            if (input.modifier.Recall(0).down() == flipRotateMod)
                 leanVec += new Vector3(1.0f, 0.0f, 0.0f);
         }
         // going left
-        if (input.left && !input.right)
+        if (input.left.Recall(0).down() && !input.right.Recall(0).down())
         {
-            if (input.modifier == flipRotateMod)
+            if (input.modifier.Recall(0).down() == flipRotateMod)
                 leanVec += new Vector3(-1.0f, 0.0f, 0.0f);
         }
 
         // Pump
-        if (input.space)
+        if (input.space.Recall(0).down())
         {
             RopePump(pumpAmount);
         }
