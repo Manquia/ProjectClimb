@@ -14,9 +14,28 @@ using System.Collections.Generic;
 //      use SendToNet.
 //
 ///////////////////////////////////////////////////////
+namespace FF
+{
+    delegate int Compare(Transform obj1, Transform obj2);
+    public enum SendOrder_PT
+    {
+        Nearest,
+        Furthest,
+    }
+    public enum SendOrder_Axis
+    {
+        PosX,
+        NegX,
+        PosY,
+        NegY,
+        PoxZ,
+        NegZ,
+    }
+}
 
 namespace FFPrivate
 {
+
     public struct MessageInfo
     {
         public int callCount;
@@ -96,9 +115,10 @@ public class FFMessage<EventType> : FFPrivate.BaseMessage
 
     private static List<EventListener> messageList = new List<EventListener>();
     /// <summary>
-    /// The type of delegate used for this message
+    /// The type of delegate used for this message, returns the number of event ticks consumed
+    /// 0 if not consumed, 1 if consumed. This is used by MessageBoard, MessageBox, and Message
     /// </summary>
-    public delegate void EventListener(EventType e);
+    public delegate int EventListener(EventType e);
 
     /// <summary>
     /// Returns a reference to the message which contains helper functions

@@ -30,7 +30,7 @@ public class ExEnemy3 : ExEnemyBase {
         FFMessageBoard<DeactivateEnemiesEvent>.Disconnect(deactivate, gameObject);
     }
 
-    void activate(ActivateEnemiesEvent e)
+    int activate(ActivateEnemiesEvent e)
     {
         if (!active)
         {
@@ -49,9 +49,10 @@ public class ExEnemy3 : ExEnemyBase {
 
             active = true;
         }
+        return 0;
     }
 
-    void deactivate(DeactivateEnemiesEvent e)
+    int deactivate(DeactivateEnemiesEvent e)
     {
         if (active)
         {
@@ -59,6 +60,8 @@ public class ExEnemy3 : ExEnemyBase {
             seq1.Pause();
             active = false;
         }
+        return 0;
+
     }
 
     // shoot at gameobject target with a delay between attacks of

@@ -38,18 +38,10 @@ public class ExPathShower : MonoBehaviour {
                 Gizmos.DrawLine(transform.position, path.PointAlongPath(distAlongPath));
 
                 // TESTED: T + R + S
+                int nearestPointIndex;
+                float nearestPointDistance;
                 Gizmos.color = Color.green;
-                Gizmos.DrawLine(transform.position, path.NearestPoint(distAlongPath));
-
-                // TESTED: T + R + S
-                Gizmos.color = Color.yellow; // next point (half yellow)
-                Vector3 nextPoint = path.NextPoint(distAlongPath);
-                Gizmos.DrawLine(transform.position, transform.position + (Vector3.Normalize(nextPoint - transform.position) * (Vector3.Magnitude(nextPoint - transform.position) - 0.4f)));
-
-                // TESTED: T + R + S
-                Gizmos.color = Color.yellow; // prev point (half yellow)
-                Vector3 prevPoint = path.PrevPoint(distAlongPath);
-                Gizmos.DrawLine(transform.position, transform.position + (Vector3.Normalize(prevPoint - transform.position) *(Vector3.Magnitude(prevPoint - transform.position) - 0.4f)));
+                Gizmos.DrawLine(transform.position, path.NearestPoint(distAlongPath, out nearestPointIndex, out nearestPointDistance));
             }
 
             Gizmos.color = tempColor;

@@ -85,6 +85,27 @@ public class FFAction : MonoBehaviour
         {
             return _sequence.Count == 0;
         }
+        public bool IsComplete()
+        {
+            var seq = _sequence;
+            if(_sequence.Count == 1)
+            {
+                bool incomplete = false;
+                
+                incomplete |= seq[0].as_VoidCalls         != null ? seq[0].as_VoidCalls        .Count != 0   : false;
+                incomplete |= seq[0].as_ObjectCalls       != null ? seq[0].as_ObjectCalls      .Count != 0   : false;
+                incomplete |= seq[0].as_intProperties     != null ? seq[0].as_intProperties    .Count != 0   : false;
+                incomplete |= seq[0].as_floatProperties   != null ? seq[0].as_floatProperties  .Count != 0   : false;
+                incomplete |= seq[0].as_Vector2Properties != null ? seq[0].as_Vector2Properties.Count != 0   : false;
+                incomplete |= seq[0].as_Vector3Properties != null ? seq[0].as_Vector3Properties.Count != 0   : false;
+                incomplete |= seq[0].as_Vector4Properties != null ? seq[0].as_Vector4Properties.Count != 0   : false;
+                incomplete |= seq[0].as_ColorProperties   != null ? seq[0].as_ColorProperties  .Count != 0   : false;
+                incomplete |= seq[0].as_DelayTime > 0.0f;
+
+                return incomplete == false;
+            }
+            return false;
+        }
         // All actions must complete to move to the next set of actions
         public void Sync()
         {
@@ -143,13 +164,13 @@ public class FFAction : MonoBehaviour
         // An action which does nothing but wait
         public void Delay(float time)
         {
-            if (_sequence.Count != 0)
-                _sequence[_sequence.Count - 1].as_DelayTime += time;
+            if(_sequence.Count != 0)
+                _sequence[_sequence.Count - 1].as_DelayTime += time;    
         }
         public void Delay(double time)
         {
             if (_sequence.Count != 0)
-                _sequence[_sequence.Count - 1].as_DelayTime += (float)time;
+                _sequence[_sequence.Count - 1].as_DelayTime += (float)time;   
         }
         #endregion
 
@@ -172,9 +193,9 @@ public class FFAction : MonoBehaviour
 
         public void Call(FFActionVoidCall fun)
         {
-            if (_sequence.Count != 0 && fun != null)
+            if(_sequence.Count != 0 && fun != null)
             {
-                if (_sequence[_sequence.Count - 1].as_VoidCalls == null)
+                if(_sequence[_sequence.Count - 1].as_VoidCalls == null)
                 {
                     _sequence[_sequence.Count - 1].as_VoidCalls = new Queue<FFActionVoidCall>();
                 }
@@ -206,7 +227,7 @@ public class FFAction : MonoBehaviour
                 SetMuGetter<int>(myprop, easeType);
 
                 // Add to front of sequence
-                if (_sequence[_sequence.Count - 1].as_intProperties == null)
+                if(_sequence[_sequence.Count - 1].as_intProperties == null)
                 {
                     _sequence[_sequence.Count - 1].as_intProperties = new List<FFActionProperty<int>>();
                 }
@@ -264,7 +285,7 @@ public class FFAction : MonoBehaviour
                 myprop.prev_value = var.Val;
 
                 myprop.total_time = Mathf.Max(timeToComplete, 0.01f);
-
+                
                 SetMuGetter<float>(myprop, easeType);
 
                 // Add to front of sequence
@@ -533,7 +554,7 @@ public class FFAction : MonoBehaviour
 
         public void Property(FFRef<Color> var, Color endValue, AnimationCurve curve, float timeToComplete = CurveTime)
         {
-            if (timeToComplete == CurveTime)
+            if(timeToComplete == CurveTime)
                 timeToComplete = curve.TimeToComplete();
 
             if (_sequence.Count != 0 && var != null)
@@ -563,7 +584,7 @@ public class FFAction : MonoBehaviour
                 Debug.Log("Error in ActionSequence Property call");
             }
         }
-
+        
         /// <summary>
         /// The time taken for the curve to complete.
         /// </summary>
@@ -642,7 +663,7 @@ public class FFAction : MonoBehaviour
             curve.keys = keys;
         }
 
-        prop.mu_getter = (curr_time, total_time) => curve.Evaluate((curr_time / total_time) * curve.keys[curve.keys.Length - 1].time);
+        prop.mu_getter = (curr_time, total_time) => curve.Evaluate((curr_time/total_time) * curve.keys[curve.keys.Length - 1].time);
     }
     #endregion
 
@@ -679,15 +700,15 @@ public class FFAction : MonoBehaviour
 
     public class FFActionSet
     {
-        public Queue<FFActionVoidCall> as_VoidCalls;
-        public Queue<FFActionObjectCaller> as_ObjectCalls;
-        public float as_DelayTime;
-        public List<FFActionProperty<int>> as_intProperties;
-        public List<FFActionProperty<float>> as_floatProperties;
-        public List<FFActionProperty<Vector2>> as_Vector2Properties;
-        public List<FFActionProperty<Vector3>> as_Vector3Properties;
-        public List<FFActionProperty<Vector4>> as_Vector4Properties;
-        public List<FFActionProperty<Color>> as_ColorProperties;
+        public Queue<FFActionVoidCall>          as_VoidCalls;
+        public Queue<FFActionObjectCaller>      as_ObjectCalls;
+        public float                            as_DelayTime;
+        public List<FFActionProperty<int>>      as_intProperties;
+        public List<FFActionProperty<float>>    as_floatProperties;
+        public List<FFActionProperty<Vector2>>  as_Vector2Properties;
+        public List<FFActionProperty<Vector3>>  as_Vector3Properties;
+        public List<FFActionProperty<Vector4>>  as_Vector4Properties;
+        public List<FFActionProperty<Color>>    as_ColorProperties;
     }
     #endregion FFActionTypes
 
@@ -700,7 +721,7 @@ public class FFAction : MonoBehaviour
         FFMessage<FFLocalEvents.TimeChangeEvent>.Disconnect(OnTimeChangeEvent);
     }
 
-    private void OnTimeChangeEvent(FFLocalEvents.TimeChangeEvent e)
+    private int OnTimeChangeEvent(FFLocalEvents.TimeChangeEvent e)
     {
         //Debug.LogWarning("TimeChangeEvent: " + e.newCurrentTime); // debug
 
@@ -709,6 +730,7 @@ public class FFAction : MonoBehaviour
             ActionSequenceList[i].seqTime = (float)e.newCurrentTime;
             //Debug.LogWarning("SeqTime: " + ActionSequenceList[i].seqTime); //debug
         }
+        return 0;
     }
 
     public bool unlimitedTimeWarp = false;
@@ -733,7 +755,7 @@ public class FFAction : MonoBehaviour
                     dt = Time.deltaTime;
                 else
                     dt = Time.unscaledDeltaTime;
-
+                        
 
                 if (!unlimitedTimeWarp && timeoutTimer > timeoutTime)
                 {
@@ -1097,7 +1119,7 @@ public class FFAction : MonoBehaviour
             objectcallcount = set.as_ObjectCalls.Count;
         else
             objectcallcount = 0;
-
+        
         // void calls
         for (int j = 0; j < voidcallcount && set.as_VoidCalls != null; ++j)
         {
@@ -1192,7 +1214,7 @@ public class FFAction : MonoBehaviour
     // new operations you add to the sequence to be first.
     public void ClearAllSequences()
     {
-        foreach (var seq in ActionSequenceList)
+        foreach(var seq in ActionSequenceList)
         {
             seq.ClearSequence();
         }

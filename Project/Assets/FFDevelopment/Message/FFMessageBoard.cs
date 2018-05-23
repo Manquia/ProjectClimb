@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using FFPrivate;
+using System;
 
 //////////////////////////////////////////////////////
 // Author: Micah Rust
@@ -217,8 +218,10 @@ public class FFMessageBoard<EventType> : FFPrivate.BaseMessageBoard
     /// <summary>
     /// Send to the message networked (to all other connected clients) to this board's sepecific box entry.
     /// </summary>
-    public static void SendToNet(EventType message, string entry, bool varified = false)
+    private static void SendToNet(EventType message, string entry, bool varified = false)
     {
+        Debug.Assert(false, "this codepath probably doens't work");
+
         if (activeGlobal && activeLocal)
         {
             FFMessageSystem.SendMessageToNet<EventType>(message, entry, varified);
@@ -251,60 +254,236 @@ public class FFMessageBoard<EventType> : FFPrivate.BaseMessageBoard
     /// <summary>
     /// Send the message locally (to this Unity Instance) to the go (GameObject)
     /// </summary>
-    public static bool SendToLocal(EventType message, GameObject go)
+    public static int Send(EventType message, GameObject go, int consumeQuantity = 1)
     {
+        if (consumeQuantity <= 0)
+            return consumeQuantity;
+
         string boxEntry = BaseMessageBoard.LocalIdEntry(go.GetInstanceID());
         FFMessageBox<EventType> box;
 
         if (messageBoard.TryGetValue(boxEntry, out box))
         {
-            return box.SendToLocal(message);
+            return box.SendToLocal(message, consumeQuantity);
         }
         else
         {
-            return false;
+            return consumeQuantity;
         }
+        // @TODO @NET if a networked object, we should send the message to the net as well...
+        //FFMessageSystem.SendMessageToNet<EventType>(message, go.GetInstanceID(),
+        //    FFPacketInstructionFlags.MessageBoardGameObjectSend, varifiedPacket);
     }
+
+    public static int Send<AComp>(EventType message, AComp[] objects, bool randomize = false, int consumeQuantity = 1) where AComp : Component
+    {
+        if(randomize)
+        {
+            objects.Randomize();
+        }
+
+        int objCount = objects.Length;
+        for (int i = 0; i < objCount && consumeQuantity > 0; ++i)
+        {
+            consumeQuantity = Send(message, objects[i].gameObject, consumeQuantity);
+        }
+        return consumeQuantity;
+    }
+    public static int Send(EventType message, GameObject[] gos, bool randomize = false, int consumeQuantity = 1)
+    {
+        if (randomize)
+        {
+            gos.Randomize();
+        }
+
+        int objCount = gos.Length;
+        for (int i = 0; i < objCount && consumeQuantity > 0; ++i)
+        {
+            consumeQuantity = Send(message, gos[i].gameObject, consumeQuantity);
+        }
+        return consumeQuantity;
+    }
+
+    public static int SendSpacial(EventType message, Vector3 center, float radius, int mask, bool randomize = false, int consumeQuantity = 1)
+    {
+        if (consumeQuantity <= 0)
+            return consumeQuantity;
+
+        var res = Physics.OverlapSphere(center, radius, mask);
+        
+        Send(message, res, randomize, consumeQuantity);
+        return consumeQuantity;
+    }
+    public static int SendSpecial(EventType message, Vector3 center, Vector3 halfBoxExtends, Quaternion boxOrientation, int mask, bool randomize = false, int consumeQuantity = 1)
+    {
+        if (consumeQuantity <= 0)
+            return consumeQuantity;
+
+        var res = Physics.OverlapBox(center, halfBoxExtends, boxOrientation, mask);
+        
+        Send(message, res, randomize, consumeQuantity);
+
+        return consumeQuantity;
+    }
+
     /// <summary>
     /// Sends the message locally (to this Unity Instance) to all parents of go (GameObject) from bottom to top (go included)
     /// </summary>
-    public static void SendToLocalUp(EventType message, GameObject go)
+    public static int SendUp(EventType message, GameObject go, int consumeQuantity = 1)
     {
+        if (consumeQuantity <= 0)
+            return consumeQuantity;
+
         Transform trans = go.transform;
         do
         {
-            SendToLocal(message, trans.gameObject);
-        } while ((trans = trans.parent) != null);
+            consumeQuantity = Send(message, trans.gameObject, consumeQuantity);
+        } while ((trans = trans.parent) != null && consumeQuantity > 0);
+        return consumeQuantity;
     }
     /// <summary>
     /// Sends the message locally (to this Unity Instance) to all childern of go (GameObject) from top to bottom (go included)
     /// </summary>
-    public static void SendToLocalDown(EventType message, GameObject go)
+    public static int SendDown(EventType message, GameObject go, int consumeQuantity = 1)
     {
-        SendToLocal(message, go.gameObject);
+        if (consumeQuantity <= 0)
+            return consumeQuantity;
+
+        consumeQuantity = Send(message, go.gameObject, consumeQuantity);
         foreach (Transform child in go.transform)
         {
-            SendToLocalDown(message, child.gameObject);
+            if (consumeQuantity <= 0) break;
+            consumeQuantity = SendDown(message, child.gameObject, consumeQuantity);
         }
+        return consumeQuantity;
     }
     /// <summary>
     /// Sends the message locally (to this Unity Instance) to every parent and child reachable by the game object's transform (go included)
     /// </summary>
-    public static void SendToLocalToAllConnected(EventType message, GameObject go)
+    public static int SendAllConnected(EventType message, GameObject go, int consumeQuantity = 1)
     {
+        if (consumeQuantity <= 0)
+            return consumeQuantity;
+
         // Get root object of cluster
         Transform trans = go.transform;
         while (trans.parent != null)
             trans = trans.parent;
 
         // Send down
-        SendToLocalDown(message, trans.gameObject);
+        return SendDown(message, trans.gameObject, consumeQuantity);
+    }
+    
+    /// <summary>
+    /// Send objects ordered by their relative distances from a given world point
+    /// </summary>
+    public static int SendOrdered(EventType message, Transform[] objects, Vector3 fromPosition, FF.SendOrder_PT order, int consumeQuantity = 1)
+    {
+        if (consumeQuantity <= 0)
+            return consumeQuantity;
+        
+        // Apply ordering to given objects
+        switch (order)
+        {
+            case FF.SendOrder_PT.Nearest:
+                // Sort with Array.Sort (ie quick sort)
+                Array.Sort<Transform>(objects, delegate (Transform obj1, Transform obj2)
+                {
+                    float dist1 = (obj1.position - fromPosition).sqrMagnitude;
+                    float dist2 = (obj2.position - fromPosition).sqrMagnitude;
+                    return Math.Sign(dist1 - dist2);
+                });
+                break;
+            case FF.SendOrder_PT.Furthest:
+                // Sort with Array.Sort (ie quick sort)
+                Array.Sort<Transform>(objects, delegate (Transform obj1, Transform obj2)
+                {
+                    float dist1 = (obj1.position - fromPosition).sqrMagnitude;
+                    float dist2 = (obj2.position - fromPosition).sqrMagnitude;
+                    return -Math.Sign(dist1 - dist2);
+                });
+                break;
+        }
+
+        // Send out events to objects
+        return Send(message, objects, false, consumeQuantity);
+    }
+    /// <summary>
+    /// Sends the message to the objects by their relative axis values.
+    /// </summary>
+    public static int SendOrdered(EventType message, Transform[] objects, FF.SendOrder_Axis order, int consumeQuantity = 1)
+    {
+        if (consumeQuantity <= 0)
+            return consumeQuantity;
+
+        // Apply ordering to given objects
+        switch (order)
+        {
+            case FF.SendOrder_Axis.PosX:
+                // Sort with Array.Sort (ie quick sort)
+                Array.Sort<Transform>(objects, delegate (Transform obj1, Transform obj2)
+                {
+                    float x1 = obj1.position.x;
+                    float x2 = obj2.position.x;
+                    return Math.Sign(x1 - x2);
+                });
+                break;
+            case FF.SendOrder_Axis.NegX:
+                // Sort with Array.Sort (ie quick sort)
+                Array.Sort<Transform>(objects, delegate (Transform obj1, Transform obj2)
+                {
+                    float x1 = obj1.position.x;
+                    float x2 = obj2.position.x;
+                    return -Math.Sign(x1 - x2);
+                });
+                break;
+            case FF.SendOrder_Axis.PosY:
+                // Sort with Array.Sort (ie quick sort)
+                Array.Sort<Transform>(objects, delegate (Transform obj1, Transform obj2)
+                {
+                    float x1 = obj1.position.y;
+                    float x2 = obj2.position.y;
+                    return Math.Sign(x1 - x2);
+                });
+                break;
+            case FF.SendOrder_Axis.NegY:
+                // Sort with Array.Sort (ie quick sort)
+                Array.Sort<Transform>(objects, delegate (Transform obj1, Transform obj2)
+                {
+                    float x1 = obj1.position.y;
+                    float x2 = obj2.position.y;
+                    return -Math.Sign(x1 - x2);
+                });
+                break;
+            case FF.SendOrder_Axis.PoxZ:
+                // Sort with Array.Sort (ie quick sort)
+                Array.Sort<Transform>(objects, delegate (Transform obj1, Transform obj2)
+                {
+                    float x1 = obj1.position.z;
+                    float x2 = obj2.position.z;
+                    return Math.Sign(x1 - x2);
+                });
+                break;
+            case FF.SendOrder_Axis.NegZ:
+                // Sort with Array.Sort (ie quick sort)
+                Array.Sort<Transform>(objects, delegate (Transform obj1, Transform obj2)
+                {
+                    float x1 = obj1.position.z;
+                    float x2 = obj2.position.z;
+                    return -Math.Sign(x1 - x2);
+                });
+                break;
+        }
+
+        // Send out events to objects
+        return Send(message, objects, false, consumeQuantity);
     }
 
+    #region Net Sending OLD
     /// <summary>
     /// Send the message networked (to all other connected clients) to other clients' go (GameObject). go (GameObject) must be a registered Object on other clients.
     /// </summary>
-    public static void SendToNet(EventType message, GameObject go, bool varifiedPacket = false)
+    private static void SendToNet(EventType message, GameObject go, bool varifiedPacket = false)
     {
         FFMessageSystem.SendMessageToNet<EventType>(message, go.GetInstanceID(),
             FFPacketInstructionFlags.MessageBoardGameObjectSend, varifiedPacket);
@@ -314,7 +493,7 @@ public class FFMessageBoard<EventType> : FFPrivate.BaseMessageBoard
     /// Send the message networked (to all other connected clients) to other clients' go (GameObject) and its parents. go (GameObject) must be a registered Object on other clients
     /// and its parents do not need to be registered to recieve the message
     /// </summary>
-    public static void SendToNetUp(EventType message, GameObject go, bool varifiedPacket = false)
+    private static void SendToNetUp(EventType message, GameObject go, bool varifiedPacket = false)
     {
         FFMessageSystem.SendMessageToNet<EventType>(message, go.GetInstanceID(),
             FFPacketInstructionFlags.MessageBoardGameObjectSendUp, varifiedPacket);
@@ -324,7 +503,7 @@ public class FFMessageBoard<EventType> : FFPrivate.BaseMessageBoard
     /// Send the message networked (to all other connected clients) to other clients' go (GameObject) and its childeren. go (GameObject) must be a registered Object on other clients
     /// and its childeren do not need to be registered to recieve the message
     /// </summary>
-    public static void SendToNetDown(EventType message, GameObject go, bool varifiedPacket = false)
+    private static void SendToNetDown(EventType message, GameObject go, bool varifiedPacket = false)
     {
         FFMessageSystem.SendMessageToNet<EventType>(message, go.GetInstanceID(),
             FFPacketInstructionFlags.MessageBoardGameObjectSendDown, varifiedPacket);
@@ -334,18 +513,19 @@ public class FFMessageBoard<EventType> : FFPrivate.BaseMessageBoard
     /// Send the message networked (to all other connected clients) to other clients' go (GameObject) and everything connected. go (GameObject) must be a registered Object on other clients
     /// and anything connected does not need to be registered
     /// </summary>
-    public static void SendToNetToAllConnected(EventType message, GameObject go, bool varifiedpacket = false)
+    private static void SendToNetToAllConnected(EventType message, GameObject go, bool varifiedpacket = false)
     {
         FFMessageSystem.SendMessageToNet<EventType>(message, go.GetInstanceID(),
             FFPacketInstructionFlags.MessageBoardGameObjectSendToAllConnected, varifiedpacket);
     }
-    
+    #endregion Net
+
     /// <summary>
     /// Connect to Local and Networked message on this GameObject's box for this board type. Connecting
     /// will make this function called when it is sent a message directly or indirectly
     /// (via SendToLocal/Up/Down/ToAllConnected or by another client calling SendToNet/Up/Down/ToAllConnected)
     /// </summary>
-    public static void Connect(FFMessageBox<EventType>.EventListener function, GameObject go)
+    public static void Connect(FFMessage<EventType>.EventListener function, GameObject go)
     {
         GetReady();
         string id = BaseMessageBoard.LocalIdEntry(go.GetInstanceID());
@@ -366,7 +546,7 @@ public class FFMessageBoard<EventType> : FFPrivate.BaseMessageBoard
     /// Stops listening to Local and Networed message on this GameObject's box for this board type. This
     /// can be done at any time and is useful for 1-off listeners or other time sensative listeners.
     /// </summary>
-    public static void Disconnect(FFMessageBox<EventType>.EventListener function, GameObject go)
+    public static void Disconnect(FFMessage<EventType>.EventListener function, GameObject go)
     {
         string id = BaseMessageBoard.LocalIdEntry(go.GetInstanceID());
         FFMessageBox<EventType> box;
@@ -439,19 +619,19 @@ public class FFMessageBoard<EventType> : FFPrivate.BaseMessageBoard
         switch(package.packetInstructions)
         {
             case FFPacketInstructionFlags.MessageBoardGameObjectSend:
-                FFMessageBoard<EventType>.SendToLocal(sentPackage.message, go);
+                FFMessageBoard<EventType>.Send(sentPackage.message, go);
                 break;
 
             case FFPacketInstructionFlags.MessageBoardGameObjectSendDown:
-                FFMessageBoard<EventType>.SendToLocalDown(sentPackage.message, go);
+                FFMessageBoard<EventType>.SendDown(sentPackage.message, go);
                 break;
 
             case FFPacketInstructionFlags.MessageBoardGameObjectSendUp:
-                FFMessageBoard<EventType>.SendToLocalUp(sentPackage.message, go);
+                FFMessageBoard<EventType>.SendUp(sentPackage.message, go);
                 break;
 
             case FFPacketInstructionFlags.MessageBoardGameObjectSendToAllConnected:
-                FFMessageBoard<EventType>.SendToLocalToAllConnected(sentPackage.message, go);
+                FFMessageBoard<EventType>.SendAllConnected(sentPackage.message, go);
                 break;
             default:
                 break;

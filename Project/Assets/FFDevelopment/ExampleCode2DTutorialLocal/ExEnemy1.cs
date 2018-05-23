@@ -30,7 +30,7 @@ public class ExEnemy1 : ExEnemyBase {
     }
 
 
-    void activate(ActivateEnemiesEvent e)
+    int activate(ActivateEnemiesEvent e)
     {
         if (!active)
         {
@@ -44,15 +44,17 @@ public class ExEnemy1 : ExEnemyBase {
 
             active = true;
         }
+        return 0;
     }
 
-    void deactivate(DeactivateEnemiesEvent e)
+    int deactivate(DeactivateEnemiesEvent e)
     {
         if (active)
         {
             seq.Pause();
             active = false;
         }
+        return 0;
     }
 
     // move down/up (depends on if AttackWidth is pos/neg) and right/left (depends on if AttackWidth is pos/neg)

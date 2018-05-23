@@ -34,7 +34,7 @@ public class ExEnemy2 : ExEnemyBase {
         FFMessageBoard<DeactivateEnemiesEvent>.Disconnect(deactivate, gameObject);
     }
 
-    void activate(ActivateEnemiesEvent e)
+    int activate(ActivateEnemiesEvent e)
     {
         if (!active)
         {
@@ -48,15 +48,17 @@ public class ExEnemy2 : ExEnemyBase {
 
             active = true;
         }
+        return 0;
     }
 
-    void deactivate(DeactivateEnemiesEvent e)
+    int deactivate(DeactivateEnemiesEvent e)
     {
         if (active)
         {
             seq.Pause();
             active = false;
         }
+        return 0;
     }
 
     // move down and right

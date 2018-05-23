@@ -13,13 +13,15 @@ public class ExMessageReciever2 : MonoBehaviour {
     }
 
     // Example of a 1-off event
-    void OnPlayerDiedEvent(PlayerDiedEvent e)
+    int OnPlayerDiedEvent(PlayerDiedEvent e)
     {
         // It is ok to disconnect/connect/send events from within
         // an event call. However, added events within the same
         // event type will not be called on the event they are added.
         FFMessage<PlayerDiedEvent>.Disconnect(OnPlayerDiedEvent);
         Debug.Log("The Player died!, I am quite sad. I am going to be quiet now...  (One Time Event example)");
+
+        return 0;
     }
 
 

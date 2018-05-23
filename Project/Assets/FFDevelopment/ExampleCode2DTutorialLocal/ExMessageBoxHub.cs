@@ -44,7 +44,7 @@ public class ExMessageBoxHub : MonoBehaviour {
             Activator.SendToLocal(e);
 
             // for ExEnemies 3
-            FFMessageBoard<ActivateEnemiesEvent>.SendToLocalDown(e, gameObject);
+            FFMessageBoard<ActivateEnemiesEvent>.SendDown(e, gameObject);
         }
 
         if (Input.GetKeyDown(KeyCode.D))  // Deactivator Triggered
@@ -56,7 +56,7 @@ public class ExMessageBoxHub : MonoBehaviour {
             Deactivator.SendToLocal(e);
 
             // for ExEnemies 3
-            FFMessageBoard<DeactivateEnemiesEvent>.SendToLocalDown(e, gameObject);
+            FFMessageBoard<DeactivateEnemiesEvent>.SendDown(e, gameObject);
         }
 	
 	}

@@ -37,7 +37,7 @@ public class FFPath : MonoBehaviour
 
     //////////////////// Stats when Unselected ////////////////////
     // point radius and color
-    private const float DebugPointsRadius = 0.1f;
+    private const float DebugPointsRadius = 4.0f;
     private Color DebugPointsColorUnselected = Color.blue;
     // Lower value to increase debug line precision
     private const float DebugLineLengthUnselected = 0.2f;
@@ -233,7 +233,7 @@ public class FFPath : MonoBehaviour
             MakeDebugPoint(poolTrans, point);
         }
     }
-    public void UpdateModifyablePoints()
+    void UpdateModifyablePoints()
     {
         bool setupNeeded = false;
 
@@ -358,7 +358,7 @@ public class FFPath : MonoBehaviour
 
         return;
     }
-    public void TransferPointData()
+    void TransferPointData()
     {
         var pool = transform.Find(FFPathDebugPointsPoolName(gameObject.name));
 
@@ -389,7 +389,7 @@ public class FFPath : MonoBehaviour
             }
         }
     }
-    public void DestroyModifiablePoints()
+    void DestroyModifiablePoints()
     {
         var pool = transform.Find(FFPathDebugPointsPoolName(gameObject.name));
         if(pool != null)
@@ -398,7 +398,7 @@ public class FFPath : MonoBehaviour
             DestroyImmediate(pool.gameObject);
         }
     }
-    public void DrawDebugLinesGizmo(Color drawColor, float lineDensity)
+    void DrawDebugLinesGizmo(Color drawColor, float lineDensity)
     {
         if (points.Length > 1)
         {
@@ -474,7 +474,7 @@ public class FFPath : MonoBehaviour
     [SerializeField]
     public bool SmoothBetweenPoints = false;
     [SerializeField]
-    public bool ModifyAndDraw = true;
+    public bool ModifyAndDraw = false;
     [SerializeField]
     public Vector3[] points =
     { new Vector3(0, 0, 0), new Vector3(0,1,0), new Vector3(0,2,0) };
@@ -520,7 +520,7 @@ public class FFPath : MonoBehaviour
 
     public Vector3 PositionAtPoint(int index)
     {
-        return transform.TransformPoint(points[index]);
+	    return transform.TransformPoint(points[index % points.Length]);
     }
     /// <summary>
     /// Returns whether the path is valid to use.
@@ -554,6 +554,12 @@ public class FFPath : MonoBehaviour
         var currentPoint = pointIndex % points.Length;
         var numberOfLoops = pointIndex / points.Length;
         return numberOfLoops * PathLength + linearDistanceAlongPath[currentPoint];
+    }
+
+    public Vector3 PointAlongPathNorm(float distanceAlongPathNorm)
+    {
+        distanceAlongPathNorm -= Mathf.Floor(distanceAlongPathNorm);
+        return PointAlongPath(distanceAlongPathNorm * PathLength);
     }
 
     /// <summary>
@@ -691,16 +697,10 @@ public class FFPath : MonoBehaviour
     /// </summary>
     public Vector3 NearestPoint(Vector3 givenPoint)
     {
-        Vector3 pos;
-        if (transform != null) { pos = transform.position; }
-        else { pos = new Vector3(0, 0, 0); }
-        
         if ((!DynamicPath && IsValidPath()) || (SetupPointData() && IsValidPath()))
         {
             // offset, rotate and scale point to get it in the same world space as path
-            givenPoint = FFMatrix3X3.ScaleBy(Quaternion.Inverse(transform.rotation) * (givenPoint - pos),
-                new Vector3(1.0f / transform.lossyScale.x, 1.0f / transform.lossyScale.y, 1.0f / transform.lossyScale.z));
-
+            givenPoint = transform.InverseTransformPoint(givenPoint);
             Vector3 nearestPoint = FFVector3.VecMaxValue;
             float nearestDist = float.MaxValue;
 
@@ -713,7 +713,7 @@ public class FFPath : MonoBehaviour
                     nearestPoint = point;
                 }
             }
-            return pos + (transform.rotation * FFMatrix3X3.ScaleBy(nearestPoint, transform.lossyScale));
+            return transform.TransformPoint(nearestPoint);
         }
         else
         {
@@ -726,7 +726,7 @@ public class FFPath : MonoBehaviour
     /// returns the nearest point to a distance along the path
     /// TODO: Mod Needed in end?
     /// </summary>
-    public Vector3 NearestPoint(float distanceAlongPath)
+    public Vector3 NearestPoint(float distanceAlongPath, out int indexOfNearest, out float vecToNearest)
     {
         float distmod = distanceAlongPath % PathLength;
         float distNegEqualZero = (distmod + PathLength) % PathLength;
@@ -736,12 +736,67 @@ public class FFPath : MonoBehaviour
             distanceAlongPath = distNegEqualZero;
         else   // given positive distance
             distanceAlongPath = distPos;
+        
+        if ((!DynamicPath && IsValidPath()) || (SetupPointData() && IsValidPath()))
+        {
+            int i = 0;
+            int first = 1;
+            int middle = PointCount / 2;
+            int last = PointCount - 1;
 
-        Vector3 pos; // TODO: not sure if this is an edge case or not
-        if (transform != null) { pos = transform.position; }
-        else { pos = new Vector3(0, 0, 0); }
 
+            while (first <= last)
+            {
+                if (distanceAlongPath > (linearDistanceAlongPath[middle])) // greater than
+                {
+                    first = middle + 1;
+                }
+                else if (distanceAlongPath >= (linearDistanceAlongPath[middle - 1]) // equal to
+                    && distanceAlongPath <= (linearDistanceAlongPath[middle]))
+                {
+                    i = middle;
+                    break;
+                }
+                else // less than (dist < linearDistanceAlongPath[middle - 1])
+                {
+                    last = middle - 1;
+                }
 
+                middle = (first + last) / 2;
+            }
+            var distOnLineBetweenPoints = distanceAlongPath - linearDistanceAlongPath[i - 1];
+            float lengthBetweenPoints = (linearDistanceAlongPath[i] - linearDistanceAlongPath[i - 1]);
+            float halfLengthBetweenPoints = lengthBetweenPoints / 2.0f;
+            if (distOnLineBetweenPoints > halfLengthBetweenPoints)
+            {
+                vecToNearest = distOnLineBetweenPoints - lengthBetweenPoints;
+                indexOfNearest = i % points.Length;
+                return transform.TransformPoint(points[indexOfNearest]); // if we are more than halfway through line
+            }
+            else
+            {
+                vecToNearest = distOnLineBetweenPoints;
+                indexOfNearest = i - 1;
+                return transform.TransformPoint(points[indexOfNearest]);  // if we less than or equal to than halfway through line
+            }
+        }
+
+        Debug.LogError("Error, Path failed to setup");
+        vecToNearest = -1.0f;
+        indexOfNearest = -1;
+        return new FFVector3(0, 0, 0);
+    }
+
+    public void NearestPoints(float distanceAlongPath, out int indexofPrevPoint, out float vecToPrevPoint, out int indexOfNextPt, out float vecToNextPoint)
+    {
+        float distmod = distanceAlongPath % PathLength;
+        float distNegEqualZero = (distmod + PathLength) % PathLength;
+        float distPos = distmod > 0 ? distPos = distmod : distPos = PathLength;
+
+        if (distanceAlongPath <= 0) // given negative/zero distance
+            distanceAlongPath = distNegEqualZero;
+        else   // given positive distance
+            distanceAlongPath = distPos;
 
         if ((!DynamicPath && IsValidPath()) || (SetupPointData() && IsValidPath()))
         {
@@ -770,21 +825,26 @@ public class FFPath : MonoBehaviour
 
                 middle = (first + last) / 2;
             }
-            distanceAlongPath -= linearDistanceAlongPath[i - 1];
-            float halfLengthBetweenPoints = (linearDistanceAlongPath[i] - linearDistanceAlongPath[i - 1])/2;
-            if (distanceAlongPath > halfLengthBetweenPoints)
-                return pos + (transform.rotation * FFMatrix3X3.ScaleBy(points[i % points.Length], transform.lossyScale)); // if we are more than halfway through line
-            else
-                return pos + (transform.rotation * FFMatrix3X3.ScaleBy(points[i - 1], transform.lossyScale));  // if we less than or equal to than halfway through line
+            var distOnLineBetweenPoints = distanceAlongPath - linearDistanceAlongPath[i - 1];
+            float lengthBetweenPoints = (linearDistanceAlongPath[i] - linearDistanceAlongPath[i - 1]);
+            
+            vecToNextPoint = distOnLineBetweenPoints - lengthBetweenPoints;
+            indexOfNextPt = i % points.Length;
+            vecToPrevPoint = distOnLineBetweenPoints;
+            indexofPrevPoint = i - 1;
+            return;
         }
-        Debug.LogError("Error, Path failed to setup");
-        return new FFVector3(0, 0, 0);
-    }
 
+        Debug.LogError("Error, Path failed to setup");
+        indexofPrevPoint = -1;
+        vecToPrevPoint = 0.0f;
+        indexOfNextPt = -1;
+        vecToNextPoint = 0.0f;
+    }
     /// <summary>
     /// returns the next point in the Path
     /// </summary>
-    public Vector3 NextPoint(float distanceAlongPath)
+    public Vector3 NextPoint(float distanceAlongPath, out int indexOfNextPt)
     {
         float distmod = distanceAlongPath % PathLength;
         float distNegEqualZero = (distmod + PathLength) % PathLength;
@@ -794,12 +854,7 @@ public class FFPath : MonoBehaviour
             distanceAlongPath = distNegEqualZero;
         else   // given positive distance
             distanceAlongPath = distPos;
-
-        Vector3 pos; // TODO: not sure if this is an edge case or not
-        if (transform != null) { pos = transform.position; }
-        else { pos = new Vector3(0, 0, 0); }
-
-
+        
         if ((!DynamicPath && IsValidPath()) || (SetupPointData() && IsValidPath()))
         {
             int i = 0;
@@ -830,10 +885,12 @@ public class FFPath : MonoBehaviour
 
                 middle = (first + last) / 2;
             }
-            return pos + (transform.rotation * FFMatrix3X3.ScaleBy(points[i % points.Length], transform.lossyScale));
+            indexOfNextPt = i % points.Length;
+            return transform.TransformPoint(points[indexOfNextPt]);
         }
 
         Debug.LogError("Error, Path failed to setup");
+        indexOfNextPt = -1;
         return new FFVector3(0, 0, 0);
     }
     
@@ -841,7 +898,7 @@ public class FFPath : MonoBehaviour
     /// Returns the previous point on the path relative to the 
     /// given distance along the path
     /// </summary>
-    public Vector3 PrevPoint(float distanceAlongPath)
+    public Vector3 PrevPoint(float distanceAlongPath, out int indexOfNextPt)
     {
         float distmod = distanceAlongPath % PathLength;
         float distNegEqualZero = (distmod + PathLength) % PathLength;
@@ -851,11 +908,7 @@ public class FFPath : MonoBehaviour
             distanceAlongPath = distNegEqualZero;
         else   // given positive distance
             distanceAlongPath = distPos;
-
-        Vector3 pos; // TODO: not sure if this is an edge case or not
-        if (transform != null) { pos = transform.position; }
-        else { pos = new Vector3(0, 0, 0); }
-
+        
         if ((!DynamicPath && IsValidPath()) || (SetupPointData() && IsValidPath()))
         {
             int i = 0;
@@ -886,10 +939,12 @@ public class FFPath : MonoBehaviour
 
                 middle = (first + last) / 2;
             }
-            return pos + (transform.rotation * FFMatrix3X3.ScaleBy(points[i - 1], transform.lossyScale));
+            indexOfNextPt = i -1;
+            return transform.TransformPoint(points[indexOfNextPt]);
         }
 
         Debug.LogError("Error, Path failed to setup");
+        indexOfNextPt = -1;
         return new FFVector3(0, 0, 0);
     }
 

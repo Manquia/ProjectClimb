@@ -5,18 +5,18 @@ public class ExReporter : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        FFMessage<PathFollowerCompletedLoopEvent>.Connect(LoopCompleted);
+        //FFMessage<PathFollowerCompletedLoopEvent>.Connect(LoopCompleted);
 	}
 
     // for example of Global Type-based Messages/Events
     int TotalLoopsCompleted = 0;
     float TotalDistanceTraveled = 0.0f;
 
-    void LoopCompleted(PathFollowerCompletedLoopEvent e)
-    {
-        ++TotalLoopsCompleted;
-        TotalDistanceTraveled += e.distTraveled;
-    }
+    //void LoopCompleted(PathFollowerCompletedLoopEvent e)
+    //{
+    //    ++TotalLoopsCompleted;
+    //    TotalDistanceTraveled += e.distTraveled;
+    //}
 	
     void Update()
     {
@@ -42,6 +42,7 @@ public class ExReporter : MonoBehaviour {
         // remember to disconnect or else a null exception might happen
         // if a listener who has been destroyed is called. Disconnecting
         // a function which has already been disconnected previously is fine.
-        FFMessage<PathFollowerCompletedLoopEvent>.Disconnect(LoopCompleted);
+        //FFMessage<PathFollowerCompletedLoopEvent>.Disconnect(LoopCompleted);
+        //Micah commented them
     }
 }

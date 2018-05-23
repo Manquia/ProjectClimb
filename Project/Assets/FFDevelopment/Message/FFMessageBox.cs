@@ -34,11 +34,7 @@ public class FFMessageBox<EventType>
     // total Visitors, or the number of events which are not disconnected
     private int visitorCountLocal = 0;
 
-    private List<EventListener> messageList = new List<EventListener>();
-    /// <summary>
-    /// The type of delegate used for this message
-    /// </summary>
-    public delegate void EventListener(EventType e);
+    private List<FFMessage<EventType>.EventListener> messageList = new List<FFMessage<EventType>.EventListener>();
 
     private string boxEntry;
     private FFMessageBoard<EventType> messageBoard;
@@ -74,7 +70,7 @@ public class FFMessageBox<EventType>
     /// FFMessageBoard or by other clients through a FFMessageBoard. Cannot Connect
     /// the same function more than once.
     /// </summary>
-    public bool Connect(EventListener function)
+    public bool Connect(FFMessage<EventType>.EventListener function)
     {
         if (!messageList.Contains(function)) // Cannot connect to a single function more than once
         {
@@ -91,7 +87,7 @@ public class FFMessageBox<EventType>
     /// <summary>
     /// returns true if any listeners are called
     /// </summary>
-    public bool SendToLocal(EventType e)
+    public int SendToLocal(EventType e, int consumeQuantity = 1)
     {
         if (active)
         {
@@ -102,28 +98,31 @@ public class FFMessageBox<EventType>
 
             ++callCountLocal;
 
-            var listenerList = new List<EventListener>(messageList);
-            foreach (var listener in listenerList)
+            var listenerList = new List<FFMessage<EventType>.EventListener>(messageList);
+            for(int i = 0; i < listenerList.Count && consumeQuantity > 0; ++i)
             {
-                listener(e);
+                consumeQuantity -= listenerList[i](e);
             }
 
-            return true;
+            return consumeQuantity;
         }
-        return false;
+        return consumeQuantity;
     }
 
     /// <summary>
     /// returns true if it could be sent to the net, if this box wasn't
     /// created via a FFMessageBoard it will not be able to send to Net
+    /// DOES NOTHING!!!
     /// </summary>
-    public bool SendToNet(EventType e, bool varifiedPacket = false)
+    private bool SendToNet(EventType e, bool varifiedPacket = false)
     {
         if (active && messageBoard != null)
         {
             messageBoard.IncrementCallCount();
             ++callCountLocal;
-            FFMessageBoard<EventType>.SendToNet(e, entry, varifiedPacket);
+            // @ NET
+            // ADD ME LATER MAYBE
+            //FFMessageBoard<EventType>.SendToNet(e, entry, varifiedPacket);
             return true;
         }
         Debug.LogError("Warning, an FFMessageBox which is not connected to a FFMessageBoard tried to SendToNet.");
@@ -134,7 +133,7 @@ public class FFMessageBox<EventType>
     /// Stop listening to this box, function will not be called when SendToLocal is called via
     /// FFMessageBoard or by other clients through a FFMessageBoard
     /// </summary>
-    public bool Disconnect(EventListener function)
+    public bool Disconnect(FFMessage<EventType>.EventListener function)
     {
         var deleted = messageList.Remove(function);
 

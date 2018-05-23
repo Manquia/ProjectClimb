@@ -12,11 +12,13 @@ public class ExMessageReciever1 : MonoBehaviour {
         FFMessage<PlayerDiedEvent>.Connect(ReportPlayerDeath);
     }
 
-    void ReportPlayerDeath(PlayerDiedEvent e)
+    int ReportPlayerDeath(PlayerDiedEvent e)
     {
         Debug.Log("The Player has died! He was killed by " + e.Killer
             + " Who murderded his face off with over " + e.overkillDamage
             + " damage! This news just in at " + e.timeOfDeath);
+
+        return 0;
     }
 
     void OnDestroy()
