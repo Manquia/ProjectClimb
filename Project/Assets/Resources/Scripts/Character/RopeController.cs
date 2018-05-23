@@ -1,15 +1,18 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct RopeChange
+public struct RopeControllerUpdate
 {
     public RopeController controller;
-    public float dt;
 }
 
 public class RopeController : MonoBehaviour
 {
+    // @PERF @SPEED Make this not require dynamicPath. Lots of IK samples so
+    // if this is slow that is low hanging fruit...
+
     private FFPath path; // rope is exactly 2 points
     public FFPath GetPath() { return path; }
 
@@ -48,10 +51,23 @@ public class RopeController : MonoBehaviour
         path = GetComponent<FFPath>();
         Debug.Assert(path.points.Length == 2);
 
-        // set interaction collider's dimensions
-        {
-            // @TODO
-        }
+        FFMessageBoard<PlayerInteract.Use>.Connect(OnUse, gameObject);
+    }
+    private void OnDestroy()
+    {
+        FFMessageBoard<PlayerInteract.Use>.Disconnect(OnUse, gameObject);
+    }
+
+    private int OnUse(PlayerInteract.Use e)
+    {
+        // make sure its a player
+        var player = e.actor.GetComponent<Player>();
+
+        Debug.Assert(player != null, "PlayerInteract.Use refered an object which wasn't a player on a RopeController!");
+
+        player.SetupOnRope(this);
+
+        return 1;
     }
 
     void FixedUpdate()
@@ -60,7 +76,7 @@ public class RopeController : MonoBehaviour
         UpdateRopeMovement(dt);
         UpdateRopeVisuals();
 
-        SendUpdateEvent(dt);
+        SendUpdateEvent();
     }
     
     public Vector3 RopeVecNorm()
@@ -175,17 +191,16 @@ public class RopeController : MonoBehaviour
 
     void AddVisualElement()
     {
-        var element = Instantiate(FFResource.Load_Prefab("RopeVisualElement")).transform;
+        var element = Instantiate(FFResource.Load_Prefab("RopeSegment")).transform;
         element.SetParent(transform);
         visualElements.Add(element);
     }
 
-    void SendUpdateEvent(float dt)
+    void SendUpdateEvent()
     {
-        RopeChange rc;
+        RopeControllerUpdate rc;
         rc.controller = this;
-        rc.dt = dt;
-        FFMessageBoard<RopeChange>.Send(rc, gameObject);
+        FFMessageBoard<RopeControllerUpdate>.Send(rc, gameObject, 1000); // other objects listen to use for Update
     }
 
 

@@ -2544,34 +2544,42 @@ MonoBehaviour:
   fadeScreenMaskSprite: {fileID: 212821717972053198}
   fadeScreenMaskImage: {fileID: 114962408118227352}
   fadeTime: 1.8
+  input:
+    moveDir: {x: 0, y: 0, z: 0}
+    moveDirRel: {x: 0, y: 0, z: 0}
+    modifier: 0
+    up: 0
+    down: 0
+    left: 0
+    right: 0
   OnRope:
     rope: {fileID: 0}
-    pumpSpeed: 0.003
-    pumpAcceleration: 0.5
-    pumpResetSpeed: 0.05
+    pumpSpeed: 0.02
+    pumpAcceleration: 1.8
+    pumpResetSpeed: 0.1
     climbSpeed: 0.5
-    rotateSpeed: 20
+    rotateSpeed: 90
     leanSpeed: 0.9
     distUpRope: 0
     distPumpUp: 0
-    maxPumpUpDist: 0.1
+    maxPumpUpDist: 0.03
     maxPumpDownDist: 0
-    leftHandOffsetOnRope: 0
-    rightHandOffsetOnRope: 0
-    leftFootOffsetOnRope: 0
-    rightFootOffsetOnRope: 0
-    leftHandOffset: {x: 0, y: 0, z: 0}
-    rightHandOffset: {x: 0, y: 0, z: 0}
-    leftFootOffset: {x: 0, y: 0, z: 0}
-    rightFootOffset: {x: 0, y: 0, z: 0}
-    leftHandRot: {x: 0, y: 0, z: 0}
-    rightHandRot: {x: 0, y: 0, z: 0}
-    leftFootRot: {x: 0, y: 0, z: 0}
-    rightFootRot: {x: 0, y: 0, z: 0}
+    leftHandOffsetOnRope: 1.2
+    rightHandOffsetOnRope: 1.3
+    leftFootOffsetOnRope: 0.23
+    rightFootOffsetOnRope: 0.21
+    leftHandOffset: {x: -0.057, y: 0, z: -0.025}
+    rightHandOffset: {x: 0.06, y: 0, z: -0.025}
+    leftFootOffset: {x: -0.09, y: 0, z: -0.05}
+    rightFootOffset: {x: 0.09, y: 0.13, z: -0.09}
+    leftHandRot: {x: -44.6, y: 10.8, z: 92.28}
+    rightHandRot: {x: -37.78, y: -15.69, z: -92.28}
+    leftFootRot: {x: 4.68, y: 0, z: 44.02}
+    rightFootRot: {x: -32.83, y: 0, z: -44}
     angleOnRope: 0
-    distFromRope: 0
+    distFromRope: 0.4
     rotationYaw: 0
-    rotationPitch: 0
+    rotationPitch: 0.56
     onRopeAngularVelocity: 0
   movement:
     maxSpeed: 1.8

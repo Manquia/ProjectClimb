@@ -37,6 +37,33 @@ public class Player : FFComponent
 
     }
 
+    public enum Mode
+    {
+        Frozen = 0,
+        Movement = 1,
+        Rope = 2,
+        Climb = 3,
+    }
+
+    public Annal<Mode> mode = new Annal<Mode>(16, Mode.Frozen);
+
+    [System.Serializable]
+    public class InputState
+    {
+        public Vector3 moveDir;
+        public Vector3 moveDirRel;
+        public bool modifier;
+        public bool up;
+        public bool down;
+        public bool left;
+        public bool right;
+
+        // @TODO make this into key states instead of bools
+        public Annal<bool> space = new Annal<bool>(15, false);
+        public Annal<bool> spaceHeld = new Annal<bool>(15, false);
+    }
+    public InputState input;
+
     [System.Serializable]
     public class RopeConnection
     {
@@ -140,6 +167,11 @@ public class Player : FFComponent
     {
         myBody = GetComponent<Rigidbody>();
         myCol = GetComponent<CapsuleCollider>();
+        cameraController.SetupCameraController(this);
+
+
+        // start in movement state
+        SwitchMode(Mode.Movement);
     }
     void Start ()
     {
@@ -153,17 +185,12 @@ public class Player : FFComponent
                     (v) => { }));
         }
 
-        // make sure stuff is on, We have it off from the
-        // start of the level
-        GetComponent<CameraController>().enabled = true;
-        transform.Find("Camera").gameObject.SetActive(true);
-
         // Fade Screen
         {
             // init
-            fadeScreenSeq = action.Sequence();
-            fadeScreenSeq.affectedByTimeScale = false;
-            Seq_FadeOutScreenMasks();
+            //fadeScreenSeq = action.Sequence();
+            //fadeScreenSeq.affectedByTimeScale = false;
+            //Seq_FadeOutScreenMasks();
         }
     }
     void Seq_FadeOutScreenMasks()
@@ -222,7 +249,7 @@ public class Player : FFComponent
     }
 
 
-#region Collisions
+    #region Collisions
     private void OnCollisionEnter(Collision collision)
     {
     }
@@ -234,27 +261,40 @@ public class Player : FFComponent
     }
     #endregion Collisions
 
-#region Update
+    #region Update
     // Called right before physics, use this for dynamic Player actions
     void FixedUpdate()
     {
-        UpdateCameraTurn();
-
-        if (grounded)
+        switch (mode.Recall(0))
         {
-            UpdateMove(dt, OnGroundData);
-            CheckJump();
-        }
-        else
-        {
-            UpdateMove(dt, OnAirData);
-            UpdateAir();
+            case Mode.Frozen:
+                // DO NOTHING
+                break;
+            case Mode.Movement:
+                UpdateCameraTurn();
+
+                if (grounded)
+                {
+                    UpdateMove(dt, OnGroundData);
+                    CheckJump();
+                }
+                else
+                {
+                    UpdateMove(dt, OnAirData);
+                    UpdateAir();
+                }
+
+                movement.details.groundTouches.Wash(false);
+                break;
+            case Mode.Rope:
+                break;
+            case Mode.Climb:
+                break;
+            default:
+                break;
         }
 
-
-        movement.details.groundTouches.Wash(false);
     }
-
 
 
     // Called right after physics, before rendering. Use for Kinimatic player actions
@@ -262,15 +302,26 @@ public class Player : FFComponent
     {
         UpdateInput();
 
-        UpdateGroundRaycast();
-        UpdateJumpState();
-        // @TODO have this work through an event or something
-        //if (OnRope.rope != null)
-        //    SetupOnRope();
-        // @TODO add statemachine OR check on OnRope
-        // @ROPE @FIX
-        // Controls for movement on a rope
-        // UpdateRope(up, down, left, right, space, modifier, dt);
+
+        switch (mode.Recall(0))
+        {
+            case Mode.Frozen:
+                // DO NOTHING
+                break;
+            case Mode.Movement:
+                UpdateGroundRaycast();
+                UpdateJumpState();
+                break;
+            case Mode.Rope:
+                float dt = Time.deltaTime;
+                UpdateRopeActions(dt);
+                break;
+            case Mode.Climb:
+                break;
+            default:
+                break;
+        }
+
     }
 
     private void UpdateJumpState()
@@ -291,31 +342,30 @@ public class Player : FFComponent
     
     
 
-    // @CLEAN UP
-    Vector3 moveDir;
-    Vector3 moveDirRel;
-    // history of last 15 freams
-    Annal<bool> space = new Annal<bool>(15, false);
-    Annal<bool> spaceHeld = new Annal<bool>(15, false);
-    bool modifier;
     float dt;
     void UpdateInput()
     {
-        moveDir.x = 0.0f;//Input.GetAxis("Horizontal");
-        moveDir.y = 0.0f;
-        moveDir.z = 0.0f;//Input.GetAxis("Vertical");
+        input.moveDir.x = 0.0f;//Input.GetAxis("Horizontal");
+        input.moveDir.y = 0.0f;
+        input.moveDir.z = 0.0f;//Input.GetAxis("Vertical");
 
-        moveDir.x += Input.GetKey(KeyCode.D) ? 1.0f : 0.0f;
-        moveDir.x += Input.GetKey(KeyCode.A) ? -1.0f : 0.0f;
-        moveDir.z += Input.GetKey(KeyCode.W) ? 1.0f : 0.0f;
-        moveDir.z += Input.GetKey(KeyCode.S) ? -1.0f : 0.0f;
+        input.up = Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W);
+        input.down = Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S);
+        input.left = Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A);
+        input.right = Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D);
 
-        moveDirRel = transform.rotation * moveDir;
+        input.moveDir.x += input.right ?  1.0f : 0.0f;
+        input.moveDir.x += input.left  ? -1.0f : 0.0f;
+        input.moveDir.z += input.up    ?  1.0f : 0.0f;
+        input.moveDir.z += input.down  ? -1.0f : 0.0f;
 
-        space.Record(Input.GetKeyDown(KeyCode.Space));
-        spaceHeld.Record(Input.GetKey(KeyCode.Space));
+        input.moveDirRel = transform.rotation * input.moveDir;
 
-        modifier = Input.GetKey(KeyCode.LeftShift);
+        input.space.Record(Input.GetKeyDown(KeyCode.Space));
+        input.spaceHeld.Record(Input.GetKey(KeyCode.Space));
+
+        input.modifier = Input.GetKey(KeyCode.LeftShift);
+
         dt = Time.deltaTime;
     }
 
@@ -335,7 +385,7 @@ public class Player : FFComponent
         var revRotOfPlane = Quaternion.FromToRotation(Vector3.up, movement.up);
 
         // movement in the Y axis (jump), Grounded && space in the last few frames?
-        if (grounded && space.Contains((v) => v))
+        if (grounded && input.space.Contains((v) => v))
         {
             SnapToGround(maxDistToFloor);
             movement.details.jumping.Record(true);
@@ -352,7 +402,7 @@ public class Player : FFComponent
     private void UpdateAir()
     {
         // cancel/reverse jump force
-        if(!spaceHeld && myBody.velocity.y > 0.0f)
+        if(!input.spaceHeld && myBody.velocity.y > 0.0f)
         {
             Vector3 revJumpVel = movement.revJumpVel * myBody.velocity.y * -Vector3.up;
             myBody.velocity = myBody.velocity + revJumpVel;
@@ -364,7 +414,7 @@ public class Player : FFComponent
         var revRotOfPlane = Quaternion.FromToRotation(Vector3.up, movement.up);
 
         var maxSpeed = moveData.maxSpeed;
-        if (modifier)
+        if (input.modifier)
         {
             maxSpeed *= movement.runMultiplier;
         }
@@ -410,7 +460,7 @@ public class Player : FFComponent
     }
 
     // @TODO make this work with Vec2 for directional move input
-    void UpdateRopeActions(bool up, bool down, bool left, bool right, bool space, bool modifier, float dt)
+    void UpdateRopeActions(float dt)
     {
         float pumpAmount = OnRope.pumpSpeed * dt;
         float climbAmount = OnRope.climbSpeed * dt;
@@ -420,24 +470,24 @@ public class Player : FFComponent
         Vector3 leanVec = Vector3.zero;
         float climbVec = 0.0f;
 
-        if (space)
+        if (input.space)
         {
             RopePump(pumpAmount);
         }
 
         bool flipClimbMod = false;
         // going up
-        if (up)
+        if (input.up)
         {
-            if (modifier == flipClimbMod)
+            if (input.modifier == flipClimbMod)
                 leanVec += new Vector3(0.0f, 0.0f, 1.0f);
             else
                 climbVec += 1.0f;
         }
         // going down
-        if (down)
+        if (input.down)
         {
-            if (modifier == flipClimbMod)
+            if (input.modifier == flipClimbMod)
                 leanVec += new Vector3(0.0f, 0.0f, -1.0f);
             else
                 climbVec += -1.0f;
@@ -445,20 +495,20 @@ public class Player : FFComponent
 
         bool flipRotateMod = false;
         // going right
-        if (right && !left)
+        if (input.right && !input.left)
         {
-            if (modifier == flipRotateMod)
+            if (input.modifier == flipRotateMod)
                 leanVec += new Vector3(1.0f, 0.0f, 0.0f);
         }
         // going left
-        if (left && !right)
+        if (input.left && !input.right)
         {
-            if (modifier == flipRotateMod)
+            if (input.modifier == flipRotateMod)
                 leanVec += new Vector3(-1.0f, 0.0f, 0.0f);
         }
 
         // Pump
-        if (space)
+        if (input.space)
         {
             RopePump(pumpAmount);
         }
@@ -479,23 +529,20 @@ public class Player : FFComponent
 
         // Rotate based on mouse look
         {
-            float lookVec = cameraController.lookVec.x;
+            float lookVecX = cameraController.lookVec.x;
             float sensitivityRotate = Mathf.Abs(cameraController.cameraTurn / cameraController.maxTurnAngle);
             sensitivityRotate = sensitivityRotate * sensitivityRotate;
 
-            float turnAmount = lookVec * sensitivityRotate;
-
+            float turnAmount = lookVecX * sensitivityRotate;
+            
             RopeRotateOn(-turnAmount * OnRope.rotateSpeed * dt);
         }
 
     }
-    private int OnRopeChange(RopeChange e)
+    private int OnRopeControllerUpdate(RopeControllerUpdate e)
     {
-        UpdateRope(e.dt);
-        return 0;
-    }
-    void UpdateRope(float dt)
-    {
+        Debug.Assert(OnRope != null, "UpdateRope is being called when OnRope is null");
+
         var rope = OnRope.rope;
         var ropePath = rope.GetPath();
         var ropeLength = ropePath.PathLength;
@@ -524,6 +571,7 @@ public class Player : FFComponent
         transform.rotation = characterRot;
 
         // update Snapping IK
+        if (ikSnap != null) // @TODO
         {
             ikSnap.rightHandPos = ropePath.PointAlongPath(distOnPath - OnRope.rightHandOffsetOnRope) + (angularRotationOnRope * OnRope.rightHandOffset);
             ikSnap.leftHandPos = ropePath.PointAlongPath(distOnPath - OnRope.leftHandOffsetOnRope) + (angularRotationOnRope * OnRope.leftHandOffset);
@@ -535,6 +583,8 @@ public class Player : FFComponent
             ikSnap.rightFootRot = angularRotationOnRope * Quaternion.Euler(OnRope.rightFootRot);
             ikSnap.leftFootRot = angularRotationOnRope * Quaternion.Euler(OnRope.leftFootRot);
         }
+
+        return 0;
     }
 
     #endregion
@@ -560,10 +610,10 @@ public class Player : FFComponent
         var forceRot = Quaternion.FromToRotation(Vector3.up, upVec.normalized);
         var velocity = myBody.velocity;
 
-        if (moveDirRel != Vector3.zero)
+        if (input.moveDirRel != Vector3.zero)
         {
             // apply movement
-            myBody.AddForce(forceRot * moveDirRel * magnitude * fps * dt, ForceMode.Acceleration);
+            myBody.AddForce(forceRot * input.moveDirRel * magnitude * fps * dt, ForceMode.Acceleration);
         }
         else if (velocity != Vector3.zero) // no given movement direction, and have a velocity
         {
@@ -579,9 +629,9 @@ public class Player : FFComponent
     {
         // force multiplier for when going in a new direction (Improves responsivness)
         var redirectForce = 1.0f;
-        if (myBody.velocity != Vector3.zero && moveDir != Vector3.zero)
+        if (myBody.velocity != Vector3.zero && input.moveDir != Vector3.zero)
         {
-            float velDotDir = Vector3.Dot(myBody.velocity.normalized, moveDirRel.normalized);
+            float velDotDir = Vector3.Dot(myBody.velocity.normalized, input.moveDirRel.normalized);
             float normRedirectForce = Mathf.Abs((velDotDir - 1.0f) * 0.5f);
             redirectForce = 1.0f + normRedirectForce * redirectForceMultiplier;
         }
@@ -704,19 +754,65 @@ public class Player : FFComponent
     }
     #endregion
 
-    void SetupOnRope()
+    public void SetupOnRope(RopeController rc)
     {
+        var ropePath = rc.GetComponent<FFPath>();
+        
+        var playerPos = transform.position;
+        float distAlongRope = 0;
+        ropePath.NearestPointAlongPath(playerPos, out distAlongRope);
+        float distUpRope = ropePath.PathLength - distAlongRope;
+
+        OnRope.distUpRope = distUpRope;
+        OnRope.rope = rc;
+        SwitchMode(Mode.Rope);
+
         SetVelocityRef(new FFRef<Vector3>(
             () => OnRope.rope.VelocityAtDistUpRope(OnRope.distUpRope),
             (v) => {} ));
 
-        FFMessageBoard<RopeChange>.Connect(OnRopeChange, OnRope.rope.gameObject);
+        RopeControllerUpdate rcu;
+        rcu.controller = rc;
+        OnRopeControllerUpdate(rcu);
+
+        FFMessageBoard<RopeControllerUpdate>.Connect(OnRopeControllerUpdate, OnRope.rope.gameObject);
     }
 
     void DestroyOnRope()
     {
+        // TODO preserve velocity of rope before switching mode
+
         if(OnRope.rope != null)
-            FFMessageBoard<RopeChange>.Disconnect(OnRopeChange, OnRope.rope.gameObject);
+            FFMessageBoard<RopeControllerUpdate>.Disconnect(OnRopeControllerUpdate, OnRope.rope.gameObject);
+
+        OnRope.rope = null;
     }
+
     
+    void SwitchMode(Mode newMode)
+    {
+        // @TODO make this pass an event
+        mode.Record(newMode);
+
+        switch (newMode)
+        {
+            case Mode.Frozen:
+                myBody.useGravity = false;
+                myBody.isKinematic = true;
+                break;
+            case Mode.Movement:
+                myBody.useGravity = true;
+                myBody.isKinematic = false;
+                break;
+            case Mode.Rope:
+                myBody.useGravity = false;
+                myBody.isKinematic = true;
+                break;
+            case Mode.Climb:
+                myBody.useGravity = false;
+                myBody.isKinematic = true;
+                break;
+        }
+    }
+
 }

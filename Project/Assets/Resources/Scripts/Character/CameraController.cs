@@ -4,9 +4,12 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour {
 
-
+    Player player;
+    Player.Mode mode
+    {
+        get { return player.mode;  }
+    }
     public Vector2 lookSensitivity = new Vector2(10.0f,10.0f);
-
 
     public float maxPitchUpAngle = 80.0f;
     public float maxPitchDownAngle = 70.0f;
@@ -14,13 +17,16 @@ public class CameraController : MonoBehaviour {
 
     private Transform CameraTrans;
 
-	// Use this for initialization
-	void Start ()
+	
+    public void SetupCameraController(Player player)
     {
+        this.player = player;
+
         CameraTrans = transform.Find("Camera");
 
         Debug.Assert(CameraTrans != null, "Camera is missing from camera");
         SetCursorState(CursorLockMode.Locked);
+
     }
     void Destroy()
     {
@@ -36,14 +42,14 @@ public class CameraController : MonoBehaviour {
     // return look vector
     public float turnVector()
     {
-        //if(lookVec.x > 0.0f /*|| cameraTurn == maxTurnAngle*/)
-        //{
-        //    return 1.0f;
-        //}
-        //if(lookVec.x < 0.0f /*|| cameraTurn == -maxTurnAngle*/)
-        //{
-        //    return -1.0f;
-        //}
+        if(lookVec.x > 0.0f || cameraTurn == maxTurnAngle)
+        {
+            return 1.0f;
+        }
+        if(lookVec.x < 0.0f || cameraTurn == -maxTurnAngle)
+        {
+            return -1.0f;
+        }
         return lookVec.x;
     }
 
@@ -58,18 +64,18 @@ public class CameraController : MonoBehaviour {
         lookVec.y = lookSensitivity.y * Input.GetAxis("Mouse Y") * Time.deltaTime;
 
         // @TODO @CLEANUP @ROPE @LookBox/Bounds?
-        //if(lookVec.x != 0.0f)
-        //{ // rotate player relative to mouse movement
-        //    // Limit rotation
-        //    var turnAngle = Mathf.Clamp(cameraTurn + lookVec.x, -maxTurnAngle, maxTurnAngle);
-        //    float angleDelta = turnAngle - cameraTurn;
-        //    var turnRotDelta = Quaternion.AngleAxis(angleDelta, Vector3.up);
-        //    transform.localRotation = transform.localRotation * turnRotDelta;
-        //
-        //    cameraTurn = turnAngle;
-        //}
+        if(lookVec.x != 0.0f && mode == Player.Mode.Rope)
+        { // rotate player relative to mouse movement
+            // Limit rotation
+            var turnAngle = Mathf.Clamp(cameraTurn + lookVec.x, -maxTurnAngle, maxTurnAngle);
+            float angleDelta = turnAngle - cameraTurn;
+            var turnRotDelta = Quaternion.AngleAxis(angleDelta, Vector3.up);
+            transform.localRotation = transform.localRotation * turnRotDelta;
+        
+            cameraTurn = turnAngle;
+        }
 
-        if(lookVec.y != 0.0f)
+        if (lookVec.y != 0.0f)
         { // Pitch Camera
             // Limit rotation
             var pitchAngle = Mathf.Clamp(cameraPitch + lookVec.y, -maxPitchDownAngle, maxPitchUpAngle);
