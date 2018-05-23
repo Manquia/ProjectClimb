@@ -2584,32 +2584,58 @@ MonoBehaviour:
   OnGroundData:
     moveForce:
       serializedVersion: 2
-      m_Curve: []
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 100
+        inSlope: -0.40398034
+        outSlope: -0.40398034
+        tangentMode: 0
+        weightedMode: 2
+        inWeight: 0.33333334
+        outWeight: 1
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: -237.25214
+        outSlope: -237.25214
+        tangentMode: 0
+        weightedMode: 1
+        inWeight: 0.28493148
+        outWeight: 0.33333334
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    redirectForce:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
+    redirectForce: 0.1
     maxSpeed: 2.5
-    friction: 0.1
+    friction: 0.25
   OnAirData:
     moveForce:
       serializedVersion: 2
-      m_Curve: []
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 100
+        inSlope: -0.40398034
+        outSlope: -0.40398034
+        tangentMode: 0
+        weightedMode: 2
+        inWeight: 0.33333334
+        outWeight: 1
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: -237.25214
+        outSlope: -237.25214
+        tangentMode: 0
+        weightedMode: 1
+        inWeight: 0.28493148
+        outWeight: 0.33333334
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    redirectForce:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    maxSpeed: 2.5
+    redirectForce: 0.5
+    maxSpeed: 2.65
     friction: 0.1
 --- !u!114 &114343968850046598
 MonoBehaviour:

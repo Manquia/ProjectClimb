@@ -654,6 +654,11 @@ Prefab:
       propertyPath: OnAirData.maxSpeed
       value: 2.65
       objectReference: {fileID: 0}
+    - target: {fileID: 114317609191911982, guid: be86daae345e56744957fac80cc1a107,
+        type: 2}
+      propertyPath: OnGroundData.redirectForce
+      value: 0.1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: be86daae345e56744957fac80cc1a107, type: 2}
   m_IsPrefabParent: 0
