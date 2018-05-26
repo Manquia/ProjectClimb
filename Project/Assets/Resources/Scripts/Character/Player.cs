@@ -53,6 +53,7 @@ public class Player : FFComponent
         public Vector3 moveDir;
         public Vector3 moveDirRel;
 
+        public Annal<KeyState> use = new Annal<KeyState>(15, KeyState.Constructor);
         public Annal<KeyState> modifier = new Annal<KeyState>(15, KeyState.Constructor);
         public Annal<KeyState> up       = new Annal<KeyState>(15, KeyState.Constructor);
         public Annal<KeyState> down     = new Annal<KeyState>(15, KeyState.Constructor);
@@ -123,12 +124,26 @@ public class Player : FFComponent
         public class Details
         {
             public Annal<bool> groundTouches = new Annal<bool>(16, false);
-            public Annal<bool> jumping = new Annal<bool>(16, false);
+            public Annal<bool> jumping = new Annal<bool>(7, false);
         }
         public Details details = new Details();
         public float climbRadius = 0.45f;
         public float revJumpVel = 1.0f;
         internal Vector3 up;
+
+        public bool grounded
+        {
+            // if touched ground this frame by any touches
+            get
+            {
+                return details.groundTouches.Contains((v) => v);
+            }
+        }
+        public bool jumping
+        {
+            get { return details.jumping; }
+        }
+
     }
     public Movement movement;
     [System.Serializable]
@@ -141,24 +156,6 @@ public class Player : FFComponent
     }
     public MovementData OnGroundData;
     public MovementData OnAirData;
-
-    bool grounded
-    {
-        // if touched ground this frame by any touches
-        get
-        {
-            return movement.details.groundTouches.Contains((v) => v);
-        }
-    }
-    bool jumping
-    {
-        get { return movement.details.jumping; }
-    }
-
-    // @TODO make this into an annal
-
-
-    //bool groundedThisFrame = false;
 
     // Use this for initialization
     private void Awake()
@@ -173,6 +170,7 @@ public class Player : FFComponent
     }
     void Start ()
     {
+        orientSeq = action.Sequence();
 
         // Set referece to 0 for initialization
         SetVelocityRef(new FFVar<Vector3>(Vector3.zero));
@@ -242,8 +240,8 @@ public class Player : FFComponent
     }
     void OnDestroy()
     {
-        if (OnRope != null)
-            DestroyOnRope();
+        if (OnRope.rope != null)
+            DestroyOnRope(Mode.Frozen);
     }
 
 
@@ -271,7 +269,7 @@ public class Player : FFComponent
             case Mode.Movement:
                 UpdateCameraTurn();
 
-                if (grounded)
+                if (movement.grounded)
                 {
                     UpdateMove(dt, OnGroundData);
                     CheckJump();
@@ -327,7 +325,7 @@ public class Player : FFComponent
         // grounded && !jumping && spacePressed -> jumping = true
         // grounded && jumping -> jumping = false
         
-        if (grounded && movement.details.jumping)
+        if (movement.grounded && movement.jumping)
             movement.details.jumping.Record(false);
     }
 
@@ -353,6 +351,7 @@ public class Player : FFComponent
         UpdateKeyState(input.right, KeyCode.D);
         UpdateKeyState(input.space, KeyCode.Space);
         UpdateKeyState(input.modifier, KeyCode.LeftShift);
+        UpdateKeyState(input.use, KeyCode.E);
 
         input.moveDir.x += input.right.Recall(0).down() ? 1.0f : 0.0f;
         input.moveDir.x += input.left .Recall(0).down() ? -1.0f : 0.0f;
@@ -387,7 +386,7 @@ public class Player : FFComponent
         var revRotOfPlane = Quaternion.FromToRotation(Vector3.up, movement.up);
 
         // movement in the Y axis (jump), Grounded && space in the last few frames?
-        if (grounded && input.space.Contains((v) => v.down()))
+        if (movement.grounded && input.space.Contains((v) => v.down()))
         {
             SnapToGround(maxDistToFloor);
             movement.details.jumping.Record(true);
@@ -540,6 +539,13 @@ public class Player : FFComponent
             RopeRotateOn(-turnAmount * OnRope.rotateSpeed * dt);
         }
 
+        // Remove self from rope?
+        if (input.use.Recall(0).pressed())
+        {
+            // Transition to climb??? @TODO
+            DestroyOnRope(Mode.Movement);
+        }
+
     }
     private int OnRopeControllerUpdate(RopeControllerUpdate e)
     {
@@ -620,7 +626,7 @@ public class Player : FFComponent
         else if (velocity != Vector3.zero) // no given movement direction, and have a velocity
         {
             // apply slowing movement
-            if (!jumping && velocity.y > 0.0f) // when not jumping and going up
+            if (!movement.jumping && velocity.y > 0.0f) // when not jumping and going up
                 myBody.velocity = Vector3.Lerp(velocity, new Vector3(0.0f, 0.0f, 0.0f), stoppingSpeed * dt);
             else
                 myBody.velocity = Vector3.Lerp(velocity, new Vector3(0.0f, velocity.y, 0.0f), stoppingSpeed * dt);
@@ -758,6 +764,7 @@ public class Player : FFComponent
 
     public void SetupOnRope(RopeController rc)
     {
+        Mode oldMode = mode;
         var ropePath = rc.GetComponent<FFPath>();
         
         var playerPos = transform.position;
@@ -778,19 +785,56 @@ public class Player : FFComponent
         OnRopeControllerUpdate(rcu);
 
         FFMessageBoard<RopeControllerUpdate>.Connect(OnRopeControllerUpdate, OnRope.rope.gameObject);
+
+        //@TODO Make the orientation changes from the old mode. @Polish. Should be fine to do this in 1 frame for most cases
+        // @POLISH @POLISH @POLISH @POLISH @POLISH
     }
 
-    void DestroyOnRope()
+    FFAction.ActionSequence orientSeq;
+    void DestroyOnRope(Mode newMode)
     {
-        // TODO preserve velocity of rope before switching mode
+        // preserve velocity of rope before switching mode
+        var ropeVelocity = OnRope.rope.VelocityAtDistUpRope(OnRope.distUpRope);
+        myBody.velocity = ropeVelocity;
 
-        if(OnRope.rope != null)
+        if (OnRope.rope != null)
             FFMessageBoard<RopeControllerUpdate>.Disconnect(OnRopeControllerUpdate, OnRope.rope.gameObject);
 
+        SwitchMode(newMode);
+
+        // orient the player to its proper setup for 
+        switch (newMode)
+        {
+            case Mode.Frozen:
+                break;
+            case Mode.Movement:
+                var playerForward = transform.forward;
+                var playerforwardVecXZ = Vector3.ProjectOnPlane(playerForward, Vector3.up);
+                
+                
+                // @CONTINUE THIS!!! I need to Quaternion.Lerp(...) to the action system..
+                orientSeq.ClearSequence();
+
+                
+
+                break;
+            case Mode.Rope:
+                break;
+            case Mode.Climb:
+                break;
+        }
+
+        // 0 out player rotation to up
+        // Root rotate back to match player 0
+
+
+        // @TODO Camera Rotation (SPIN) needs to be reset @ACTION
+        
+        // @TODO Player's body rotation needs to be reset @ACTION
         OnRope.rope = null;
     }
 
-    
+
     void SwitchMode(Mode newMode)
     {
         // @TODO make this pass an event
