@@ -27,9 +27,9 @@ public class FFComponent : MonoBehaviour
     {
         get { return new FFRef<Vector3>(() => transform.position, (v) => { transform.position = v; }); }
     }
-    public FFRef<Vector3> ffrotation
+    public FFRef<Quaternion> ffrotation
     {
-        get { return new FFRef<Vector3>(() => transform.eulerAngles, (v) => { transform.rotation = Quaternion.Euler(v); }); }
+        get { return new FFRef<Quaternion>(() => transform.localRotation, (v) => { transform.localRotation = v; }); }
     }
     public FFRef<Vector3> ffscale
     {

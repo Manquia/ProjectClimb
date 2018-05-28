@@ -584,7 +584,69 @@ public class FFAction : MonoBehaviour
                 Debug.Log("Error in ActionSequence Property call");
             }
         }
-        
+
+        public void Property(FFRef<Quaternion> var, Quaternion endValue, FFEase easeType, float timeToComplete)
+        {
+            if (_sequence.Count != 0 && var != null)
+            {
+                // Set Property
+                FFActionProperty<Quaternion> myprop = new FFActionProperty<Quaternion>();
+                myprop.var = var;
+                myprop.start_value = var.Val;
+                myprop.end_value = endValue;
+                myprop.curr_time = 0.0f;
+                myprop.prev_value = var.Val;
+
+                // total_time cannot be zero
+                myprop.total_time = Mathf.Max(timeToComplete, 0.01f);
+
+                SetMuGetter<Quaternion>(myprop, easeType);
+
+                // Add to front of sequence
+                if (_sequence[_sequence.Count - 1].as_Quaternions == null)
+                {
+                    _sequence[_sequence.Count - 1].as_Quaternions = new List<FFActionProperty<Quaternion>>();
+                }
+                _sequence[_sequence.Count - 1].as_Quaternions.Add(myprop);
+            }
+            else
+            {
+                Debug.Log("Error in ActionSequence Property call");
+            }
+        }
+
+        public void Property(FFRef<Quaternion> var, Quaternion endValue, AnimationCurve curve, float timeToComplete = CurveTime)
+        {
+            if (timeToComplete == CurveTime)
+                timeToComplete = curve.TimeToComplete();
+
+            if (_sequence.Count != 0 && var != null)
+            {
+                // Set Property
+                FFActionProperty<Quaternion> myprop = new FFActionProperty<Quaternion>();
+                myprop.var = var;
+                myprop.start_value = var.Val;
+                myprop.end_value = endValue;
+                myprop.curr_time = 0.0f;
+                myprop.prev_value = var.Val;
+
+                // total_time cannot be zero
+                myprop.total_time = Mathf.Max(timeToComplete, 0.01f);
+
+                SetMuGetter<Quaternion>(myprop, curve);
+
+                // Add to front of sequence
+                if (_sequence[_sequence.Count - 1].as_Quaternions == null)
+                {
+                    _sequence[_sequence.Count - 1].as_Quaternions = new List<FFActionProperty<Quaternion>>();
+                }
+                _sequence[_sequence.Count - 1].as_Quaternions.Add(myprop);
+            }
+            else
+            {
+                Debug.Log("Error in ActionSequence Property call");
+            }
+        }
         /// <summary>
         /// The time taken for the curve to complete.
         /// </summary>
@@ -709,6 +771,7 @@ public class FFAction : MonoBehaviour
         public List<FFActionProperty<Vector3>>  as_Vector3Properties;
         public List<FFActionProperty<Vector4>>  as_Vector4Properties;
         public List<FFActionProperty<Color>>    as_ColorProperties;
+        public List<FFActionProperty<Quaternion>> as_Quaternions;
     }
     #endregion FFActionTypes
 
@@ -915,6 +978,27 @@ public class FFAction : MonoBehaviour
                     }
                     #endregion
 
+                    #region Quaternions
+                    if (actSet[first].as_Quaternions != null)
+                    {
+                        int countIncomplete = 0;
+                        for (int j = 0; j < actSet[first].as_Quaternions.Count; ++j)
+                        {
+                            if (FFActionUpdaterQuaternion(actSet[first].as_Quaternions[j], dt))
+                            {
+                                ++countIncomplete; // true == incomplete
+                            }
+                            else
+                            {
+                                actSet[first].as_Quaternions.RemoveAt(j);
+                                --j;
+                            }
+                        }
+                        if (countIncomplete > 0)
+                            finishedSet = false;
+                    }
+                    #endregion
+
                     if (finishedSet && ActionSequenceList[i].seqData.Count > 1)
                     {
                         ActionSequenceList[i].seqData.RemoveAt(first);
@@ -1096,7 +1180,32 @@ public class FFAction : MonoBehaviour
             next_value.b - prop.prev_value.b + curr_value.b,
             next_value.a - prop.prev_value.a + curr_value.a));
 
-        prop.prev_value = new Color(next_value.r, next_value.g, next_value.b, next_value.a);
+        prop.prev_value = next_value;
+        return incomplete;
+    }
+
+    private static bool FFActionUpdaterQuaternion(FFActionProperty<Quaternion> prop, float dt)
+    {
+        bool incomplete = true;
+
+        // Add dt
+        prop.curr_time = dt + prop.curr_time;
+
+        if (prop.curr_time >= prop.total_time)
+        {
+            prop.curr_time = prop.total_time;
+            incomplete = false;
+        }
+
+        float mu = prop.mu_getter(prop.curr_time, prop.total_time);
+        Quaternion next_value = Quaternion.Slerp(prop.start_value, prop.end_value, mu);
+        Quaternion inverse_prev_value = Quaternion.Inverse(prop.prev_value);
+
+        // added delta if any
+        Quaternion curr_value = prop.var.Val;
+        prop.var.Setter((next_value * inverse_prev_value) * curr_value);
+
+        prop.prev_value = next_value;
         return incomplete;
     }
     #endregion FFActionUpdaters
