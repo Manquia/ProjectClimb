@@ -179,6 +179,7 @@ public class Player : FFComponent
 
         public float timeScaleMinimum = 0.05f;
         public FFVar<float> timeScaleVar = new FFVar<float>(1.0f);
+        public AnimationCurve timeSlowCurve;
     }
     public Miscellaneous miscellaneous = new Miscellaneous();
 
@@ -317,14 +318,14 @@ public class Player : FFComponent
                 break;
         }
 
-        //UpdateTimeScale();
+        UpdateTimeScale();
     }
 
     void UpdateTimeScale()
     {
-        float denominator = 1.0f / miscellaneous.timeScaleMinimum;
+        const float minTimeScale = 0.1f;
         float timeScaleVar = miscellaneous.timeScaleVar.Val;
-        float newTimeScale = miscellaneous.timeScaleMinimum + (timeScaleVar / (timeScaleVar + denominator));
+        float newTimeScale = minTimeScale + (1.0f / (timeScaleVar + minTimeScale));
 
         Time.timeScale = newTimeScale;
     }
@@ -838,6 +839,9 @@ public class Player : FFComponent
         // we should always grab onto the rope with it forward facing
         cameraController.cameraTurn = 0.0f;
 
+        // finish any time slow effects
+        timeScaleSeq.RunToEnd();
+
         FFMessageBoard<RopeControllerUpdate>.Connect(OnRopeControllerUpdate, OnRope.rope.gameObject);
 
         // wash movement details
@@ -894,6 +898,7 @@ public class Player : FFComponent
                 if(movement.grounded)
                 {
                     // throw self up high
+                    timeScaleSeq.Property(miscellaneous.timeScaleVar, miscellaneous.timeScaleVar + 0.5f, miscellaneous.timeSlowCurve, 0.8f);
 
 
                 }

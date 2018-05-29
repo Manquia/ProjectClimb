@@ -88,18 +88,18 @@ public class FFAction : MonoBehaviour
         public bool IsComplete()
         {
             var seq = _sequence;
-            if(_sequence.Count == 1)
+            if (_sequence.Count == 1)
             {
                 bool incomplete = false;
-                
-                incomplete |= seq[0].as_VoidCalls         != null ? seq[0].as_VoidCalls        .Count != 0   : false;
-                incomplete |= seq[0].as_ObjectCalls       != null ? seq[0].as_ObjectCalls      .Count != 0   : false;
-                incomplete |= seq[0].as_intProperties     != null ? seq[0].as_intProperties    .Count != 0   : false;
-                incomplete |= seq[0].as_floatProperties   != null ? seq[0].as_floatProperties  .Count != 0   : false;
-                incomplete |= seq[0].as_Vector2Properties != null ? seq[0].as_Vector2Properties.Count != 0   : false;
-                incomplete |= seq[0].as_Vector3Properties != null ? seq[0].as_Vector3Properties.Count != 0   : false;
-                incomplete |= seq[0].as_Vector4Properties != null ? seq[0].as_Vector4Properties.Count != 0   : false;
-                incomplete |= seq[0].as_ColorProperties   != null ? seq[0].as_ColorProperties  .Count != 0   : false;
+
+                incomplete |= seq[0].as_VoidCalls != null ? seq[0].as_VoidCalls.Count != 0 : false;
+                incomplete |= seq[0].as_ObjectCalls != null ? seq[0].as_ObjectCalls.Count != 0 : false;
+                incomplete |= seq[0].as_intProperties != null ? seq[0].as_intProperties.Count != 0 : false;
+                incomplete |= seq[0].as_floatProperties != null ? seq[0].as_floatProperties.Count != 0 : false;
+                incomplete |= seq[0].as_Vector2Properties != null ? seq[0].as_Vector2Properties.Count != 0 : false;
+                incomplete |= seq[0].as_Vector3Properties != null ? seq[0].as_Vector3Properties.Count != 0 : false;
+                incomplete |= seq[0].as_Vector4Properties != null ? seq[0].as_Vector4Properties.Count != 0 : false;
+                incomplete |= seq[0].as_ColorProperties != null ? seq[0].as_ColorProperties.Count != 0 : false;
                 incomplete |= seq[0].as_DelayTime > 0.0f;
 
                 return incomplete == false;
@@ -130,6 +130,108 @@ public class FFAction : MonoBehaviour
         {
             _active = true;
             _actionSequence.Update();
+        }
+
+        // return the time till the next sync point
+        public float TimeUntilNextSync()
+        {
+            float time = 0;
+            if (_sequence.Count >= 0)
+                time = TimeOnSet(_sequence[0]);
+            return time;
+        }
+        // returns the time till the sequence finishes
+        public float TimeUntilEnd()
+        {
+            float time = 0;
+            foreach (var set in _sequence)
+            {
+                time += TimeOnSet(set);
+            }
+            return time;
+        }
+        // get sets from seqData. each set matches a sync call
+        public float TimeOnSet(FFActionSet set)
+        {
+            float time = 0.0f;
+            time = Mathf.Max(time, TimeOnProperty(set.as_intProperties));
+            time = Mathf.Max(time, TimeOnProperty(set.as_floatProperties));
+            time = Mathf.Max(time, TimeOnProperty(set.as_Vector2Properties));
+            time = Mathf.Max(time, TimeOnProperty(set.as_Vector3Properties));
+            time = Mathf.Max(time, TimeOnProperty(set.as_Vector4Properties));
+            time = Mathf.Max(time, TimeOnProperty(set.as_ColorProperties));
+            time = Mathf.Max(time, TimeOnProperty(set.as_QuaternionProperties));
+            time = Mathf.Max(time, set.as_DelayTime);
+            return time;
+        }
+        // returns the time of a given ActionProperty. See seqData[x].as_NAME
+        // for the types which can be passed as to see how much longer
+        // that specific type will take to complete
+        public float TimeOnProperty<T>(List<FFActionProperty<T>> actProps)
+        {
+            if (actProps == null)
+                return 0.0f;
+
+            float time = 0.0f;
+            foreach (var prop in actProps)
+            {
+                time = Mathf.Max(time, prop.total_time - prop.curr_time);
+            }
+            return time;
+        }
+
+        // *** Warning: This is not incremental and  Addative properties on
+        // rotation may have different results than if run normally!!!
+        // *** Warning: Calls will not get called more than once, so
+        // if you push a call inside a call it will not finish that Set
+        public void RunToNextSync()
+        {
+            // cannot run set of given index
+            if (_sequence.Count >= 0)
+            {
+                Debug.LogError("Cannot Run to next sync for FFAction.ActionSequence.RUnToNextSync");
+                return;
+            }
+            RunSet(_sequence[0]);
+        }
+
+        // *** Warning: This is not incremental and  Addative properties on
+        // rotation may have different results than if run normally!!!
+        // *** Warning: Calls will not get called more than once, so
+        // if you push a call inside a call it will not finish that Set
+        public void RunSet(FFActionSet set)
+        {
+            if(set.as_intProperties        != null) RunProperty(set.as_intProperties,        float.MaxValue);
+            if(set.as_floatProperties      != null) RunProperty(set.as_floatProperties,      float.MaxValue);
+            if(set.as_Vector2Properties    != null) RunProperty(set.as_Vector2Properties,    float.MaxValue);
+            if(set.as_Vector3Properties    != null) RunProperty(set.as_Vector3Properties,    float.MaxValue);
+            if(set.as_Vector4Properties    != null) RunProperty(set.as_Vector4Properties,    float.MaxValue);
+            if(set.as_ColorProperties      != null) RunProperty(set.as_ColorProperties,      float.MaxValue);
+            if(set.as_QuaternionProperties != null) RunProperty(set.as_QuaternionProperties, float.MaxValue);
+
+            bool finished = ActionUpdateCalls(set);
+
+            if (_sequence.Count > 1 && finished) // not the last sequence
+                _sequence.Remove(set);
+        }
+
+        // pass in float.MaxValue if you want the property to finish. These will not remoe the FFActionSet even if it is complete
+        // which may introduce a frame of latency if you use this explicitly
+        public void RunProperty<T>(List<FFActionProperty<T>> actProps, float time){Debug.Assert(false, "ERROR, type not specialized!");}
+        public void RunProperty(List<FFActionProperty<int>>        actProps, float time) { foreach (var p in actProps) FFActionUpdaterInt(p, time); }
+        public void RunProperty(List<FFActionProperty<float>>      actProps, float time) { foreach (var p in actProps) FFActionUpdaterFloat(p, time); }
+        public void RunProperty(List<FFActionProperty<Vector2>>    actProps, float time) { foreach (var p in actProps) FFActionUpdaterVector2(p, time); }
+        public void RunProperty(List<FFActionProperty<Vector3>>    actProps, float time) { foreach (var p in actProps) FFActionUpdaterVector3(p, time); }
+        public void RunProperty(List<FFActionProperty<Vector4>>    actProps, float time) { foreach (var p in actProps) FFActionUpdaterVector4(p, time); }
+        public void RunProperty(List<FFActionProperty<Color>>      actProps, float time) { foreach (var p in actProps) FFActionUpdaterColor(p, time); }
+        public void RunProperty(List<FFActionProperty<Quaternion>> actProps, float time) { foreach (var p in actProps) FFActionUpdaterQuaternion(p, time); }
+
+        public void RunToEnd()
+        {
+            foreach(var set in _sequence)
+            {
+                RunSet(set);
+            }
         }
 
         /// <summary>
@@ -603,11 +705,11 @@ public class FFAction : MonoBehaviour
                 SetMuGetter<Quaternion>(myprop, easeType);
 
                 // Add to front of sequence
-                if (_sequence[_sequence.Count - 1].as_Quaternions == null)
+                if (_sequence[_sequence.Count - 1].as_QuaternionProperties == null)
                 {
-                    _sequence[_sequence.Count - 1].as_Quaternions = new List<FFActionProperty<Quaternion>>();
+                    _sequence[_sequence.Count - 1].as_QuaternionProperties = new List<FFActionProperty<Quaternion>>();
                 }
-                _sequence[_sequence.Count - 1].as_Quaternions.Add(myprop);
+                _sequence[_sequence.Count - 1].as_QuaternionProperties.Add(myprop);
             }
             else
             {
@@ -636,11 +738,11 @@ public class FFAction : MonoBehaviour
                 SetMuGetter<Quaternion>(myprop, curve);
 
                 // Add to front of sequence
-                if (_sequence[_sequence.Count - 1].as_Quaternions == null)
+                if (_sequence[_sequence.Count - 1].as_QuaternionProperties == null)
                 {
-                    _sequence[_sequence.Count - 1].as_Quaternions = new List<FFActionProperty<Quaternion>>();
+                    _sequence[_sequence.Count - 1].as_QuaternionProperties = new List<FFActionProperty<Quaternion>>();
                 }
-                _sequence[_sequence.Count - 1].as_Quaternions.Add(myprop);
+                _sequence[_sequence.Count - 1].as_QuaternionProperties.Add(myprop);
             }
             else
             {
@@ -771,7 +873,7 @@ public class FFAction : MonoBehaviour
         public List<FFActionProperty<Vector3>>  as_Vector3Properties;
         public List<FFActionProperty<Vector4>>  as_Vector4Properties;
         public List<FFActionProperty<Color>>    as_ColorProperties;
-        public List<FFActionProperty<Quaternion>> as_Quaternions;
+        public List<FFActionProperty<Quaternion>> as_QuaternionProperties;
     }
     #endregion FFActionTypes
 
@@ -830,6 +932,10 @@ public class FFAction : MonoBehaviour
                 {
                     bool finishedSet = true;
                     var actSet = actSeq.seqData;
+
+                    // @SPEED we use actSeq[x] to get the FFAction which
+                    // is going to be much slower than holding onto 
+                    // the FFAction  @TODO @FF - MRUST
 
                     // Paused Sequences do do not get updated
                     if (actSeq.Active == false)
@@ -979,18 +1085,18 @@ public class FFAction : MonoBehaviour
                     #endregion
 
                     #region Quaternions
-                    if (actSet[first].as_Quaternions != null)
+                    if (actSet[first].as_QuaternionProperties != null)
                     {
                         int countIncomplete = 0;
-                        for (int j = 0; j < actSet[first].as_Quaternions.Count; ++j)
+                        for (int j = 0; j < actSet[first].as_QuaternionProperties.Count; ++j)
                         {
-                            if (FFActionUpdaterQuaternion(actSet[first].as_Quaternions[j], dt))
+                            if (FFActionUpdaterQuaternion(actSet[first].as_QuaternionProperties[j], dt))
                             {
                                 ++countIncomplete; // true == incomplete
                             }
                             else
                             {
-                                actSet[first].as_Quaternions.RemoveAt(j);
+                                actSet[first].as_QuaternionProperties.RemoveAt(j);
                                 --j;
                             }
                         }
@@ -1211,7 +1317,7 @@ public class FFAction : MonoBehaviour
     #endregion FFActionUpdaters
 
     // calls (must be first thing to update)
-    bool ActionUpdateCalls(FFActionSet set)
+    static bool ActionUpdateCalls(FFActionSet set)
     {
         bool finishedSet = true;
 
