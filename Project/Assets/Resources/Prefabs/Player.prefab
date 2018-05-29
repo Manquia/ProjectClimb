@@ -2672,15 +2672,15 @@ MonoBehaviour:
       - serializedVersion: 3
         time: 0
         value: 0
-        inSlope: 3.9798355
-        outSlope: 3.9798355
+        inSlope: 3.0199146
+        outSlope: 3.0199146
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.043259494
+        outWeight: 0.05259585
       - serializedVersion: 3
         time: 0.75530726
-        value: 1.1969085
+        value: 1.2045646
         inSlope: -0.032374922
         outSlope: -0.032374922
         tangentMode: 0
@@ -2690,19 +2690,65 @@ MonoBehaviour:
       - serializedVersion: 3
         time: 1
         value: 1
-        inSlope: -1.8166207
-        outSlope: -1.8166207
+        inSlope: 1.7977192
+        outSlope: 1.7977192
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0.20917076
+        inWeight: 0.19594043
         outWeight: 0.33333334
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+    releaseAirSlowMotionTime: 1.1
+    releaseAirSlowMotionSlow: 1.1
+    releaseAirSlowMotionFOVDelta: 15
+    releaseAirSlowMotionFOVCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 45.772305
+        outSlope: 45.772305
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.025982203
+      - serializedVersion: 3
+        time: 0.09273052
+        value: 1.0047112
+        inSlope: -0.014078794
+        outSlope: -0.014078794
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.12399207
+      - serializedVersion: 3
+        time: 0.88840264
+        value: 0.99870515
+        inSlope: -0.0057713455
+        outSlope: -0.0057713455
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.06724512
+        outWeight: 0.4683344
+      - serializedVersion: 3
+        time: 1.0003662
+        value: 0
+        inSlope: -4.132051
+        outSlope: -4.132051
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.031246778
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    releaseAirVelocityBoost: 1.6
   movement:
     groundPhysicsMask:
       serializedVersion: 2
-      m_Bits: 257
+      m_Bits: 256
     maxSpeed: 1.8
     runMultiplier: 2
     jumpForce: 2200
@@ -2834,6 +2880,48 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     timeScaleMinimum: 0.05
+    timeSlowCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 45.772305
+        outSlope: 45.772305
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.025982203
+      - serializedVersion: 3
+        time: 0.09273052
+        value: 1.0047112
+        inSlope: -0.014078794
+        outSlope: -0.014078794
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.12399207
+      - serializedVersion: 3
+        time: 0.88840264
+        value: 0.99870515
+        inSlope: -0.0057713455
+        outSlope: -0.0057713455
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.06724512
+        outWeight: 0.4683344
+      - serializedVersion: 3
+        time: 1.0003662
+        value: 0
+        inSlope: -4.132051
+        outSlope: -4.132051
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.031246778
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
 --- !u!114 &114343968850046598
 MonoBehaviour:
   m_ObjectHideFlags: 1

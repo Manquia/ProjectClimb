@@ -115,6 +115,13 @@ public class Player : FFComponent
         public float transitionTimeOnRope = 0.4f;
         public AnimationCurve grabTransitionCurve; // @TODO move to misc?, but save the curve!! @CLEANUP
 
+        // Data for when releaseing from the rope
+        public float releaseAirSlowMotionTime = 0.8f;
+        public float releaseAirSlowMotionSlow = 1.2f;
+        public float releaseAirSlowMotionFOVDelta = 10.0f;
+        public AnimationCurve releaseAirSlowMotionFOVCurve;
+        public float releaseAirVelocityBoost = 1.6f;
+
         // allows for smooth transition from other movementModes
         internal Vector3 grabPosition;
         internal Quaternion grabRotion;
@@ -804,7 +811,7 @@ public class Player : FFComponent
 
     public void SetupOnRope(RopeController rc)
     {
-        Mode oldMode = mode;
+        //Mode oldMode = mode; // @TODO Climbing
         var ropePath = rc.GetPath();
         
         var playerPos = transform.position;
@@ -851,9 +858,6 @@ public class Player : FFComponent
 
     void DestroyOnRope(Mode newMode)
     {
-        // preserve velocity of rope before switching mode
-        var ropeVelocity = OnRope.rope.VelocityAtDistUpRope(OnRope.distUpRope);
-        myBody.velocity = ropeVelocity;
 
         if (OnRope.rope != null)
             FFMessageBoard<RopeControllerUpdate>.Disconnect(OnRopeControllerUpdate, OnRope.rope.gameObject);
@@ -894,12 +898,27 @@ public class Player : FFComponent
 
                 // When we aren't on the ground
                 // update our physics to see if we should be on the ground
+                // @TODO make this check so it can give addition distances...?
                 GroundRaycastPattern(movement.groundPhysicsMask);
-                if(movement.grounded)
+                if(movement.grounded == false)
                 {
-                    // throw self up high
-                    timeScaleSeq.Property(miscellaneous.timeScaleVar, miscellaneous.timeScaleVar + 0.5f, miscellaneous.timeSlowCurve, 0.8f);
 
+
+                    var camera = cameraController.cameraTrans.GetComponent<Camera>();
+                    var camFOVRef = new FFRef<float>(() => camera.fieldOfView, (v) => camera.fieldOfView = v);
+
+                    // throw self up high
+                    timeScaleSeq.Property(miscellaneous.timeScaleVar, miscellaneous.timeScaleVar + 1.0f, miscellaneous.timeSlowCurve, OnRope.releaseAirSlowMotionTime);
+                    timeScaleSeq.Property(camFOVRef, camFOVRef + OnRope.releaseAirSlowMotionFOVDelta, OnRope.releaseAirSlowMotionFOVCurve, OnRope.releaseAirSlowMotionTime);
+
+                    // apply velocity from rope
+                    var ropeVelocity = OnRope.rope.VelocityAtDistUpRope(OnRope.distUpRope);
+                    myBody.velocity = ropeVelocity;
+                    // Add some pullup force
+                    myBody.velocity += Vector3.up * OnRope.releaseAirVelocityBoost;
+                }
+                else
+                {
 
                 }
 

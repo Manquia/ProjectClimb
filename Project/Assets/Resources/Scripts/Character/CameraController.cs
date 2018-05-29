@@ -15,16 +15,16 @@ public class CameraController : FFComponent {
     public float maxPitchDownAngle = 70.0f;
     public float maxTurnAngle = 75.0f;
 
-    private Transform CameraTrans;
+    internal Transform cameraTrans;
 
 	
     public void SetupCameraController(Player player)
     {
         this.player = player;
 
-        CameraTrans = transform.Find("Camera");
+        cameraTrans = transform.Find("Camera");
 
-        Debug.Assert(CameraTrans != null, "Camera is missing from camera");
+        Debug.Assert(cameraTrans != null, "Camera is missing from camera");
         SetCursorState(CursorLockMode.Locked);
 
     }
@@ -81,7 +81,7 @@ public class CameraController : FFComponent {
             var pitchAngle = Mathf.Clamp(cameraPitch + lookVec.y, -maxPitchDownAngle, maxPitchUpAngle);
             float angleDelta = pitchAngle - cameraPitch;
             var pitchRotDelta = Quaternion.AngleAxis(angleDelta, -Vector3.right);
-            CameraTrans.localRotation = CameraTrans.localRotation * pitchRotDelta;
+            cameraTrans.localRotation = cameraTrans.localRotation * pitchRotDelta;
 
             cameraPitch = pitchAngle;
         }
