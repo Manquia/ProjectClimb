@@ -896,7 +896,7 @@ Transform:
   m_GameObject: {fileID: 1175648653379900}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 1.28}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 6, y: 0.1, z: 1}
   m_Children: []
   m_Father: {fileID: 4000011725226242}
   m_RootOrder: 2
@@ -953,7 +953,7 @@ Transform:
   m_GameObject: {fileID: 1775927238659358}
   m_LocalRotation: {x: 0.026545124, y: -0, z: 0.000000021886075, w: 0.9996476}
   m_LocalPosition: {x: -0, y: -0.252, z: 1.295}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 6, y: 0.1, z: 1}
   m_Children: []
   m_Father: {fileID: 4000010541526640}
   m_RootOrder: 4
@@ -1031,7 +1031,7 @@ Transform:
   m_GameObject: {fileID: 1896560267998168}
   m_LocalRotation: {x: 0.026545124, y: -0, z: 0.000000021886075, w: 0.9996476}
   m_LocalPosition: {x: -0, y: -0.423, z: 1.287}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 6, y: 0.1, z: 1}
   m_Children: []
   m_Father: {fileID: 4869650841716636}
   m_RootOrder: 1
@@ -2641,7 +2641,7 @@ MonoBehaviour:
     pumpSpeed: 0.02
     pumpAcceleration: 1.8
     pumpResetSpeed: 0.1
-    climbSpeed: 0.5
+    climbSpeed: 2.5
     rotateSpeed: 90
     leanSpeed: 0.9
     distUpRope: 0
@@ -2664,8 +2664,45 @@ MonoBehaviour:
     distFromRope: 0.4
     rotationYaw: 0
     rotationPitch: 0.56
-    onRopeAngularVelocity: 0
+    timeOnRope: 0
+    transitionTimeOnRope: 0.4
+    grabTransitionCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 3.9798355
+        outSlope: 3.9798355
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.043259494
+      - serializedVersion: 3
+        time: 0.75530726
+        value: 1.1969085
+        inSlope: -0.032374922
+        outSlope: -0.032374922
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.2141799
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: -1.8166207
+        outSlope: -1.8166207
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.20917076
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
   movement:
+    groundPhysicsMask:
+      serializedVersion: 2
+      m_Bits: 257
     maxSpeed: 1.8
     runMultiplier: 2
     jumpForce: 2200
@@ -2729,6 +2766,74 @@ MonoBehaviour:
     redirectForce: 0.5
     maxSpeed: 2.65
     friction: 0.1
+  miscellaneous:
+    ropeToMovePlayerAlignmentCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: -2.0226157
+        outSlope: -2.0226157
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.19864975
+      - serializedVersion: 3
+        time: 0.23605277
+        value: 0.20220952
+        inSlope: 3.6795409
+        outSlope: 3.6795409
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.03325796
+      - serializedVersion: 3
+        time: 0.57655776
+        value: 0.9970948
+        inSlope: 0.89490473
+        outSlope: 0.89490473
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.14270791
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0.5961088
+        outSlope: 0.5961088
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.16719459
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    ropeToMoveCameraAlignmentCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 2.9688854
+        outSlope: 2.9688854
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.073972605
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0.74942833
+        outSlope: 0.74942833
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.07397258
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    timeScaleMinimum: 0.05
 --- !u!114 &114343968850046598
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2911,8 +3016,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lookSensitivity: {x: 100, y: 100}
   maxPitchUpAngle: 80
-  maxPitchDownAngle: 70
-  maxTurnAngle: 75
+  maxPitchDownAngle: 55
+  maxTurnAngle: 35
+  cameraTurn: 0
 --- !u!114 &114692020672119296
 MonoBehaviour:
   m_ObjectHideFlags: 1

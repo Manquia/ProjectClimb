@@ -6,6 +6,7 @@ using UnityEngine;
 public struct RopeControllerUpdate
 {
     public RopeController controller;
+    public float dt;
 }
 
 public class RopeController : MonoBehaviour
@@ -13,7 +14,10 @@ public class RopeController : MonoBehaviour
     // @PERF @SPEED Make this not require dynamicPath. Lots of IK samples so
     // if this is slow that is low hanging fruit...
 
+    private List<Transform> visualElements = new List<Transform>();
+
     private FFPath path; // rope is exactly 2 points
+
     public FFPath GetPath() { return path; }
 
     public float length = 25.0f;
@@ -25,6 +29,9 @@ public class RopeController : MonoBehaviour
     public float friction = 0.05f;
 
     public float ropeRotation = 0.0f;
+    public float distBetweenRopeVisuals = 0.1f;
+
+
 
     public Vector3 VelocityAtDistUpRope(float distUpRope)
     {
@@ -44,6 +51,13 @@ public class RopeController : MonoBehaviour
 
         return Quaternion.LookRotation(vecAlongEdgeOfSphere, -ropeVecNorm);
     }
+
+    public Vector3 RopeVecNorm()
+    {
+        var ropeVec = path.PositionAtPoint(1) - path.PositionAtPoint(0);
+        return Vector3.Normalize(ropeVec);
+    }
+
 
     // Use this for initialization
     void Start()
@@ -76,15 +90,9 @@ public class RopeController : MonoBehaviour
         UpdateRopeMovement(dt);
         UpdateRopeVisuals();
 
-        SendUpdateEvent();
+        SendUpdateEvent(dt);
     }
     
-    public Vector3 RopeVecNorm()
-    {
-        var ropeVec = path.PositionAtPoint(1) - path.PositionAtPoint(0);
-        return Vector3.Normalize(ropeVec);
-    }
-
     void UpdateRopeMovement(float dt)
     {
         var epsilon = 0.005f;
@@ -150,8 +158,6 @@ public class RopeController : MonoBehaviour
         Debug.DrawLine(path.PositionAtPoint(1), path.PositionAtPoint(1) + velocity, Color.red);
     }
 
-    public float distBetweenRopeVisuals = 0.1f;
-    private List<Transform> visualElements = new List<Transform>();
 
     void UpdateRopeVisuals()
     {
@@ -196,10 +202,11 @@ public class RopeController : MonoBehaviour
         visualElements.Add(element);
     }
 
-    void SendUpdateEvent()
+    void SendUpdateEvent(float dt)
     {
         RopeControllerUpdate rc;
         rc.controller = this;
+        rc.dt = dt;
         FFMessageBoard<RopeControllerUpdate>.Send(rc, gameObject, 1000); // other objects listen to use for Update
     }
 

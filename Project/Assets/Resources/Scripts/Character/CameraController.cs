@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraController : MonoBehaviour {
+public class CameraController : FFComponent {
 
     Player player;
     Player.Mode mode
@@ -56,7 +56,7 @@ public class CameraController : MonoBehaviour {
 
     internal Vector2 lookVec;
     // Store this becuase Unity's rotation isn't good
-    internal float cameraTurn = 0.0f;
+    public float cameraTurn = 0.0f;
     private float cameraPitch = 0.0f;
     private void UpdateRotation()
     {

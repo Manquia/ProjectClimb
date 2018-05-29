@@ -23,7 +23,12 @@ public class Player : FFComponent
     FFAction.ActionSequence fadeScreenSeq;
 
     internal Rigidbody myBody;
-    internal CapsuleCollider myCol; 
+    internal CapsuleCollider myCol;
+
+
+    FFAction.ActionSequence oneShotSeq; // never call sync OR  ClearSequence on this one...
+    FFAction.ActionSequence orientSeq;
+    FFAction.ActionSequence timeScaleSeq;
 
     private FFRef<Vector3> velocityRef;
     private FFRef<Vector3> GetVelocityRef()
@@ -55,11 +60,11 @@ public class Player : FFComponent
 
         public Annal<KeyState> use = new Annal<KeyState>(15, KeyState.Constructor);
         public Annal<KeyState> modifier = new Annal<KeyState>(15, KeyState.Constructor);
-        public Annal<KeyState> up       = new Annal<KeyState>(15, KeyState.Constructor);
-        public Annal<KeyState> down     = new Annal<KeyState>(15, KeyState.Constructor);
-        public Annal<KeyState> left     = new Annal<KeyState>(15, KeyState.Constructor);
-        public Annal<KeyState> right    = new Annal<KeyState>(15, KeyState.Constructor);
-        public Annal<KeyState> space    = new Annal<KeyState>(15, KeyState.Constructor);
+        public Annal<KeyState> up = new Annal<KeyState>(15, KeyState.Constructor);
+        public Annal<KeyState> down = new Annal<KeyState>(15, KeyState.Constructor);
+        public Annal<KeyState> left = new Annal<KeyState>(15, KeyState.Constructor);
+        public Annal<KeyState> right = new Annal<KeyState>(15, KeyState.Constructor);
+        public Annal<KeyState> space = new Annal<KeyState>(15, KeyState.Constructor);
     }
     public InputState input;
 
@@ -75,10 +80,10 @@ public class Player : FFComponent
         public float climbSpeed = 0.5f;
         public float rotateSpeed = 20.0f;
         public float leanSpeed = 0.9f;
-        
+
         public float distUpRope;
         public float distPumpUp = 0.0f;
-        
+
         public float maxPumpUpDist = 0.1f;
         public float maxPumpDownDist = 0.0f;
 
@@ -99,22 +104,28 @@ public class Player : FFComponent
         public Vector3 rightHandRot;
         public Vector3 leftFootRot;
         public Vector3 rightFootRot;
-        
+
         // Functional stuff
         public float angleOnRope; // in degrees
         public float distFromRope;
         public float rotationYaw;
         public float rotationPitch;
-        
-        // @TODO @Polish
-        public float onRopeAngularVelocity; // <--- Rename...
-        
+
+        public float timeOnRope = 0.0f;
+        public float transitionTimeOnRope = 0.4f;
+        public AnimationCurve grabTransitionCurve; // @TODO move to misc?, but save the curve!! @CLEANUP
+
+        // allows for smooth transition from other movementModes
+        internal Vector3 grabPosition;
+        internal Quaternion grabRotion;
+
     }
     public RopeConnection OnRope;
 
     [System.Serializable]
     public class Movement
     {
+        public LayerMask groundPhysicsMask;
         public float maxSpeed = 2.5f;
         public float runMultiplier = 2.0f;
 
@@ -144,6 +155,7 @@ public class Player : FFComponent
             get { return details.jumping; }
         }
 
+
     }
     public Movement movement;
     [System.Serializable]
@@ -156,6 +168,19 @@ public class Player : FFComponent
     }
     public MovementData OnGroundData;
     public MovementData OnAirData;
+
+    [System.Serializable]
+    public class Miscellaneous
+    {
+        public AnimationCurve ropeToMovePlayerAlignmentCurve;
+        public AnimationCurve ropeToMoveCameraAlignmentCurve;
+
+
+
+        public float timeScaleMinimum = 0.05f;
+        public FFVar<float> timeScaleVar = new FFVar<float>(1.0f);
+    }
+    public Miscellaneous miscellaneous = new Miscellaneous();
 
     // Use this for initialization
     private void Awake()
@@ -171,6 +196,8 @@ public class Player : FFComponent
     void Start ()
     {
         orientSeq = action.Sequence();
+        timeScaleSeq = action.Sequence();
+        oneShotSeq = action.Sequence();
 
         // Set referece to 0 for initialization
         SetVelocityRef(new FFVar<Vector3>(Vector3.zero));
@@ -290,8 +317,17 @@ public class Player : FFComponent
                 break;
         }
 
+        //UpdateTimeScale();
     }
 
+    void UpdateTimeScale()
+    {
+        float denominator = 1.0f / miscellaneous.timeScaleMinimum;
+        float timeScaleVar = miscellaneous.timeScaleVar.Val;
+        float newTimeScale = miscellaneous.timeScaleMinimum + (timeScaleVar / (timeScaleVar + denominator));
+
+        Time.timeScale = newTimeScale;
+    }
 
     // Called right after physics, before rendering. Use for Kinimatic player actions
     void Update()
@@ -331,9 +367,7 @@ public class Player : FFComponent
 
     void UpdateGroundRaycast()
     {
-        var mask = LayerMask.GetMask("Solid");
-        
-        GroundRaycastPattern(mask);
+        GroundRaycastPattern(movement.groundPhysicsMask);
     }
     
     
@@ -542,7 +576,6 @@ public class Player : FFComponent
         // Remove self from rope?
         if (input.use.Recall(0).pressed())
         {
-            // Transition to climb??? @TODO
             DestroyOnRope(Mode.Movement);
         }
 
@@ -551,32 +584,34 @@ public class Player : FFComponent
     {
         Debug.Assert(OnRope != null, "UpdateRope is being called when OnRope is null");
 
+        // count time for mu on rope
+        OnRope.timeOnRope += e.dt;
+
         var rope = OnRope.rope;
-        var ropePath = rope.GetPath();
-        var ropeLength = ropePath.PathLength;
-        var ropeVecNorm = rope.RopeVecNorm();
+        FFPath ropePath = rope.GetPath();
+        float ropeLength = ropePath.PathLength;
+        Vector3 ropeVecNorm = rope.RopeVecNorm();
+        float mu = Mathf.Clamp(OnRope.timeOnRope / OnRope.transitionTimeOnRope, 0.0f, 1.0f);
+        float sampleMu = OnRope.grabTransitionCurve.Evaluate(mu);
 
         var distOnPath = Mathf.Clamp(ropeLength - (OnRope.distUpRope), 0.0f, ropeLength);
-        //var velocity = rope.VelocityAtLength(OnRope.distUpRope);
 
         // update Character Position
         var AngleFromDown = Quaternion.FromToRotation(Vector3.down, ropeVecNorm);
         var angularRotationOnRope = Quaternion.AngleAxis(OnRope.angleOnRope, ropeVecNorm) * AngleFromDown;
         var positionOnRope = ropePath.PointAlongPath(distOnPath);
-
-        // @ TODO: Add charater offset!
-        transform.position = positionOnRope +                                   // Position on rope
+        Vector3 characterPos = positionOnRope +                                   // Position on rope
             (angularRotationOnRope * -Vector3.forward * OnRope.distFromRope) +  // set offset out from rope based on rotation
             (ropeVecNorm * -OnRope.distPumpUp);                                  // vertical offset from pumping
+        transform.position = Vector3.Lerp(OnRope.grabPosition, characterPos, sampleMu);
 
-        var vecForward = positionOnRope - transform.position;
-
-
-        //Debug.DrawLine(positionOnRope, transform.position, Color.yellow);
-        var forwardRot = Quaternion.LookRotation(vecForward, -ropeVecNorm);
-        transform.rotation = forwardRot;
+        // update charater rotation
+        var vecToRope = positionOnRope - transform.position;
+        var forwardRot = Quaternion.LookRotation(vecToRope, -ropeVecNorm);
+        transform.rotation = Quaternion.Lerp(OnRope.grabRotion, forwardRot, sampleMu);
         var characterRot = forwardRot * Quaternion.AngleAxis(OnRope.rotationPitch, transform.right) * Quaternion.AngleAxis(OnRope.rotationYaw, transform.forward);
-        transform.rotation = characterRot;
+        transform.rotation = Quaternion.Lerp(OnRope.grabRotion, characterRot, sampleMu);
+
 
         // update Snapping IK
         if (ikSnap != null) // @TODO
@@ -591,6 +626,7 @@ public class Player : FFComponent
             ikSnap.rightFootRot = angularRotationOnRope * Quaternion.Euler(OnRope.rightFootRot);
             ikSnap.leftFootRot = angularRotationOnRope * Quaternion.Euler(OnRope.leftFootRot);
         }
+
 
         return 0;
     }
@@ -762,35 +798,53 @@ public class Player : FFComponent
     }
     #endregion
 
+
+    #region Transitions
+
     public void SetupOnRope(RopeController rc)
     {
         Mode oldMode = mode;
-        var ropePath = rc.GetComponent<FFPath>();
+        var ropePath = rc.GetPath();
         
         var playerPos = transform.position;
+        var playerRot = transform.rotation;
         float distAlongRope = 0;
         ropePath.NearestPointAlongPath(playerPos, out distAlongRope);
         float distUpRope = ropePath.PathLength - distAlongRope;
+        Vector3 nearestPointOnRope = ropePath.PointAlongPath(distAlongRope);
+        Vector3 vecToNearestPointOnRope = nearestPointOnRope - playerPos;
+        Vector3 vecToNearestPointOnRopeXZ = Vector3.ProjectOnPlane(vecToNearestPointOnRope, rc.RopeVecNorm());
 
+        OnRope.angleOnRope = (Mathf.Atan2(vecToNearestPointOnRopeXZ.z, vecToNearestPointOnRopeXZ.x) * Mathf.Rad2Deg) - 90.0f;
         OnRope.distUpRope = distUpRope;
         OnRope.rope = rc;
+        OnRope.timeOnRope = 0;              // set time to 0
+        OnRope.grabPosition = playerPos;    // Set position for transition
+        OnRope.grabRotion = playerRot;      // set rotation for trasitions
+
         SwitchMode(Mode.Rope);
 
         SetVelocityRef(new FFRef<Vector3>(
             () => OnRope.rope.VelocityAtDistUpRope(OnRope.distUpRope),
             (v) => {} ));
 
+        // place ourselves onto the rope
         RopeControllerUpdate rcu;
         rcu.controller = rc;
+        rcu.dt = 0.0f;
         OnRopeControllerUpdate(rcu);
+
+        // Set Camera Controller's bound b/c unity can't do crap!
+        // we should always grab onto the rope with it forward facing
+        cameraController.cameraTurn = 0.0f;
 
         FFMessageBoard<RopeControllerUpdate>.Connect(OnRopeControllerUpdate, OnRope.rope.gameObject);
 
-        //@TODO Make the orientation changes from the old mode. @Polish. Should be fine to do this in 1 frame for most cases
-        // @POLISH @POLISH @POLISH @POLISH @POLISH
+        // wash movement details
+        movement.details.groundTouches.Wash(false);
+        movement.details.jumping.Wash(false);
     }
 
-    FFAction.ActionSequence orientSeq;
     void DestroyOnRope(Mode newMode)
     {
         // preserve velocity of rope before switching mode
@@ -808,14 +862,41 @@ public class Player : FFComponent
             case Mode.Frozen:
                 break;
             case Mode.Movement:
-                var playerForward = transform.forward;
-                var playerforwardVecXZ = Vector3.ProjectOnPlane(playerForward, Vector3.up);
-                
-                
-                // @CONTINUE THIS!!! I need to Quaternion.Lerp(...) to the action system..
+
+                // clear orient sequence of anything currently happeneing so we don't additivly hurt anything
                 orientSeq.ClearSequence();
 
-                
+                // orient the player for movement Move
+                {
+                    Vector3 cameraForward = cameraController.transform.forward;
+                    float forwardAngle = (Mathf.Atan2(cameraForward.z, -cameraForward.x) * Mathf.Rad2Deg) - 90.0f;
+                    Quaternion forwardXZ = Quaternion.AngleAxis(forwardAngle, Vector3.up);
+                    float angleTowardUprightOrientation = Quaternion.Angle(forwardXZ, transform.localRotation);
+                    float anglesPerSecond = 120.0f;
+                    float timeToUpright = angleTowardUprightOrientation / anglesPerSecond;
+
+                    orientSeq.Property(ffrotation, forwardXZ, miscellaneous.ropeToMovePlayerAlignmentCurve, timeToUpright);
+                }
+
+                // orient the player's camera for movement Move
+                {
+                    Quaternion cameraUprightForward = Quaternion.identity;
+                    float anglesTowardForwardAlignment = Quaternion.Angle(cameraUprightForward, cameraController.transform.localRotation);
+                    float anglesPerSecond = 90.0f;
+                    float timeToAlign = anglesTowardForwardAlignment / anglesPerSecond;
+                    
+                    orientSeq.Property(cameraController.ffrotation, cameraUprightForward, miscellaneous.ropeToMoveCameraAlignmentCurve, timeToAlign);
+                }
+
+                // When we aren't on the ground
+                // update our physics to see if we should be on the ground
+                GroundRaycastPattern(movement.groundPhysicsMask);
+                if(movement.grounded)
+                {
+                    // throw self up high
+
+
+                }
 
                 break;
             case Mode.Rope:
@@ -824,13 +905,6 @@ public class Player : FFComponent
                 break;
         }
 
-        // 0 out player rotation to up
-        // Root rotate back to match player 0
-
-
-        // @TODO Camera Rotation (SPIN) needs to be reset @ACTION
-        
-        // @TODO Player's body rotation needs to be reset @ACTION
         OnRope.rope = null;
     }
 
@@ -860,5 +934,8 @@ public class Player : FFComponent
                 break;
         }
     }
+
+
+    #endregion Transitions
 
 }
