@@ -2633,9 +2633,6 @@ MonoBehaviour:
   fadeScreenMaskSprite: {fileID: 0}
   fadeScreenMaskImage: {fileID: 0}
   fadeTime: 1.8
-  input:
-    moveDir: {x: 0, y: 0, z: 0}
-    moveDirRel: {x: 0, y: 0, z: 0}
   OnRope:
     rope: {fileID: 0}
     pumpSpeed: 0.02
@@ -2643,7 +2640,7 @@ MonoBehaviour:
     pumpResetSpeed: 0.1
     climbSpeed: 2.5
     rotateSpeed: 90
-    leanSpeed: 0.9
+    leanSpeed: 1
     distUpRope: 0
     distPumpUp: 0
     maxPumpUpDist: 0.03
@@ -2744,7 +2741,8 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    releaseAirVelocityBoost: 1.6
+    releaseAirVelocityBoostUp: 1.6
+    releaseAirVelocityBoostForward: 1.5
   movement:
     groundPhysicsMask:
       serializedVersion: 2
@@ -2756,6 +2754,88 @@ MonoBehaviour:
     groundTouchHeight: 0.05
     climbRadius: 0
     revJumpVel: 0.3
+    sprintStartFOVCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.002166748
+        inSlope: 1.7138767
+        outSlope: 1.7138767
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.055432368
+      - serializedVersion: 3
+        time: 1
+        value: 1.0021667
+        inSlope: -0.60186785
+        outSlope: -0.60186785
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.11086482
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    sprintRepeatFOVCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: -0.0019874573
+        inSlope: -0.30455694
+        outSlope: -0.30455694
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.19911087
+      - serializedVersion: 3
+        time: 0.50111914
+        value: -0.0011940002
+        inSlope: 0.52066773
+        outSlope: 0.52066773
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.12000001
+        outWeight: 0.38053092
+      - serializedVersion: 3
+        time: 1
+        value: -0.0019874573
+        inSlope: -0.47677577
+        outSlope: -0.47677577
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.12889172
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    sprintEndFOVCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 2
+        outSlope: 2
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    sprintFOVDifference: 7.5
   OnGroundData:
     moveForce:
       serializedVersion: 2

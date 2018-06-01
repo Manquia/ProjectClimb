@@ -27,6 +27,7 @@ public class Player : FFComponent
 
 
     FFAction.ActionSequence oneShotSeq; // never call sync OR  ClearSequence on this one...
+    FFAction.ActionSequence runEffectSeq;
     FFAction.ActionSequence orientSeq;
     FFAction.ActionSequence timeScaleSeq;
 
@@ -48,6 +49,7 @@ public class Player : FFComponent
         Movement = 1,
         Rope = 2,
         Climb = 3,
+        FreeFall = 4, // Not forzen, but doesn't do movement stuff
     }
 
     public Annal<Mode> mode = new Annal<Mode>(16, Mode.Frozen);
@@ -55,8 +57,8 @@ public class Player : FFComponent
     [System.Serializable]
     public class InputState
     {
-        public Vector3 moveDir;
-        public Vector3 moveDirRel;
+        public Annal<Vector3> moveDir    = new Annal<Vector3>(15, Vector3.zero);
+        public Annal<Vector3> moveDirRel = new Annal<Vector3>(15, Vector3.zero);
 
         public Annal<KeyState> use = new Annal<KeyState>(15, KeyState.Constructor);
         public Annal<KeyState> modifier = new Annal<KeyState>(15, KeyState.Constructor);
@@ -120,7 +122,8 @@ public class Player : FFComponent
         public float releaseAirSlowMotionSlow = 1.2f;
         public float releaseAirSlowMotionFOVDelta = 10.0f;
         public AnimationCurve releaseAirSlowMotionFOVCurve;
-        public float releaseAirVelocityBoost = 1.6f;
+        public float releaseAirVelocityBoostUp = 1.6f;
+        public float releaseAirVelocityBoostForward = 1.5f;
 
         // allows for smooth transition from other movementModes
         internal Vector3 grabPosition;
@@ -162,6 +165,11 @@ public class Player : FFComponent
             get { return details.jumping; }
         }
 
+        public AnimationCurve sprintStartFOVCurve;
+        public AnimationCurve sprintRepeatFOVCurve;
+        public AnimationCurve sprintEndFOVCurve;
+        public float          sprintFOVDifference;
+        internal FFVar<float> sprintFOVDeltaTracker = new FFVar<float>(0.0f);
 
     }
     public Movement movement;
@@ -206,6 +214,7 @@ public class Player : FFComponent
         orientSeq = action.Sequence();
         timeScaleSeq = action.Sequence();
         oneShotSeq = action.Sequence();
+        runEffectSeq = action.Sequence();
 
         // Set referece to 0 for initialization
         SetVelocityRef(new FFVar<Vector3>(Vector3.zero));
@@ -276,7 +285,7 @@ public class Player : FFComponent
     void OnDestroy()
     {
         if (OnRope.rope != null)
-            DestroyOnRope(Mode.Frozen);
+            DestroyOnRope();
     }
 
 
@@ -321,6 +330,9 @@ public class Player : FFComponent
                 break;
             case Mode.Climb:
                 break;
+            case Mode.FreeFall:
+                UpdateCameraTurn();
+                break;
             default:
                 break;
         }
@@ -340,6 +352,7 @@ public class Player : FFComponent
     // Called right after physics, before rendering. Use for Kinimatic player actions
     void Update()
     {
+        float dt = Time.deltaTime;
         UpdateInput();
 
 
@@ -351,18 +364,22 @@ public class Player : FFComponent
             case Mode.Movement:
                 UpdateGroundRaycast();
                 UpdateJumpState();
+                UpdateMoveEffects();
                 break;
             case Mode.Rope:
-                float dt = Time.deltaTime;
                 UpdateRopeActions(dt);
                 break;
             case Mode.Climb:
+                break;
+            case Mode.FreeFall:
+                UpdateFreeFall(dt);
                 break;
             default:
                 break;
         }
 
     }
+
 
     private void UpdateJumpState()
     {
@@ -371,6 +388,55 @@ public class Player : FFComponent
         
         if (movement.grounded && movement.jumping)
             movement.details.jumping.Record(false);
+    }
+
+    private void UpdateMoveEffects()
+    {
+        bool areMoving = input.moveDir.Recall(0) != Vector3.zero;
+        bool wasMoving = input.moveDir.Recall(1) != Vector3.zero;
+
+
+        var camera = cameraController.cameraTrans.GetComponent<Camera>();
+        var camFOVRef = new FFRef<float>(() => camera.fieldOfView, (v) => camera.fieldOfView = v); // @TODO @Speed, make this use a stored FFREF
+
+        // Start Effects for sprint
+        if (
+            (!wasMoving && areMoving && input.modifier.Recall(0).down()) ||
+            (areMoving && input.modifier.Recall(0).pressed()))
+        {
+            const float startTime = 0.25f;
+            float fovDeltaValue = -movement.sprintFOVDifference;
+            float fovDeltaStart = fovDeltaValue - movement.sprintFOVDeltaTracker.Val;
+
+            runEffectSeq.ClearSequence();
+            runEffectSeq.Property(camFOVRef                     , camFOVRef + fovDeltaStart                         , movement.sprintStartFOVCurve, startTime);
+            runEffectSeq.Property(movement.sprintFOVDeltaTracker, movement.sprintFOVDeltaTracker.Val + fovDeltaStart, movement.sprintStartFOVCurve, startTime);
+            runEffectSeq.Sync();
+        }
+        // Stop Effects for sprint
+        else if (
+            (!areMoving && wasMoving && input.modifier.Recall(1).down()) ||
+            (areMoving && input.modifier.Recall(0).released()))
+        {
+            runEffectSeq.ClearSequence();
+            const float resetTime = 0.2f;
+            float fovDeltaToNormal = movement.sprintFOVDeltaTracker.Val;
+
+            runEffectSeq.Property(camFOVRef                     , camFOVRef - fovDeltaToNormal                     , movement.sprintEndFOVCurve, resetTime);
+            runEffectSeq.Property(movement.sprintFOVDeltaTracker, movement.sprintFOVDeltaTracker - fovDeltaToNormal, movement.sprintEndFOVCurve, resetTime);
+            // we do this addativly b/c it could be interrupted by starting to sprint again
+        }
+        // Are sprinting && run effects need to be refreshed...
+        else if(areMoving && input.modifier.Recall(0).down() && runEffectSeq.TimeUntilEnd() < 0.02f)
+        {
+            const float repeatTime = 0.5f; // @TODO @POLISH should be connected to walk cycle sound
+            const float fovDeltaValue = -1.0f;
+            // we don't need a delta b/c we are starting from an unknown fov, just track the difference so we can not infinatly change fov
+
+            runEffectSeq.Property(camFOVRef                     , camFOVRef + fovDeltaValue                     , movement.sprintRepeatFOVCurve, repeatTime);
+            runEffectSeq.Property(movement.sprintFOVDeltaTracker, movement.sprintFOVDeltaTracker + fovDeltaValue, movement.sprintRepeatFOVCurve, repeatTime);
+        }
+        
     }
 
     void UpdateGroundRaycast()
@@ -383,9 +449,13 @@ public class Player : FFComponent
     float dt;
     void UpdateInput()
     {
-        input.moveDir.x = 0.0f;//Input.GetAxis("Horizontal");
-        input.moveDir.y = 0.0f;
-        input.moveDir.z = 0.0f;//Input.GetAxis("Vertical");
+        Vector3 moveDir = Vector3.zero;
+        Vector3 moveDirRel = Vector3.zero;
+
+        // @TODO controller support
+        //moveDir.x = 0.0f;//Input.GetAxis("Horizontal");
+        //moveDir.y = 0.0f;
+        //moveDir.z = 0.0f;//Input.GetAxis("Vertical");
 
         UpdateKeyState(input.up, KeyCode.W);
         UpdateKeyState(input.down, KeyCode.S);
@@ -395,12 +465,15 @@ public class Player : FFComponent
         UpdateKeyState(input.modifier, KeyCode.LeftShift);
         UpdateKeyState(input.use, KeyCode.E);
 
-        input.moveDir.x += input.right.Recall(0).down() ? 1.0f : 0.0f;
-        input.moveDir.x += input.left .Recall(0).down() ? -1.0f : 0.0f;
-        input.moveDir.z += input.up   .Recall(0).down() ? 1.0f : 0.0f;
-        input.moveDir.z += input.down .Recall(0).down() ? -1.0f : 0.0f;
+        moveDir.x += input.right.Recall(0).down() ? 1.0f : 0.0f;
+        moveDir.x += input.left .Recall(0).down() ? -1.0f : 0.0f;
+        moveDir.z += input.up   .Recall(0).down() ? 1.0f : 0.0f;
+        moveDir.z += input.down .Recall(0).down() ? -1.0f : 0.0f;
 
-        input.moveDirRel = transform.rotation * input.moveDir;
+        moveDirRel = transform.rotation * moveDir;
+
+        input.moveDir.Record(moveDir);
+        input.moveDirRel.Record(moveDirRel);
 
         dt = Time.deltaTime;
     }
@@ -584,7 +657,7 @@ public class Player : FFComponent
         // Remove self from rope?
         if (input.use.Recall(0).pressed())
         {
-            DestroyOnRope(Mode.Movement);
+            DestroyOnRope();
         }
 
     }
@@ -639,10 +712,20 @@ public class Player : FFComponent
         return 0;
     }
 
+
+
+    private void UpdateFreeFall(float dt)
+    {
+        GroundRaycastPattern(movement.groundPhysicsMask);
+        if(movement.grounded)
+        {
+            SwitchMode(Mode.Movement);
+        }
+    }
     #endregion
 
     #region helpers
-    
+
     float distToFloor
     {
         get { return myCol.height * 0.5f; }
@@ -683,7 +766,7 @@ public class Player : FFComponent
         var redirectForce = 1.0f;
         if (myBody.velocity != Vector3.zero && input.moveDir != Vector3.zero)
         {
-            float velDotDir = Vector3.Dot(myBody.velocity.normalized, input.moveDirRel.normalized);
+            float velDotDir = Vector3.Dot(myBody.velocity.normalized, input.moveDirRel.Recall(0).normalized);
             float normRedirectForce = Mathf.Abs((velDotDir - 1.0f) * 0.5f);
             redirectForce = 1.0f + normRedirectForce * redirectForceMultiplier;
         }
@@ -856,77 +939,68 @@ public class Player : FFComponent
         movement.details.jumping.Wash(false);
     }
 
-    void DestroyOnRope(Mode newMode)
+    void DestroyOnRope()
     {
+        Debug.Assert(OnRope.rope != null, "DestroyOnRope was called when we don't have a rope!!");
 
         if (OnRope.rope != null)
             FFMessageBoard<RopeControllerUpdate>.Disconnect(OnRopeControllerUpdate, OnRope.rope.gameObject);
 
-        SwitchMode(newMode);
+        // clear orient sequence of anything currently happeneing so we don't additivly hurt anything
+        orientSeq.ClearSequence();
 
-        // orient the player to its proper setup for 
-        switch (newMode)
+        // orient the player for movement Move
         {
-            case Mode.Frozen:
-                break;
-            case Mode.Movement:
+            Vector3 cameraForward = cameraController.transform.forward;
+            float forwardAngle = (Mathf.Atan2(cameraForward.z, -cameraForward.x) * Mathf.Rad2Deg) - 90.0f;
+            Quaternion forwardXZ = Quaternion.AngleAxis(forwardAngle, Vector3.up);
+            float angleTowardUprightOrientation = Quaternion.Angle(forwardXZ, transform.localRotation);
+            float anglesPerSecond = 120.0f;
+            float timeToUpright = angleTowardUprightOrientation / anglesPerSecond;
 
-                // clear orient sequence of anything currently happeneing so we don't additivly hurt anything
-                orientSeq.ClearSequence();
+            orientSeq.Property(ffrotation, forwardXZ, miscellaneous.ropeToMovePlayerAlignmentCurve, timeToUpright);
+        }
 
-                // orient the player for movement Move
-                {
-                    Vector3 cameraForward = cameraController.transform.forward;
-                    float forwardAngle = (Mathf.Atan2(cameraForward.z, -cameraForward.x) * Mathf.Rad2Deg) - 90.0f;
-                    Quaternion forwardXZ = Quaternion.AngleAxis(forwardAngle, Vector3.up);
-                    float angleTowardUprightOrientation = Quaternion.Angle(forwardXZ, transform.localRotation);
-                    float anglesPerSecond = 120.0f;
-                    float timeToUpright = angleTowardUprightOrientation / anglesPerSecond;
+        // orient the player's camera for movement Move
+        {
+            Quaternion cameraUprightForward = Quaternion.identity;
+            float anglesTowardForwardAlignment = Quaternion.Angle(cameraUprightForward, cameraController.transform.localRotation);
+            float anglesPerSecond = 90.0f;
+            float timeToAlign = anglesTowardForwardAlignment / anglesPerSecond;
 
-                    orientSeq.Property(ffrotation, forwardXZ, miscellaneous.ropeToMovePlayerAlignmentCurve, timeToUpright);
-                }
+            orientSeq.Property(cameraController.ffrotation, cameraUprightForward, miscellaneous.ropeToMoveCameraAlignmentCurve, timeToAlign);
+        }
 
-                // orient the player's camera for movement Move
-                {
-                    Quaternion cameraUprightForward = Quaternion.identity;
-                    float anglesTowardForwardAlignment = Quaternion.Angle(cameraUprightForward, cameraController.transform.localRotation);
-                    float anglesPerSecond = 90.0f;
-                    float timeToAlign = anglesTowardForwardAlignment / anglesPerSecond;
-                    
-                    orientSeq.Property(cameraController.ffrotation, cameraUprightForward, miscellaneous.ropeToMoveCameraAlignmentCurve, timeToAlign);
-                }
+        // When we aren't on the ground
+        // update our physics to see if we should be on the ground
+        // @TODO @Polish make this check so it can give addition distances...?
+        GroundRaycastPattern(movement.groundPhysicsMask);
+        if (movement.grounded == false)
+        {
+            // Set to Free Fall
+            SwitchMode(Mode.FreeFall);
 
-                // When we aren't on the ground
-                // update our physics to see if we should be on the ground
-                // @TODO make this check so it can give addition distances...?
-                GroundRaycastPattern(movement.groundPhysicsMask);
-                if(movement.grounded == false)
-                {
+            var camera = cameraController.cameraTrans.GetComponent<Camera>();
+            var camFOVRef = new FFRef<float>(() => camera.fieldOfView, (v) => camera.fieldOfView = v);
 
+            // throw self up high
+            timeScaleSeq.Property(miscellaneous.timeScaleVar, miscellaneous.timeScaleVar + 1.0f, miscellaneous.timeSlowCurve, OnRope.releaseAirSlowMotionTime);
+            timeScaleSeq.Property(camFOVRef, camFOVRef + OnRope.releaseAirSlowMotionFOVDelta, OnRope.releaseAirSlowMotionFOVCurve, OnRope.releaseAirSlowMotionTime);
 
-                    var camera = cameraController.cameraTrans.GetComponent<Camera>();
-                    var camFOVRef = new FFRef<float>(() => camera.fieldOfView, (v) => camera.fieldOfView = v);
+            // apply velocity from rope
+            var ropeVelocity = OnRope.rope.VelocityAtDistUpRope(OnRope.distUpRope);
+            myBody.velocity = Vector3.zero;
+            // Get velocity from rope
+            myBody.AddForce(ropeVelocity, ForceMode.VelocityChange);
+            // Add some pullup force opon release
+            myBody.AddForce(transform.up * OnRope.releaseAirVelocityBoostUp, ForceMode.VelocityChange);
+            // Give some forward force to the playher
+            myBody.AddForce(camera.transform.forward * OnRope.releaseAirVelocityBoostForward, ForceMode.VelocityChange);
 
-                    // throw self up high
-                    timeScaleSeq.Property(miscellaneous.timeScaleVar, miscellaneous.timeScaleVar + 1.0f, miscellaneous.timeSlowCurve, OnRope.releaseAirSlowMotionTime);
-                    timeScaleSeq.Property(camFOVRef, camFOVRef + OnRope.releaseAirSlowMotionFOVDelta, OnRope.releaseAirSlowMotionFOVCurve, OnRope.releaseAirSlowMotionTime);
-
-                    // apply velocity from rope
-                    var ropeVelocity = OnRope.rope.VelocityAtDistUpRope(OnRope.distUpRope);
-                    myBody.velocity = ropeVelocity;
-                    // Add some pullup force
-                    myBody.velocity += Vector3.up * OnRope.releaseAirVelocityBoost;
-                }
-                else
-                {
-
-                }
-
-                break;
-            case Mode.Rope:
-                break;
-            case Mode.Climb:
-                break;
+        }
+        else // on the ground, we are good
+        {
+            SwitchMode(Mode.Movement);
         }
 
         OnRope.rope = null;
@@ -955,6 +1029,10 @@ public class Player : FFComponent
             case Mode.Climb:
                 myBody.useGravity = false;
                 myBody.isKinematic = true;
+                break;
+            case Mode.FreeFall:
+                myBody.useGravity = true;
+                myBody.isKinematic = false;
                 break;
         }
     }
