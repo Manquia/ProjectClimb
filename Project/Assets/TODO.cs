@@ -3,7 +3,8 @@
 
 TODO
 
-- Make player have short jump (invert a fraction of the jump velocity when space is released)
+- Menus
+- Grableing gun abilities
 - CheckPoints for the player
 - Death from falling
 

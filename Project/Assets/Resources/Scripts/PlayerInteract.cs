@@ -20,8 +20,17 @@ public class PlayerInteract : MonoBehaviour
     public struct LookingAway
     {
         public Transform actor;
-
     }
+    private LookingAt      PlayerIsLookingAt;
+    private Looking        playerIsLooking;
+    private LookingAway    playerIsLookingAway;
+    private Use            playerIsUsing;
+
+    public LookingAt   isLookingAt   { get { return PlayerIsLookingAt;   } }
+    public Looking     isLooking     { get { return playerIsLooking;     } }
+    public LookingAway isLookingAway { get { return playerIsLookingAway; } }
+    public Use         isUsing       { get { return playerIsUsing;       } }
+
 
     public float maxInteractDistance = 10.0f;
     public float interactionRadius = 0.5f;
@@ -82,33 +91,31 @@ public class PlayerInteract : MonoBehaviour
             interactedObject = null;
         }
     }
+
+
     void SendLookAt(GameObject go)
     {
         //Debug.Log("PlayerInteract.SendLookAt");
-        LookingAt lookAt = new LookingAt();
-        lookAt.actor = interactorCamera.transform;
-        FFMessageBoard<LookingAt>.SendAllConnected(lookAt, go);
+        PlayerIsLookingAt.actor = interactorCamera.transform;
+        FFMessageBoard<LookingAt>.SendAllConnected(PlayerIsLookingAt, go);
     }
     void SendLookAway(GameObject go)
     {
         //Debug.Log("PlayerInteract.SendLookAway");
-        LookingAway lookAway = new LookingAway();
-        lookAway.actor = interactorCamera.transform;
-        FFMessageBoard<LookingAway>.SendAllConnected(lookAway, go);
+        playerIsLookingAway.actor = interactorCamera.transform;
+        FFMessageBoard<LookingAway>.SendAllConnected(playerIsLookingAway, go);
     }
     void SendLooking(GameObject go)
     {
         //Debug.Log("PlayerInteract.SendLooking");
-        Looking looking = new Looking();
-        looking.actor = interactorCamera.transform;
-        FFMessageBoard<Looking>.SendAllConnected(looking, go);
+        playerIsLooking.actor = interactorCamera.transform;
+        FFMessageBoard<Looking>.SendAllConnected(playerIsLooking, go);
     }
     void SendUse(GameObject go)
     {
         //Debug.Log("PlayerInteract.SendUse");
-        Use u = new Use();
-        u.actor = transform;
-        FFMessageBoard<Use>.SendAllConnected(u, go);
+        playerIsUsing.actor = transform;
+        FFMessageBoard<Use>.SendAllConnected(playerIsUsing, go);
     }
 
     bool LookRaycast(out RaycastHit hit)

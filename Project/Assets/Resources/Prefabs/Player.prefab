@@ -2704,39 +2704,30 @@ MonoBehaviour:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0
-        inSlope: 45.772305
-        outSlope: 45.772305
+        value: 0.0022583008
+        inSlope: 28.04048
+        outSlope: 28.04048
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.025982203
+        outWeight: 0.03237426
       - serializedVersion: 3
-        time: 0.09273052
+        time: 0.063952446
         value: 1.0047112
-        inSlope: -0.014078794
-        outSlope: -0.014078794
+        inSlope: -0.1702376
+        outSlope: -0.1702376
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.12399207
-      - serializedVersion: 3
-        time: 0.88840264
-        value: 0.99870515
-        inSlope: -0.0057713455
-        outSlope: -0.0057713455
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.06724512
-        outWeight: 0.4683344
+        outWeight: 0.080520846
       - serializedVersion: 3
         time: 1.0003662
         value: 0
-        inSlope: -4.132051
-        outSlope: -4.132051
+        inSlope: -3.3705351
+        outSlope: -3.3705351
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0.031246778
+        inWeight: 0.034725826
         outWeight: 0.33333334
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -2835,7 +2826,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    sprintFOVDifference: 7.5
+    sprintFOVDifference: 9
   OnGroundData:
     moveForce:
       serializedVersion: 2

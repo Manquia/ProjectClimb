@@ -403,8 +403,8 @@ public class Player : FFComponent
 
     private void UpdateMoveEffects()
     {
-        bool areMoving = input.moveDir.Recall(0) != Vector3.zero;
-        bool wasMoving = input.moveDir.Recall(1) != Vector3.zero;
+        bool areMovingForward = input.up.Recall(0).down();
+        bool wasMovingForward = input.up.Recall(1).down();
 
 
         var camera = cameraController.cameraTrans.GetComponent<Camera>();
@@ -412,8 +412,8 @@ public class Player : FFComponent
 
         // Start Effects for sprint
         if (
-            (!wasMoving && areMoving && input.modifier.Recall(0).down()) ||
-            (areMoving && input.modifier.Recall(0).pressed()))
+            (!wasMovingForward && areMovingForward && input.modifier.Recall(0).down()) ||
+            (areMovingForward && input.modifier.Recall(0).pressed()))
         {
             const float startTime = 0.25f;
             float fovDeltaValue = -movement.sprintFOVDifference;
@@ -426,8 +426,8 @@ public class Player : FFComponent
         }
         // Stop Effects for sprint
         else if (
-            (!areMoving && wasMoving && input.modifier.Recall(1).down()) ||
-            (areMoving && input.modifier.Recall(0).released()))
+            (!areMovingForward && wasMovingForward && input.modifier.Recall(1).down()) ||
+            (areMovingForward && input.modifier.Recall(0).released()))
         {
             runEffectSeq.ClearSequence();
             const float resetTime = 0.2f;
@@ -438,7 +438,7 @@ public class Player : FFComponent
             // we do this addativly b/c it could be interrupted by starting to sprint again
         }
         // Are sprinting && run effects need to be refreshed...
-        else if(areMoving && input.modifier.Recall(0).down() && runEffectSeq.TimeUntilEnd() < 0.02f)
+        else if(areMovingForward && input.modifier.Recall(0).down() && runEffectSeq.TimeUntilEnd() < 0.02f)
         {
             const float repeatTime = 0.5f; // @TODO @POLISH should be connected to walk cycle sound
             const float fovDeltaValue = -1.0f;
