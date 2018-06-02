@@ -84,9 +84,9 @@ public class RopeController : MonoBehaviour
         return 1;
     }
 
-    void FixedUpdate()
+    void Update()
     {
-        float dt = Time.fixedDeltaTime;
+        float dt = Time.deltaTime;
         UpdateRopeMovement(dt);
         UpdateRopeVisuals();
 

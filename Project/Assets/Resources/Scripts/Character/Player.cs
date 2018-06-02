@@ -305,6 +305,8 @@ public class Player : FFComponent
     // Called right before physics, use this for dynamic Player actions
     void FixedUpdate()
     {
+        float dt = Time.fixedDeltaTime;
+
         switch (mode.Recall(0))
         {
             case Mode.Frozen:
@@ -332,26 +334,19 @@ public class Player : FFComponent
                 break;
             case Mode.FreeFall:
                 UpdateCameraTurn();
+                UpdateMove(dt, OnAirData);
                 break;
             default:
                 break;
         }
 
-        UpdateTimeScale();
     }
 
-    void UpdateTimeScale()
-    {
-        const float minTimeScale = 0.1f;
-        float timeScaleVar = miscellaneous.timeScaleVar.Val;
-        float newTimeScale = minTimeScale + (1.0f / (timeScaleVar + minTimeScale));
-
-        Time.timeScale = newTimeScale;
-    }
 
     // Called right after physics, before rendering. Use for Kinimatic player actions
     void Update()
     {
+        UpdateTimeScale();
         float dt = Time.deltaTime;
         UpdateInput();
 
@@ -380,6 +375,14 @@ public class Player : FFComponent
 
     }
 
+    void UpdateTimeScale()
+    {
+        const float minTimeScale = 0.1f;
+        float timeScaleVar = miscellaneous.timeScaleVar.Val;
+        float newTimeScale = minTimeScale + (1.0f / (timeScaleVar + minTimeScale));
+
+        Time.timeScale = newTimeScale;
+    }
 
     private void UpdateJumpState()
     {
@@ -446,7 +449,6 @@ public class Player : FFComponent
     
     
 
-    float dt;
     void UpdateInput()
     {
         Vector3 moveDir = Vector3.zero;
@@ -474,8 +476,6 @@ public class Player : FFComponent
 
         input.moveDir.Record(moveDir);
         input.moveDirRel.Record(moveDirRel);
-
-        dt = Time.deltaTime;
     }
     static void UpdateKeyState(Annal<KeyState> ks, KeyCode code)
     {
@@ -558,8 +558,9 @@ public class Player : FFComponent
         ApplyMoveForce(moveForce * redirectForce, dt, movement.up);
         
         // Clamp Velocity along horizontal plane
+        if(mode != Mode.FreeFall)
         {
-            const float slowingSpeed = 10.0f;
+            const float slowingSpeed = 10.0f; // @TODO make property?
             var relVel = rotOfPlane * myBody.velocity;
             var relVelXY = new Vector3(relVel.x, 0.0f, relVel.z);
             var relVelXYNorm = relVelXY.normalized;
@@ -750,7 +751,7 @@ public class Player : FFComponent
             // apply movement
             myBody.AddForce(forceRot * input.moveDirRel * magnitude * fps * dt, ForceMode.Acceleration);
         }
-        else if (velocity != Vector3.zero) // no given movement direction, and have a velocity
+        else if (velocity != Vector3.zero && mode != Mode.FreeFall) // no given movement direction, and have a velocity
         {
             // apply slowing movement
             if (!movement.jumping && velocity.y > 0.0f) // when not jumping and going up
@@ -868,8 +869,9 @@ public class Player : FFComponent
     }
     void RopeLean(Vector3 amountVec)
     {
-        OnRope.rope.velocity += transform.rotation * amountVec;
-        //Debug.DrawLine(transform.position, transform.position + amountVec * 20.0f, Color.grey);
+        // Applied velocity should be based on the player's look direction
+        // @ROPE REFACTOR, Should only apply velocity to end segment we are on...
+        OnRope.rope.velocity += cameraController.transform.rotation * amountVec;
     }
 
 
@@ -990,13 +992,15 @@ public class Player : FFComponent
             // apply velocity from rope
             var ropeVelocity = OnRope.rope.VelocityAtDistUpRope(OnRope.distUpRope);
             myBody.velocity = Vector3.zero;
-            // Get velocity from rope
-            myBody.AddForce(ropeVelocity, ForceMode.VelocityChange);
-            // Add some pullup force opon release
-            myBody.AddForce(transform.up * OnRope.releaseAirVelocityBoostUp, ForceMode.VelocityChange);
-            // Give some forward force to the playher
-            myBody.AddForce(camera.transform.forward * OnRope.releaseAirVelocityBoostForward, ForceMode.VelocityChange);
 
+            Vector3 playerLaunchVelocity = ropeVelocity +                                                       // Get velocity from rope
+                                           transform.up * OnRope.releaseAirVelocityBoostUp +                    // Add some pullup force opon release
+                                           camera.transform.forward * OnRope.releaseAirVelocityBoostForward;    // Give some forward force to the player
+
+            myBody.AddForce(playerLaunchVelocity, ForceMode.VelocityChange);
+
+            // Reverse force to the rope to make it fly backward from the player. This should make it easier to grab other ropes
+            OnRope.rope.velocity -= playerLaunchVelocity; // * 0.5f;???
         }
         else // on the ground, we are good
         {
