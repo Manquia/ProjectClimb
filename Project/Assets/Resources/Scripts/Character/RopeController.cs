@@ -63,7 +63,7 @@ public class RopeController : MonoBehaviour
     void Start()
     {
         path = GetComponent<FFPath>();
-        Debug.Assert(path.points.Length == 2);
+        Debug.Assert(path.points.Length > 1, "Path should alwasy have atleast 2 points");
 
         FFMessageBoard<PlayerInteract.Use>.Connect(OnUse, gameObject);
     }
@@ -87,9 +87,9 @@ public class RopeController : MonoBehaviour
     void Update()
     {
         float dt = Time.deltaTime;
+
         UpdateRopeMovement(dt);
         UpdateRopeVisuals();
-
         SendUpdateEvent(dt);
     }
     

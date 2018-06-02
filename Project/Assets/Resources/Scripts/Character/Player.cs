@@ -190,8 +190,6 @@ public class Player : FFComponent
         public AnimationCurve ropeToMovePlayerAlignmentCurve;
         public AnimationCurve ropeToMoveCameraAlignmentCurve;
 
-
-
         public float timeScaleMinimum = 0.05f;
         public FFVar<float> timeScaleVar = new FFVar<float>(1.0f);
         public AnimationCurve timeSlowCurve;
@@ -302,10 +300,13 @@ public class Player : FFComponent
     #endregion Collisions
 
     #region Update
-    // Called right before physics, use this for dynamic Player actions
-    void FixedUpdate()
+
+    // Called right after physics, before rendering. Use for Kinimatic player actions
+    void Update()
     {
-        float dt = Time.fixedDeltaTime;
+        UpdateTimeScale();
+        float dt = Time.deltaTime;
+        UpdateInput();
 
         switch (mode.Recall(0))
         {
@@ -313,6 +314,11 @@ public class Player : FFComponent
                 // DO NOTHING
                 break;
             case Mode.Movement:
+                // Get updated Grounded or not
+                GroundRaycastPattern(movement.groundPhysicsMask);
+                UpdateJumpState();
+                UpdateMoveEffects();
+
                 UpdateCameraTurn();
 
                 if (movement.grounded)
@@ -326,53 +332,36 @@ public class Player : FFComponent
                     UpdateAir();
                 }
 
-                movement.details.groundTouches.Wash(false);
                 break;
-            case Mode.Rope:
-                break;
-            case Mode.Climb:
-                break;
-            case Mode.FreeFall:
-                UpdateCameraTurn();
-                UpdateMove(dt, OnAirData);
-                break;
-            default:
-                break;
-        }
-
-    }
-
-
-    // Called right after physics, before rendering. Use for Kinimatic player actions
-    void Update()
-    {
-        UpdateTimeScale();
-        float dt = Time.deltaTime;
-        UpdateInput();
-
-
-        switch (mode.Recall(0))
-        {
-            case Mode.Frozen:
-                // DO NOTHING
-                break;
-            case Mode.Movement:
-                UpdateGroundRaycast();
-                UpdateJumpState();
-                UpdateMoveEffects();
-                break;
-            case Mode.Rope:
+            case Mode.Rope: 
                 UpdateRopeActions(dt);
                 break;
             case Mode.Climb:
                 break;
             case Mode.FreeFall:
-                UpdateFreeFall(dt);
+                // Get updated Grounded or not
+                GroundRaycastPattern(movement.groundPhysicsMask);
+                UpdateCameraTurn();
+                UpdateMove(dt, OnAirData);
+
+                // Switch to Movement mode once we hit the ground
+                if (movement.grounded) SwitchMode(Mode.Movement);
                 break;
             default:
                 break;
         }
 
+        // DEBUG @TODO @REMOVE @DELETE ME!!! ##@#@#@#@#@#@#@#@#@#@#
+        // DEBUG @TODO @REMOVE @DELETE ME!!! ##@#@#@#@#@#@#@#@#@#@#
+        // DEBUG @TODO @REMOVE @DELETE ME!!! ##@#@#@#@#@#@#@#@#@#@#
+        if (Input.GetKeyDown(KeyCode.T) && Input.GetKey(KeyCode.LeftShift))
+        {
+            miscellaneous.timeScaleVar.Setter(miscellaneous.timeScaleVar * 1.2f);
+        }
+        else if (Input.GetKeyDown(KeyCode.T))
+        {
+            miscellaneous.timeScaleVar.Setter(miscellaneous.timeScaleVar * 0.8f);
+        }
     }
 
     void UpdateTimeScale()
@@ -381,7 +370,10 @@ public class Player : FFComponent
         float timeScaleVar = miscellaneous.timeScaleVar.Val;
         float newTimeScale = minTimeScale + (1.0f / (timeScaleVar + minTimeScale));
 
+        // Apply changed to time scale to get new deltaTime
         Time.timeScale = newTimeScale;
+        // have physics update match delta time
+        Time.fixedDeltaTime = Time.deltaTime;
     }
 
     private void UpdateJumpState()
@@ -441,13 +433,6 @@ public class Player : FFComponent
         }
         
     }
-
-    void UpdateGroundRaycast()
-    {
-        GroundRaycastPattern(movement.groundPhysicsMask);
-    }
-    
-    
 
     void UpdateInput()
     {
@@ -713,16 +698,6 @@ public class Player : FFComponent
         return 0;
     }
 
-
-
-    private void UpdateFreeFall(float dt)
-    {
-        GroundRaycastPattern(movement.groundPhysicsMask);
-        if(movement.grounded)
-        {
-            SwitchMode(Mode.Movement);
-        }
-    }
     #endregion
 
     #region helpers
@@ -758,7 +733,7 @@ public class Player : FFComponent
                 myBody.velocity = Vector3.Lerp(velocity, new Vector3(0.0f, 0.0f, 0.0f), stoppingSpeed * dt);
             else
                 myBody.velocity = Vector3.Lerp(velocity, new Vector3(0.0f, velocity.y, 0.0f), stoppingSpeed * dt);
-
+        
         }
     }
     float CalcRedirectForceMultiplier(float redirectForceMultiplier)

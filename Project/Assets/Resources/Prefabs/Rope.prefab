@@ -20,9 +20,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4867723344070594}
   - component: {fileID: 114458807317781892}
-  - component: {fileID: 114648231944008252}
+  - component: {fileID: 65152244051895318}
   m_Layer: 0
-  m_Name: Rope
+  m_Name: 
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -35,12 +35,24 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1071214144207190}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 16.691, y: 11.9427, z: 1.267}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &65152244051895318
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1071214144207190}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &114458807317781892
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -58,27 +70,9 @@ MonoBehaviour:
   SmoothBetweenPoints: 0
   ModifyAndDraw: 0
   points:
-  - {x: 0, y: 0, z: 0}
+  - {x: 6.74, y: 0, z: 0}
   - {x: 5.61, y: -8.9, z: 0}
   linearDistanceAlongPath:
   - 0
   - 10.520556
   - 21.041113
---- !u!114 &114648231944008252
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1071214144207190}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c51a643b5bb7d5d4e8990f90e6769fa4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  length: 12.29
-  mass: 1.5
-  springForce: 45
-  velocity: {x: 0, y: 0, z: 0}
-  friction: 0.02
-  ropeRotation: 0
-  distBetweenRopeVisuals: 0.025
