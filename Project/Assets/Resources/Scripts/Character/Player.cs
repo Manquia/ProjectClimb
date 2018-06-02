@@ -67,6 +67,14 @@ public class Player : FFComponent
         public Annal<KeyState> left = new Annal<KeyState>(15, KeyState.Constructor);
         public Annal<KeyState> right = new Annal<KeyState>(15, KeyState.Constructor);
         public Annal<KeyState> space = new Annal<KeyState>(15, KeyState.Constructor);
+
+        public Annal<KeyState> mouseLeft = new Annal<KeyState>(15, KeyState.Constructor);
+        public Annal<KeyState> mouseRight = new Annal<KeyState>(15, KeyState.Constructor);
+        public Annal<KeyState> mouseMiddle = new Annal<KeyState>(15, KeyState.Constructor);
+        public Annal<KeyState> mouseBack = new Annal<KeyState>(15, KeyState.Constructor);
+        public Annal<KeyState> mouseForward = new Annal<KeyState>(15, KeyState.Constructor);
+
+        public Annal<Vector2> MouseScroll = new Annal<Vector2>(15, Vector2.zero);
     }
     public InputState input;
 
@@ -345,15 +353,23 @@ public class Player : FFComponent
                 UpdateMove(dt, OnAirData);
 
                 // Switch to Movement mode once we hit the ground
-                if (movement.grounded) SwitchMode(Mode.Movement);
+                if (movement.grounded)
+                {
+                    SwitchMode(Mode.Movement);
+                    // @TODO @POLISH
+                    // The issue is that we do this in a single frame, we should
+                    // just speed up the current sequence with a timescale sort
+                    // of thing which we should impliment soon. @TODO
+                    timeScaleSeq.RunToEnd();
+                }
                 break;
             default:
                 break;
         }
 
-        // DEBUG @TODO @REMOVE @DELETE ME!!! ##@#@#@#@#@#@#@#@#@#@#
-        // DEBUG @TODO @REMOVE @DELETE ME!!! ##@#@#@#@#@#@#@#@#@#@#
-        // DEBUG @TODO @REMOVE @DELETE ME!!! ##@#@#@#@#@#@#@#@#@#@#
+        // @DEBUG @TODO @REMOVE @DELETE ME!!! ##@#@#@#@#@#@#@#@#@#@#
+        // @DEBUG @TODO @REMOVE @DELETE ME!!! ##@#@#@#@#@#@#@#@#@#@#
+        // @DEBUG @TODO @REMOVE @DELETE ME!!! ##@#@#@#@#@#@#@#@#@#@#
         if (Input.GetKeyDown(KeyCode.T) && Input.GetKey(KeyCode.LeftShift))
         {
             miscellaneous.timeScaleVar.Setter(miscellaneous.timeScaleVar * 1.2f);
@@ -452,6 +468,13 @@ public class Player : FFComponent
         UpdateKeyState(input.modifier, KeyCode.LeftShift);
         UpdateKeyState(input.use, KeyCode.E);
 
+        UpdateMouseState(input.mouseLeft,    0);
+        UpdateMouseState(input.mouseRight,   1);
+        UpdateMouseState(input.mouseMiddle,  2);
+        UpdateMouseState(input.mouseBack,    3);
+        UpdateMouseState(input.mouseForward, 4);
+        input.MouseScroll.Record(Input.mouseScrollDelta);
+
         moveDir.x += input.right.Recall(0).down() ? 1.0f : 0.0f;
         moveDir.x += input.left .Recall(0).down() ? -1.0f : 0.0f;
         moveDir.z += input.up   .Recall(0).down() ? 1.0f : 0.0f;
@@ -469,7 +492,13 @@ public class Player : FFComponent
         else if (Input.GetKey(code)) ks.Record(KeyState.GetDownKeyState());
         else ks.Record(KeyState.GetUpKeyState()); // up = !down && !Pressed && !Released
     }
-
+    static void UpdateMouseState(Annal<KeyState> ks, int buttonNumber)
+    {
+        if (Input.GetMouseButtonDown(buttonNumber)) ks.Record(KeyState.GetPressedKeyState());
+        else if (Input.GetMouseButtonUp(buttonNumber)) ks.Record(KeyState.GetReleasedKeyState());
+        else if (Input.GetMouseButton(buttonNumber)) ks.Record(KeyState.GetDownKeyState());
+        else ks.Record(KeyState.GetUpKeyState()); // up = !down && !Pressed && !Released
+    }
     private void UpdateCameraTurn()
     {
         // Rotate based on mouse look
@@ -641,7 +670,7 @@ public class Player : FFComponent
         }
 
         // Remove self from rope?
-        if (input.use.Recall(0).pressed())
+        if (input.mouseRight.Recall(0).pressed())
         {
             DestroyOnRope();
         }
