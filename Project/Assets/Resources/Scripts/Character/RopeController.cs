@@ -15,6 +15,7 @@ public class RopeController : MonoBehaviour
     // if this is slow that is low hanging fruit...
 
     private List<Transform> visualElements = new List<Transform>();
+    private List<Transform> collisionElements = new List<Transform>();
 
     private FFPath path; // rope is exactly 2 points
 
@@ -59,10 +60,16 @@ public class RopeController : MonoBehaviour
     }
 
 
+    GameObject visualPrefab;
+    GameObject collisionPrefab;
     // Use this for initialization
     void Start()
     {
+        visualPrefab = FFResource.Load_Prefab("RopeSegmentVisual");
+        collisionPrefab = FFResource.Load_Prefab("RopeSegmentCollision");
+
         path = GetComponent<FFPath>();
+        path.DynamicPath = false;
         Debug.Assert(path.points.Length > 1, "Path should alwasy have atleast 2 points");
 
         FFMessageBoard<PlayerInteract.Use>.Connect(OnUse, gameObject);
@@ -89,10 +96,13 @@ public class RopeController : MonoBehaviour
         float dt = Time.deltaTime;
 
         UpdateRopeMovement(dt);
+        path.SetupPointData(); // calculate updated path data
         UpdateRopeVisuals();
+        UpdateRopeCollision();
         SendUpdateEvent(dt);
     }
-    
+
+
     void UpdateRopeMovement(float dt)
     {
         var epsilon = 0.005f;
@@ -161,8 +171,6 @@ public class RopeController : MonoBehaviour
 
     void UpdateRopeVisuals()
     {
-        Debug.Assert(path.DynamicPath, "Path must be set to dynamic");
-        //Debug.Log("UpdateRopeVisuals PathLength: " + path.PathLength);
 
         var ropeVec = path.PositionAtPoint(1) - path.PositionAtPoint(0);
         var ropeVecNorm = Vector3.Normalize(ropeVec);
@@ -171,6 +179,8 @@ public class RopeController : MonoBehaviour
         //var rightVec = -Vector3.Cross(ropeVecNorm, down);
         //var vecAlongEdgeOfSphere = Vector3.Normalize(Vector3.Cross(ropeVecNorm, rightVec));
 
+        // @TODO @ROPE @REFACTOR This should take stuff into account for angleFromDown as it should be local.
+        // Use a prevPos and vector or something... This is what makes the rope fall out of alignment...
         var AngleFromDown = Quaternion.FromToRotation(Vector3.down, ropeVecNorm);
         var angularRotationOnRope = Quaternion.AngleAxis(ropeRotation, ropeVecNorm) * AngleFromDown;
 
@@ -195,11 +205,50 @@ public class RopeController : MonoBehaviour
         }
     }
 
+    private void UpdateRopeCollision()
+    {
+        // Place Collisions elements on each joint of the rope
+        int indexElement = 0;
+        int pointCount = path.points.Length;
+        Vector3 scale = Vector3.one;
+        for (indexElement = 0; indexElement < pointCount - 1; ++indexElement)
+        {
+            Transform element;
+            if (indexElement == collisionElements.Count)
+                AddCollisionElement();
+
+            element = collisionElements[indexElement];
+            element.gameObject.SetActive(true);
+
+            Vector3 startPt = path.points[indexElement];
+            Vector3 endPt = path.points[indexElement + 1];
+            Vector3 vec = endPt - startPt;
+            scale.y = vec.magnitude;
+
+            element.localPosition = startPt + (vec * 0.5f);
+            element.up = vec;
+            element.localScale = scale;
+        }
+
+        for (; indexElement < collisionElements.Count; ++indexElement)
+        {
+            collisionElements[indexElement].gameObject.SetActive(false);
+        }
+
+    }
+
     void AddVisualElement()
     {
-        var element = Instantiate(FFResource.Load_Prefab("RopeSegment")).transform;
+        var element = Instantiate(visualPrefab).transform;
         element.SetParent(transform);
         visualElements.Add(element);
+    }
+
+    void AddCollisionElement()
+    {
+        var element = Instantiate(collisionPrefab).transform;
+        element.SetParent(transform);
+        collisionElements.Add(element);
     }
 
     void SendUpdateEvent(float dt)

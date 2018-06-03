@@ -24,6 +24,7 @@ public class Player : FFComponent
 
     internal Rigidbody myBody;
     internal CapsuleCollider myCol;
+    internal PlayerInteract myPlayerInteract;
 
 
     FFAction.ActionSequence oneShotSeq; // never call sync OR  ClearSequence on this one...
@@ -204,6 +205,16 @@ public class Player : FFComponent
     }
     public Miscellaneous miscellaneous = new Miscellaneous();
 
+    [System.Serializable]
+    public class GrappleGun
+    {
+        public GameObject projectilePrefab;
+        public float projectileSpeed;
+
+        // @TODO Add IK here...?
+    }
+    public GrappleGun grappleGun = new GrappleGun();
+
     // Use this for initialization
     private void Awake()
     {
@@ -223,6 +234,9 @@ public class Player : FFComponent
         runEffectSeq = action.Sequence();
 
         // Set referece to 0 for initialization
+        // @TODO make FOV controlled by SetVelocityRef ...?? @POLISH @CLEANUP 
+        // This would be addative to some of the other FOV features like sprint, and jump
+        // off rope...
         SetVelocityRef(new FFVar<Vector3>(Vector3.zero));
         if (dynAudioPlayer != null)
         {
@@ -230,6 +244,9 @@ public class Player : FFComponent
                     () => GetVelocityRef().Getter().magnitude,
                     (v) => { }));
         }
+
+        Debug.Assert(GetComponent<PlayerInteract>() != null, "Player must also have player Interact on it");
+        myPlayerInteract = GetComponent<PlayerInteract>();
 
         // Fade Screen
         {
@@ -312,6 +329,7 @@ public class Player : FFComponent
     // Called right after physics, before rendering. Use for Kinimatic player actions
     void Update()
     {
+        myPlayerInteract.UpdateInteract();
         UpdateTimeScale();
         float dt = Time.deltaTime;
         UpdateInput();
@@ -328,6 +346,7 @@ public class Player : FFComponent
                 UpdateMoveEffects();
 
                 UpdateCameraTurn();
+                UpdateMoveActions();
 
                 if (movement.grounded)
                 {
@@ -448,6 +467,28 @@ public class Player : FFComponent
             runEffectSeq.Property(movement.sprintFOVDeltaTracker, movement.sprintFOVDeltaTracker + fovDeltaValue, movement.sprintRepeatFOVCurve, repeatTime);
         }
         
+    }
+
+    void UpdateMoveActions()
+    {
+        // Actions that happen while in move...
+        // Do update guns n stuff
+
+        // fire grableing gun when we aren't looking at anything
+        if(input.mouseLeft.Recall(0).pressed() && myPlayerInteract.isLooking.target == null)
+        {
+            var cameraTrans = cameraController.cameraTrans;
+            // spawn the projectile with rope extending back to the player
+            var grappleObj = Instantiate(grappleGun.projectilePrefab);
+            var grappleControler = grappleObj.GetComponent<GrappleController>();
+
+            // Init controller
+            var pos = cameraTrans.position + cameraTrans.forward * 1.5f; ;
+            var vel = cameraTrans.rotation * Vector3.forward * grappleGun.projectileSpeed;
+            grappleControler.Init(this, pos, vel);
+        }
+
+
     }
 
     void UpdateInput()

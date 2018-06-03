@@ -8,18 +8,22 @@ public class PlayerInteract : MonoBehaviour
     public struct LookingAt
     {
         public Transform actor;
+        public Transform target;
     }
     public struct Looking
     {
         public Transform actor;
+        public Transform target;
     }
     public struct Use
     {
         public Transform actor;
+        public Transform target;
     }
     public struct LookingAway
     {
         public Transform actor;
+        public Transform target;
     }
     private LookingAt      PlayerIsLookingAt;
     private Looking        playerIsLooking;
@@ -41,17 +45,22 @@ public class PlayerInteract : MonoBehaviour
     public Transform prevInteractedObject;
 
 	// Use this for initialization
-	void Start () {
-		
+	void Start ()
+    {
 	}
 	
 	// Update is called once per frame
-	void Update ()
+	public void UpdateInteract()
     {
         RaycastHit hit;
 
+        PlayerIsLookingAt.target = null;
+        playerIsLooking.target = null;
+        playerIsLookingAway.target = null;
+        playerIsUsing.target = null;
+
         // If we hit something, send the use command
-        if(LookRaycast(out hit))
+        if (LookRaycast(out hit))
         {
             // clicked on object
             if (Input.GetMouseButtonDown(0))
@@ -97,24 +106,28 @@ public class PlayerInteract : MonoBehaviour
     {
         //Debug.Log("PlayerInteract.SendLookAt");
         PlayerIsLookingAt.actor = interactorCamera.transform;
+        PlayerIsLookingAt.target = go.transform;
         FFMessageBoard<LookingAt>.SendAllConnected(PlayerIsLookingAt, go);
     }
     void SendLookAway(GameObject go)
     {
         //Debug.Log("PlayerInteract.SendLookAway");
         playerIsLookingAway.actor = interactorCamera.transform;
+        playerIsLookingAway.target = go.transform;
         FFMessageBoard<LookingAway>.SendAllConnected(playerIsLookingAway, go);
     }
     void SendLooking(GameObject go)
     {
         //Debug.Log("PlayerInteract.SendLooking");
         playerIsLooking.actor = interactorCamera.transform;
+        playerIsLooking.target = go.transform;
         FFMessageBoard<Looking>.SendAllConnected(playerIsLooking, go);
     }
     void SendUse(GameObject go)
     {
         //Debug.Log("PlayerInteract.SendUse");
         playerIsUsing.actor = transform;
+        playerIsUsing.target = go.transform;
         FFMessageBoard<Use>.SendAllConnected(playerIsUsing, go);
     }
 

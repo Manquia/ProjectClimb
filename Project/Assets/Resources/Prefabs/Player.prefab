@@ -2993,6 +2993,10 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+  grappleGun:
+    projectilePrefab: {fileID: 1328660778469812, guid: d01bd9c0b86319746bac2c2de772ffa1,
+      type: 2}
+    projectileSpeed: 25
 --- !u!114 &114343968850046598
 MonoBehaviour:
   m_ObjectHideFlags: 1
