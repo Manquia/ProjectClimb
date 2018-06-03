@@ -63,7 +63,7 @@ public class RopeController : MonoBehaviour
     GameObject visualPrefab;
     GameObject collisionPrefab;
     // Use this for initialization
-    void Start()
+    void Awake()
     {
         visualPrefab = FFResource.Load_Prefab("RopeSegmentVisual");
         collisionPrefab = FFResource.Load_Prefab("RopeSegmentCollision");

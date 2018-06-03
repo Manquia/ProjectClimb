@@ -370,6 +370,7 @@ public class Player : FFComponent
                 GroundRaycastPattern(movement.groundPhysicsMask);
                 UpdateCameraTurn();
                 UpdateMove(dt, OnAirData);
+                UpdateMoveActions();
 
                 // Switch to Movement mode once we hit the ground
                 if (movement.grounded)
@@ -475,7 +476,8 @@ public class Player : FFComponent
         // Do update guns n stuff
 
         // fire grableing gun when we aren't looking at anything
-        if(input.mouseLeft.Recall(0).pressed() && myPlayerInteract.isLooking.target == null)
+        if(input.mouseRight.Recall(0).down() &&
+           input.mouseLeft.Recall(0).pressed())
         {
             var cameraTrans = cameraController.cameraTrans;
             // spawn the projectile with rope extending back to the player
@@ -486,6 +488,14 @@ public class Player : FFComponent
             var pos = cameraTrans.position + cameraTrans.forward * 1.5f; ;
             var vel = cameraTrans.rotation * Vector3.forward * grappleGun.projectileSpeed;
             grappleControler.Init(this, pos, vel);
+
+
+            // @TODO @POLISH Make this auto connect rope when in free fall
+            // @ROPE REFACTOR @MULTI
+            if(mode == Mode.FreeFall)
+            {
+                SetupOnRope(grappleObj.GetComponent<RopeController>());
+            }
         }
 
 
@@ -719,7 +729,7 @@ public class Player : FFComponent
     }
     private int OnRopeControllerUpdate(RopeControllerUpdate e)
     {
-        Debug.Assert(OnRope != null, "UpdateRope is being called when OnRope is null");
+        Debug.Assert(OnRope.rope != null, "UpdateRope is being called when OnRope is null");
 
         // count time for mu on rope
         OnRope.timeOnRope += e.dt;
@@ -941,6 +951,10 @@ public class Player : FFComponent
 
     public void SetupOnRope(RopeController rc)
     {
+        if(mode == Mode.Rope) // already on a rope
+        {
+            DetachRopeConnection();
+        }
         //Mode oldMode = mode; // @TODO Climbing
         var ropePath = rc.GetPath();
         
@@ -990,8 +1004,6 @@ public class Player : FFComponent
     {
         Debug.Assert(OnRope.rope != null, "DestroyOnRope was called when we don't have a rope!!");
 
-        if (OnRope.rope != null)
-            FFMessageBoard<RopeControllerUpdate>.Disconnect(OnRopeControllerUpdate, OnRope.rope.gameObject);
 
         // clear orient sequence of anything currently happeneing so we don't additivly hurt anything
         orientSeq.ClearSequence();
@@ -1052,6 +1064,12 @@ public class Player : FFComponent
             SwitchMode(Mode.Movement);
         }
 
+        DetachRopeConnection();
+    }
+    void DetachRopeConnection()
+    {
+        if (OnRope.rope != null)
+            FFMessageBoard<RopeControllerUpdate>.Disconnect(OnRopeControllerUpdate, OnRope.rope.gameObject);
         OnRope.rope = null;
     }
 
