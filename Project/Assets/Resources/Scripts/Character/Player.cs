@@ -485,10 +485,11 @@ public class Player : FFComponent
             var grappleControler = grappleObj.GetComponent<GrappleController>();
 
             // Init controller
-            var pos = cameraTrans.position + cameraTrans.forward * 1.5f; ;
+            var pos = cameraTrans.position + cameraTrans.forward * -1.5f;
             var vel = cameraTrans.rotation * Vector3.forward * grappleGun.projectileSpeed;
             grappleControler.Init(this, pos, vel);
 
+            // @TODO make this height of the rope change to make it work and not be at the end
 
             // @TODO @POLISH Make this auto connect rope when in free fall
             // @ROPE REFACTOR @MULTI

@@ -19,7 +19,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4887766820345150}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: ModelRoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -39,7 +39,7 @@ GameObject:
   - component: {fileID: 114929576643953560}
   - component: {fileID: 114524882761300226}
   - component: {fileID: 114087690928616512}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: GrappleRope
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -57,7 +57,7 @@ GameObject:
   - component: {fileID: 33664025225907086}
   - component: {fileID: 23415198112859064}
   - component: {fileID: 65795578018714598}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
