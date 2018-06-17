@@ -4,6 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 public class Player : FFComponent
 {
     // TODO
@@ -398,6 +402,14 @@ public class Player : FFComponent
         {
             miscellaneous.timeScaleVar.Setter(miscellaneous.timeScaleVar * 0.8f);
         }
+
+        // @DEBUG @TODO @REMOVE @DELETE ME!!! ##@#@#@#@#@#@#@#@#@#@#
+#if UNITY_EDITOR
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            UnityEditor.EditorApplication.isPaused = !UnityEditor.EditorApplication.isPaused;
+        }
+#endif
     }
 
     void UpdateTimeScale()

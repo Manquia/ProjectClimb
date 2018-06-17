@@ -171,23 +171,26 @@ public class RopeController : MonoBehaviour
 
     void UpdateRopeVisuals()
     {
-
         var ropeVec = path.PositionAtPoint(1) - path.PositionAtPoint(0);
         var ropeVecNorm = Vector3.Normalize(ropeVec);
 
-        //var down = Vector3.Normalize(Physics.gravity);
-        //var rightVec = -Vector3.Cross(ropeVecNorm, down);
-        //var vecAlongEdgeOfSphere = Vector3.Normalize(Vector3.Cross(ropeVecNorm, rightVec));
-
-        // @TODO @ROPE @REFACTOR This should take stuff into account for angleFromDown as it should be local.
-        // Use a prevPos and vector or something... This is what makes the rope fall out of alignment...
-        var AngleFromDown = Quaternion.FromToRotation(Vector3.down, ropeVecNorm);
-        var angularRotationOnRope = Quaternion.AngleAxis(ropeRotation, ropeVecNorm) * AngleFromDown;
+        // Calculate the first rotation relative to an absolute down
+        var angularRotationOnRope = Quaternion.AngleAxis(ropeRotation, ropeVecNorm) * Quaternion.FromToRotation(Vector3.down, ropeVecNorm);
 
         // Draw visuals along rope
         int indexElement = 0;
+        int segmentIndex = 0;
         for(float distAlongPath = 0; distAlongPath <= path.PathLength; distAlongPath += distBetweenRopeVisuals, ++indexElement)
         {
+            // move to next segment for rotation values
+            if(distAlongPath > path.linearDistanceAlongPath[segmentIndex + 1])
+            {
+                ++segmentIndex;
+                Vector3 segmentDir = path.points[segmentIndex + 1] - path.points[segmentIndex];
+                var AngleFromDown = Quaternion.FromToRotation(Vector3.down, segmentDir);
+                angularRotationOnRope = Quaternion.AngleAxis(ropeRotation, ropeVecNorm) * AngleFromDown;
+            }
+
             Transform element;
             if (indexElement == visualElements.Count)
                 AddVisualElement();
