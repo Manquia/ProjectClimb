@@ -74,6 +74,15 @@ public class GrappleController : MonoBehaviour {
     {
         if(grappleInFlight)
         {
+            // Destroy Rope b/c its too long!!!
+            // @TODO make Sounds effects, maybe even VFX
+            // for this thing. @Polish @Sound
+            if(flightTrojectory.Count > 600)
+            {
+                Debug.Log("Destroyed Grapple/Rope b/c it was getting too long");
+                Destroy(gameObject);
+            }
+
             AlignModelOrientation();
             flightTrojectory.Add(transform.position);
 
@@ -91,10 +100,17 @@ public class GrappleController : MonoBehaviour {
 
             var worldToLocal = transform.worldToLocalMatrix;
             Vector3 worldPos = transform.position;
-            for(int i = 0; i < pathPtCount; ++i)
+            int pathIndex = 1;
+            int trojIndex = Mathf.Max(torjMaxIndex - (flightTrojectory.Count % simPtsToPathPts), (flightTrojectory.Count % simPtsToPathPts) - 1);
+
+            // first point is always at the last position
+            myPath.points[0] = flightTrojectory[torjMaxIndex] - worldPos;
+            while (pathIndex < pathPtCount)
             {
-                int torjIndex = Mathf.Clamp(torjMaxIndex - i  * simPtsToPathPts, 0, torjMaxIndex);
-                myPath.points[i] = flightTrojectory[torjIndex] - worldPos;
+                myPath.points[pathIndex] = flightTrojectory[trojIndex] - worldPos;
+
+                ++pathIndex;
+                trojIndex = Mathf.Min(trojIndex - simPtsToPathPts, torjMaxIndex);
             }
         }
         

@@ -8,6 +8,10 @@ public struct RopeControllerUpdate
     public RopeController controller;
     public float dt;
 }
+public struct RopeDestroy
+{
+    public RopeController controller;
+}
 
 public class RopeController : MonoBehaviour
 {
@@ -78,6 +82,10 @@ public class RopeController : MonoBehaviour
     private void OnDestroy()
     {
         FFMessageBoard<PlayerInteract.Use>.Disconnect(OnUse, gameObject);
+
+        RopeDestroy rd;
+        rd.controller = this;
+        FFMessageBoard<RopeDestroy>.Send(rd, gameObject);
     }
 
     private int OnUse(PlayerInteract.Use e)

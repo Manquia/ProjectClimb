@@ -368,9 +368,9 @@ public class Player : FFComponent
                 // Don't allow actions if we are attached to a grapple in flght
                 // @TODO maybe make this a limited action instead of no action...
                 // Like we can rotate around the rope mostly
-                var grapple = OnRope.rope.GetComponent<GrappleController>();
-                if (grapple && grapple.grappleInFlight)
-                    break;
+                //var grapple = OnRope.rope.GetComponent<GrappleController>();
+                //if (grapple && grapple.grappleInFlight)
+                //    break;
 
                 UpdateRopeActions(dt);
                 break;
@@ -515,7 +515,6 @@ public class Player : FFComponent
             if(mode == Mode.FreeFall)
             {
                 SetupOnRope(grappleObj.GetComponent<RopeController>());
-                OnRope.distUpRope = 0;
             }
         }
 
@@ -1025,10 +1024,17 @@ public class Player : FFComponent
         timeScaleSeq.RunToEnd();
 
         FFMessageBoard<RopeControllerUpdate>.Connect(OnRopeControllerUpdate, OnRope.rope.gameObject);
+        FFMessageBoard<RopeDestroy>.Connect(OnRopeDestroyed, OnRope.rope.gameObject);
 
         // wash movement details
         movement.details.groundTouches.Wash(false);
         movement.details.jumping.Wash(false);
+    }
+
+    private int OnRopeDestroyed(RopeDestroy e)
+    {
+        DestroyOnRope();
+        return 0;
     }
 
     void DestroyOnRope()
