@@ -127,8 +127,16 @@ public class Player : FFComponent
         public float rotationPitch;
 
         public float timeOnRope = 0.0f;
-        public float transitionTimeOnRope = 0.4f;
-        public AnimationCurve grabTransitionCurve; // @TODO move to misc?, but save the curve!! @CLEANUP
+        [System.Serializable]
+        public struct RopeTransitionData
+        {
+            public float transitionTimeOnRope;
+            public AnimationCurve grabTransitionCurve; // @TODO move to misc?, but save the curve!! @CLEANUP
+        }
+        internal RopeTransitionData transition;
+        // This may be a good place to add a scriptable object...? Actualy a lot of this could become a scriptable Object... @Cleanup @Future
+        public RopeTransitionData transitionTypeGrabRope;         // Do not use these in code, they are swapped into ropeTransition
+        public RopeTransitionData transitionTypeGrappleRope;      // Do not use these in code, they are swapped into ropeTransition
 
         // Data for when releaseing from the rope
         public float releaseAirSlowMotionTime = 0.8f;
@@ -504,7 +512,8 @@ public class Player : FFComponent
             var grappleControler = grappleObj.GetComponent<GrappleController>();
 
             // Init controller
-            var pos = cameraTrans.position + cameraTrans.forward * -1.5f;
+            // @POLISH probably just make this an offset value...
+            var pos = cameraTrans.position + cameraTrans.forward * -1.5f + Vector3.down * 0.5f;
             var vel = cameraTrans.rotation * Vector3.forward * grappleGun.projectileSpeed;
             grappleControler.Init(this, pos, vel);
 
@@ -514,7 +523,7 @@ public class Player : FFComponent
             // @ROPE REFACTOR @MULTI
             if(mode == Mode.FreeFall)
             {
-                SetupOnRope(grappleObj.GetComponent<RopeController>());
+                SetupOnRope(grappleObj.GetComponent<RopeController>(), OnRope.transitionTypeGrappleRope);
             }
         }
 
@@ -759,8 +768,8 @@ public class Player : FFComponent
         FFPath ropePath = rope.GetPath();
         float ropeLength = ropePath.PathLength;
         ropePath.SetupPointData();
-        float mu = Mathf.Clamp(OnRope.timeOnRope / OnRope.transitionTimeOnRope, 0.0f, 1.0f);
-        float sampleMu = OnRope.grabTransitionCurve.Evaluate(mu);
+        float mu = Mathf.Clamp(OnRope.timeOnRope / OnRope.transition.transitionTimeOnRope, 0.0f, 1.0f);
+        float sampleMu = OnRope.transition.grabTransitionCurve.Evaluate(mu);
 
         // Get Data in roap
         var distOnPath = Mathf.Clamp(ropeLength - (OnRope.distUpRope), 0.0f, ropeLength);
@@ -979,7 +988,7 @@ public class Player : FFComponent
 
     #region Transitions
 
-    public void SetupOnRope(RopeController rc)
+    public void SetupOnRope(RopeController rc, RopeConnection.RopeTransitionData transitionType)
     {
         if(mode == Mode.Rope) // already on a rope
         {
@@ -1003,6 +1012,7 @@ public class Player : FFComponent
         OnRope.timeOnRope = 0;              // set time to 0
         OnRope.grabPosition = playerPos;    // Set position for transition
         OnRope.grabRotion = playerRot;      // set rotation for trasitions
+        OnRope.transition = transitionType; // set the transition data
 
         SwitchMode(Mode.Rope);
 
@@ -1106,7 +1116,10 @@ public class Player : FFComponent
     void DetachRopeConnection()
     {
         if (OnRope.rope != null)
+        {
             FFMessageBoard<RopeControllerUpdate>.Disconnect(OnRopeControllerUpdate, OnRope.rope.gameObject);
+            FFMessageBoard<RopeDestroy>.Disconnect(OnRopeDestroyed, OnRope.rope.gameObject);
+        }
         OnRope.rope = null;
     }
 

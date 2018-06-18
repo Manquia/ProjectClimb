@@ -70,7 +70,7 @@ public class GrappleController : MonoBehaviour {
         myrope.length = (newPts[0] - newPts[1]).magnitude;
     }
 
-    public void GrappleUpdatePath()
+    public void GrappleUpdatePath(float dt)
     {
         if(grappleInFlight)
         {
@@ -88,8 +88,8 @@ public class GrappleController : MonoBehaviour {
 
             const int simPtsToPathPts = 12;
 
-            int torjMaxIndex = flightTrojectory.Count - 1;
-            int pathPtCount = (flightTrojectory.Count / simPtsToPathPts) + 1;
+            int trojMaxIndex = flightTrojectory.Count - 1;
+            int pathPtCount = ((flightTrojectory.Count - 1) / simPtsToPathPts) + 2;
 
             // need to get more points in our path?
             if (myPath.points.Length < pathPtCount)
@@ -99,19 +99,23 @@ public class GrappleController : MonoBehaviour {
             pathPtCount = myPath.points.Length;
 
             var worldToLocal = transform.worldToLocalMatrix;
-            Vector3 worldPos = transform.position;
+            Vector3 positionOffset = -transform.position;
             int pathIndex = 1;
-            int trojIndex = Mathf.Max(torjMaxIndex - (flightTrojectory.Count % simPtsToPathPts), (flightTrojectory.Count % simPtsToPathPts) - 1);
+            int trojIndex;
+            if (flightTrojectory.Count > simPtsToPathPts)
+                trojIndex = (pathPtCount -2) * simPtsToPathPts;
+            else
+                trojIndex = 0;
 
             // first point is always at the last position
-            myPath.points[0] = flightTrojectory[torjMaxIndex] - worldPos;
+            myPath.points[0] = Vector3.zero; // 0 in local space
+            
             while (pathIndex < pathPtCount)
             {
-                myPath.points[pathIndex] = flightTrojectory[trojIndex] - worldPos;
+                myPath.points[pathIndex] = flightTrojectory[trojIndex] + positionOffset;
 
                 ++pathIndex;
-                trojIndex = Mathf.Min(trojIndex - simPtsToPathPts, torjMaxIndex);
-            }
+                trojIndex -= simPtsToPathPts;            }
         }
         
     }

@@ -19,6 +19,8 @@ public class RopeController : MonoBehaviour
     // if this is slow that is low hanging fruit...
 
     private List<Transform> visualElements = new List<Transform>();
+    Transform visualElementRopeEndTop;
+    Transform visualElementRopeEndBot;
     private List<Transform> collisionElements = new List<Transform>();
 
     private FFPath path; // rope is exactly 2 points
@@ -64,18 +66,22 @@ public class RopeController : MonoBehaviour
         return Vector3.Normalize(ropeVec);
     }
 
-    GameObject visualPrefab;
-    GameObject collisionPrefab;
+    public GameObject visualBetweensPrefab;
+    public GameObject visualEndsPrefab;
+    public GameObject collisionPrefab;
+
     // Use this for initialization
     void Awake()
     {
-        visualPrefab = FFResource.Load_Prefab("RopeSegmentVisual");
-        collisionPrefab = FFResource.Load_Prefab("RopeSegmentCollision");
+        //visualCenterPrefab = FFResource.Load_Prefab("RopeSegmentVisual");
+        //collisionPrefab = FFResource.Load_Prefab("RopeSegmentCollision");
 
         path = GetComponent<FFPath>();
         grapple = GetComponent<GrappleController>();
         path.DynamicPath = false;
         Debug.Assert(path.points.Length > 1, "Path should alwasy have atleast 2 points");
+
+        MakeEnds();
 
         FFMessageBoard<PlayerInteract.Use>.Connect(OnUse, gameObject);
     }
@@ -95,7 +101,7 @@ public class RopeController : MonoBehaviour
 
         Debug.Assert(player != null, "PlayerInteract.Use refered an object which wasn't a player on a RopeController!");
 
-        player.SetupOnRope(this);
+        player.SetupOnRope(this, player.OnRope.transitionTypeGrabRope);
 
         return 1;
     }
@@ -104,7 +110,7 @@ public class RopeController : MonoBehaviour
     {
         float dt = Time.deltaTime;
         if (grapple != null)
-            grapple.GrappleUpdatePath();
+            grapple.GrappleUpdatePath(dt);
 
         UpdateRopeMovement(dt);
         path.SetupPointData(); // calculate updated path data
@@ -190,10 +196,13 @@ public class RopeController : MonoBehaviour
         // Calculate the first rotation relative to an absolute down
         var angularRotationOnRope = Quaternion.AngleAxis(ropeRotation, ropeVecNorm) * Quaternion.FromToRotation(Vector3.down, ropeVecNorm);
 
+        visualElementRopeEndTop.position = path.PositionAtPoint(0);
+        visualElementRopeEndTop.rotation = angularRotationOnRope;
+
         // Draw visuals along rope
         int indexElement = 0;
         int segmentIndex = 0;
-        for(float distAlongPath = 0; distAlongPath <= path.PathLength; distAlongPath += distBetweenRopeVisuals, ++indexElement)
+        for(float distAlongPath = distBetweenRopeVisuals * 0.5f; distAlongPath <= path.PathLength; distAlongPath += distBetweenRopeVisuals, ++indexElement)
         {
             // move to next segment for rotation values
             if(distAlongPath > path.linearDistanceAlongPath[segmentIndex + 1])
@@ -214,6 +223,10 @@ public class RopeController : MonoBehaviour
             //element.rotation = Quaternion.LookRotation(vecAlongEdgeOfSphere, -ropeVecNorm);
             element.rotation = angularRotationOnRope;
         }
+
+        visualElementRopeEndBot.position = path.PositionAtPoint(path.points.Length - 1);
+        visualElementRopeEndBot.rotation = angularRotationOnRope;
+
 
         for(;indexElement < visualElements.Count; ++indexElement)
         {
@@ -255,7 +268,7 @@ public class RopeController : MonoBehaviour
 
     void AddVisualElement()
     {
-        var element = Instantiate(visualPrefab).transform;
+        var element = Instantiate(visualBetweensPrefab).transform;
         element.SetParent(transform);
         visualElements.Add(element);
     }
@@ -265,6 +278,14 @@ public class RopeController : MonoBehaviour
         var element = Instantiate(collisionPrefab).transform;
         element.SetParent(transform);
         collisionElements.Add(element);
+    }
+    void MakeEnds()
+    {
+        visualElementRopeEndTop = Instantiate(visualEndsPrefab).transform;
+        visualElementRopeEndBot = Instantiate(visualEndsPrefab).transform;
+
+        visualElementRopeEndTop.SetParent(transform);
+        visualElementRopeEndBot.SetParent(transform);
     }
 
     void SendUpdateExternalEvent(float dt)
