@@ -37,7 +37,7 @@ public class FFPath : MonoBehaviour
 
     //////////////////// Stats when Unselected ////////////////////
     // point radius and color
-    private const float DebugPointsRadius = 4.0f;
+    private const float DebugPointsRadius = 0.25f;
     private Color DebugPointsColorUnselected = Color.blue;
     // Lower value to increase debug line precision
     private const float DebugLineLengthUnselected = 0.2f;

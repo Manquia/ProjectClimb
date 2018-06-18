@@ -6,7 +6,9 @@ public class GrappleController : MonoBehaviour {
 
     internal Player mySource;
     internal FFPath myPath;
-    internal bool grappleInFlight = false;
+    internal RopeController myrope;
+
+    public bool grappleInFlight = false;
 
 
     Transform modelRoot;
@@ -17,6 +19,7 @@ public class GrappleController : MonoBehaviour {
 
     public void Init(Player p, Vector3 startposition, Vector3 startVelocity)
     {
+        myrope = GetComponent<RopeController>();
         mybody = GetComponent<Rigidbody>();
         modelRoot = transform.Find("ModelRoot");
         myPath = GetComponent<FFPath>();
@@ -63,31 +66,35 @@ public class GrappleController : MonoBehaviour {
         newPts[0] = Vector3.zero;
         newPts[1] = myPath.points[myPath.points.Length - 1];
         myPath.points = newPts;
-        
+
+        myrope.length = (newPts[0] - newPts[1]).magnitude;
     }
 
-    private void FixedUpdate()
+    public void GrappleUpdatePath()
     {
         if(grappleInFlight)
         {
             AlignModelOrientation();
             flightTrojectory.Add(transform.position);
 
-            const int simPtsToPathPts = 6;
+            const int simPtsToPathPts = 12;
 
             int torjMaxIndex = flightTrojectory.Count - 1;
             int pathPtCount = (flightTrojectory.Count / simPtsToPathPts) + 1;
 
             // need to get more points in our path?
-            if (myPath.points.Length < pathPtCount) // @SPEED
+            if (myPath.points.Length < pathPtCount)
+            {
                 myPath.points = new Vector3[pathPtCount];
-
+            }
+            pathPtCount = myPath.points.Length;
 
             var worldToLocal = transform.worldToLocalMatrix;
+            Vector3 worldPos = transform.position;
             for(int i = 0; i < pathPtCount; ++i)
             {
                 int torjIndex = Mathf.Clamp(torjMaxIndex - i  * simPtsToPathPts, 0, torjMaxIndex);
-                myPath.points[i] = transform.InverseTransformPoint(flightTrojectory[torjIndex]);
+                myPath.points[i] = flightTrojectory[torjIndex] - worldPos;
             }
         }
         

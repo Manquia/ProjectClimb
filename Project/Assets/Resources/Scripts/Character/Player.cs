@@ -364,7 +364,14 @@ public class Player : FFComponent
                 }
 
                 break;
-            case Mode.Rope: 
+            case Mode.Rope:
+                // Don't allow actions if we are attached to a grapple in flght
+                // @TODO maybe make this a limited action instead of no action...
+                // Like we can rotate around the rope mostly
+                var grapple = OnRope.rope.GetComponent<GrappleController>();
+                if (grapple && grapple.grappleInFlight)
+                    break;
+
                 UpdateRopeActions(dt);
                 break;
             case Mode.Climb:
@@ -508,6 +515,7 @@ public class Player : FFComponent
             if(mode == Mode.FreeFall)
             {
                 SetupOnRope(grappleObj.GetComponent<RopeController>());
+                OnRope.distUpRope = 0;
             }
         }
 
@@ -743,6 +751,7 @@ public class Player : FFComponent
     private int OnRopeControllerUpdate(RopeControllerUpdate e)
     {
         Debug.Assert(OnRope.rope != null, "UpdateRope is being called when OnRope is null");
+        Debug.Assert(OnRope.rope == e.controller, "Updating on a rope which we don't have selected!!");
 
         // count time for mu on rope
         OnRope.timeOnRope += e.dt;
@@ -750,19 +759,28 @@ public class Player : FFComponent
         var rope = OnRope.rope;
         FFPath ropePath = rope.GetPath();
         float ropeLength = ropePath.PathLength;
-        Vector3 ropeVecNorm = rope.RopeVecNorm();
+        ropePath.SetupPointData();
         float mu = Mathf.Clamp(OnRope.timeOnRope / OnRope.transitionTimeOnRope, 0.0f, 1.0f);
         float sampleMu = OnRope.grabTransitionCurve.Evaluate(mu);
 
+        // Get Data in roap
         var distOnPath = Mathf.Clamp(ropeLength - (OnRope.distUpRope), 0.0f, ropeLength);
+        int segmentIndex = 0;
+        ropePath.PrevPoint(distOnPath, out segmentIndex);
+        Vector3 prevSegmentPoint = ropePath.points[segmentIndex];
+        Vector3 nextSegemntPoint = ropePath.points[segmentIndex + 1];
+        Vector3 segmentVec = nextSegemntPoint - prevSegmentPoint;
+        Vector3 ropeVecNorm = segmentVec.normalized;
 
         // update Character Position
-        var AngleFromDown = Quaternion.FromToRotation(Vector3.down, ropeVecNorm);
+        var AngleFromDown = Quaternion.FromToRotation(Vector3.down, segmentVec);
         var angularRotationOnRope = Quaternion.AngleAxis(OnRope.angleOnRope, ropeVecNorm) * AngleFromDown;
         var positionOnRope = ropePath.PointAlongPath(distOnPath);
         Vector3 characterPos = positionOnRope +                                   // Position on rope
             (angularRotationOnRope * -Vector3.forward * OnRope.distFromRope) +  // set offset out from rope based on rotation
             (ropeVecNorm * -OnRope.distPumpUp);                                  // vertical offset from pumping
+
+
         transform.position = Vector3.Lerp(OnRope.grabPosition, characterPos, sampleMu);
 
         // update charater rotation

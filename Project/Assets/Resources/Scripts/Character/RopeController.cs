@@ -18,6 +18,7 @@ public class RopeController : MonoBehaviour
     private List<Transform> collisionElements = new List<Transform>();
 
     private FFPath path; // rope is exactly 2 points
+    internal GrappleController grapple;
 
     public FFPath GetPath() { return path; }
 
@@ -59,7 +60,6 @@ public class RopeController : MonoBehaviour
         return Vector3.Normalize(ropeVec);
     }
 
-
     GameObject visualPrefab;
     GameObject collisionPrefab;
     // Use this for initialization
@@ -69,6 +69,7 @@ public class RopeController : MonoBehaviour
         collisionPrefab = FFResource.Load_Prefab("RopeSegmentCollision");
 
         path = GetComponent<FFPath>();
+        grapple = GetComponent<GrappleController>();
         path.DynamicPath = false;
         Debug.Assert(path.points.Length > 1, "Path should alwasy have atleast 2 points");
 
@@ -94,13 +95,17 @@ public class RopeController : MonoBehaviour
     void Update()
     {
         float dt = Time.deltaTime;
+        if (grapple != null)
+            grapple.GrappleUpdatePath();
 
         UpdateRopeMovement(dt);
         path.SetupPointData(); // calculate updated path data
         UpdateRopeVisuals();
         UpdateRopeCollision();
-        SendUpdateEvent(dt);
+        SendUpdateExternalEvent(dt);
     }
+
+
 
 
     void UpdateRopeMovement(float dt)
@@ -254,7 +259,7 @@ public class RopeController : MonoBehaviour
         collisionElements.Add(element);
     }
 
-    void SendUpdateEvent(float dt)
+    void SendUpdateExternalEvent(float dt)
     {
         RopeControllerUpdate rc;
         rc.controller = this;
