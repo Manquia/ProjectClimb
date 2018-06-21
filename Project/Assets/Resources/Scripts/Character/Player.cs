@@ -792,6 +792,8 @@ public class Player : FFComponent
         }
         else
         {
+            // @TODO @POLISH Might actually want this code in OnCollisionEnter/Stay/Exit b/c then
+            // we could get penitration and other useful stuff...
             if ((OnRopeLastPosition - transform.position).magnitude > 0.001f) // we hit something, collision resolved outside of given place
             {
                 // Change rope to nulify velocity in the direction we failed to move...
