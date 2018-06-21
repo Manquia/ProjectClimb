@@ -776,8 +776,9 @@ public class Player : FFComponent
 
     }
 
+
+    // @MOVE @Cleanup
     Vector3 OnRopeLastPosition;
-    Quaternion OnRopeLastRotation;
 
     private int OnRopeControllerUpdate(RopeControllerUpdate e)
     {
@@ -787,18 +788,29 @@ public class Player : FFComponent
         // Negate any velocities gained from the last physics update when we are not on the ground
         if (movement.grounded)
         {
-
+            // @TODO make it so that ropes aren't lame on the ground!!!
         }
         else
         {
+            if ((OnRopeLastPosition - transform.position).magnitude > 0.001f) // we hit something, collision resolved outside of given place
+            {
+                // Change rope to nulify velocity in the direction we failed to move...
+                Vector3 pos = transform.position;
+                Vector3 movementVecDelta = pos - OnRopeLastPosition;
+                Vector3 collisionNorm = movementVecDelta.normalized; // 
 
+                // remove velocity in the direction of -collisionNorm
+                {
+                    float amplitudeLost = Vector3.Dot(-collisionNorm, e.controller.velocity.normalized) * e.controller.velocity.magnitude;
+                    e.controller.velocity += amplitudeLost * collisionNorm * 1.1f; // a little bounce
+                    e.controller.UpdateRopeMovement(e.dt); // try and undo a frame with the correct velocity
+                    e.controller.GetPath().SetupPointData();
+                }
+                // set velocity of player to zero so we can detect collisions
+                myBody.velocity = Vector3.zero;
+            }
         }
 
-        if(OnRopeLastPosition != transform.position) // we hit something, collision resolved outside of given place
-        {
-            // Change rope to nulify velocity in the direction we failed to move...
-
-        }
 
         // count time for mu on rope
         OnRope.timeOnRope += e.dt;
@@ -828,6 +840,7 @@ public class Player : FFComponent
             (ropeVecNorm * -OnRope.distPumpUp);                                  // vertical offset from pumping
         Vector3 newPosition = Vector3.Lerp(OnRope.grabPosition, characterPos, sampleMu);
         transform.position = newPosition;
+        OnRopeLastPosition = newPosition;
 
         // update charater rotation
         var vecToRope = positionOnRope - transform.position;
@@ -1052,6 +1065,9 @@ public class Player : FFComponent
         OnRope.grabPosition = playerPos;    // Set position for transition
         OnRope.grabRotion = playerRot;      // set rotation for trasitions
         OnRope.transition = transitionType; // set the transition data
+
+        // Initialize the last position on rope to our current
+        OnRopeLastPosition = transform.position;
 
         SwitchMode(Mode.Rope);
 

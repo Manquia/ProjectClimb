@@ -129,7 +129,7 @@ public class RopeController : MonoBehaviour
 
 
 
-    void UpdateRopeMovement(float dt)
+    public void UpdateRopeMovement(float dt)
     {
         var epsilon = 0.005f;
         var ropeVec = path.PositionAtPoint(1) - path.PositionAtPoint(0);
