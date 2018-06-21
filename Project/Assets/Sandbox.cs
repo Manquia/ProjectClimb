@@ -16,19 +16,23 @@ public class Sandbox : FFComponent {
 	// Update is called once per frame
 	void Update ()
     {
-        if(Input.GetKey(KeyCode.R) && Input.GetKeyDown(KeyCode.Alpha1))
+        if (Input.GetKey(KeyCode.R))
         {
-            rotateSeq.Property(ffrotation, transform.localRotation * Quaternion.AngleAxis(30, Vector3.up), FFEase.E_SmoothStartEnd, 2.5f);
+            test();
+
         }
 
-        if (Input.GetKey(KeyCode.R) && Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            rotateSeq.Property(ffrotation, transform.localRotation * Quaternion.AngleAxis(30, Vector3.right), FFEase.E_Continuous, 2.5f);
-        }
 
-        if (Input.GetKey(KeyCode.R) && Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            rotateSeq.Property(ffrotation, transform.localRotation * Quaternion.AngleAxis(30, Vector3.forward), FFEase.E_SmoothEnd, 2.5f);
-        }
+    }
+
+
+    void test()
+    {
+        CapsuleCollider col;
+        Rigidbody body = GetComponent<Rigidbody>();
+
+        body.MovePosition(transform.position + Vector3.forward * 0.5f);
+
+
     }
 }

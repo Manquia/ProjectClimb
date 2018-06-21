@@ -352,62 +352,21 @@ public class Player : FFComponent
                 // DO NOTHING
                 break;
             case Mode.Movement:
-                // Get updated Grounded or not
-                GroundRaycastPattern(movement.groundPhysicsMask);
-                UpdateJumpState();
-                UpdateMoveEffects();
-
-                UpdateCameraTurn();
-                UpdateMoveActions();
-
-                if (movement.grounded)
-                {
-                    UpdateMove(dt, OnGroundData);
-                    CheckJump();
-                }
-                else
-                {
-                    UpdateMove(dt, OnAirData);
-                    UpdateAir();
-                }
-
+                UpdateModeMove(dt);
                 break;
             case Mode.Rope:
-                // Don't allow actions if we are attached to a grapple in flght
-                // @TODO maybe make this a limited action instead of no action...
-                // Like we can rotate around the rope mostly
-                //var grapple = OnRope.rope.GetComponent<GrappleController>();
-                //if (grapple && grapple.grappleInFlight)
-                //    break;
-
-                UpdateRopeActions(dt);
+                UpdateModeRope(dt);
                 break;
             case Mode.Climb:
+                UpdateModeClimb(dt);// placeholder
                 break;
             case Mode.FreeFall:
-                // Get updated Grounded or not
-                GroundRaycastPattern(movement.groundPhysicsMask);
-                UpdateCameraTurn();
-                UpdateMove(dt, OnAirData);
-                UpdateMoveActions();
-
-                // Switch to Movement mode once we hit the ground
-                if (movement.grounded)
-                {
-                    SwitchMode(Mode.Movement);
-                    // @TODO @POLISH
-                    // The issue is that we do this in a single frame, we should
-                    // just speed up the current sequence with a timescale sort
-                    // of thing which we should impliment soon. @TODO
-                    timeScaleSeq.RunToEnd();
-                }
+                UpdateModeFreeFall(dt);
                 break;
             default:
                 break;
         }
 
-        // @DEBUG @TODO @REMOVE @DELETE ME!!! ##@#@#@#@#@#@#@#@#@#@#
-        // @DEBUG @TODO @REMOVE @DELETE ME!!! ##@#@#@#@#@#@#@#@#@#@#
         // @DEBUG @TODO @REMOVE @DELETE ME!!! ##@#@#@#@#@#@#@#@#@#@#
         if (Input.GetKeyDown(KeyCode.T) && Input.GetKey(KeyCode.LeftShift))
         {
@@ -426,6 +385,66 @@ public class Player : FFComponent
         }
 #endif
     }
+
+
+    void UpdateModeMove(float dt)
+    {
+        // Get updated Grounded or not
+        GroundRaycastPattern(movement.groundPhysicsMask);
+        UpdateJumpState();
+        UpdateMoveEffects();
+
+        UpdateCameraTurn();
+        UpdateMoveActions();
+
+        if (movement.grounded)
+        {
+            UpdateMoveType(dt, OnGroundData);
+            CheckJump();
+        }
+        else
+        {
+            UpdateMoveType(dt, OnAirData);
+            UpdateAir();
+        }
+    }
+    void UpdateModeRope(float dt)
+    {
+        // @TODO maybe make this a limited action instead of no action...
+        // Like we can rotate around the rope mostly
+        //var grapple = OnRope.rope.GetComponent<GrappleController>();
+        //if (grapple && grapple.grappleInFlight)
+        //    break;
+
+        // Will probably have 1 frame of lag. Could move too Fixed update since
+        // other stuff will get resovled there...
+        UpdateRopeActions(dt);
+        // Actual position update is done through the OnRopeControllerUpdate
+        // which is an event triggered by the rope itself after it is updated...
+    }
+    void UpdateModeClimb(float dt)
+    {
+    }
+    void UpdateModeFreeFall(float dt)
+    {
+        // Get updated Grounded or not
+        GroundRaycastPattern(movement.groundPhysicsMask);
+        UpdateCameraTurn();
+        UpdateMoveType(dt, OnAirData);
+        UpdateMoveActions();
+
+        // Switch to Movement mode once we hit the ground
+        if (movement.grounded)
+        {
+            SwitchMode(Mode.Movement);
+            // @TODO @POLISH
+            // The issue is that we do this in a single frame, we should
+            // just speed up the current sequence with a timescale sort
+            // of thing which we should impliment soon. @TODO
+            timeScaleSeq.RunToEnd();
+        }
+    }
+
 
     void UpdateTimeScale()
     {
@@ -618,7 +637,7 @@ public class Player : FFComponent
             myBody.velocity = myBody.velocity + revJumpVel;
         }
     }
-    void UpdateMove(float dt, MovementData moveData)
+    void UpdateMoveType(float dt, MovementData moveData)
     {
         var rotOfPlane = Quaternion.FromToRotation(movement.up, Vector3.up);
         var revRotOfPlane = Quaternion.FromToRotation(Vector3.up, movement.up);
@@ -756,10 +775,30 @@ public class Player : FFComponent
         }
 
     }
+
+    Vector3 OnRopeLastPosition;
+    Quaternion OnRopeLastRotation;
+
     private int OnRopeControllerUpdate(RopeControllerUpdate e)
     {
         Debug.Assert(OnRope.rope != null, "UpdateRope is being called when OnRope is null");
         Debug.Assert(OnRope.rope == e.controller, "Updating on a rope which we don't have selected!!");
+
+        // Negate any velocities gained from the last physics update when we are not on the ground
+        if (movement.grounded)
+        {
+
+        }
+        else
+        {
+
+        }
+
+        if(OnRopeLastPosition != transform.position) // we hit something, collision resolved outside of given place
+        {
+            // Change rope to nulify velocity in the direction we failed to move...
+
+        }
 
         // count time for mu on rope
         OnRope.timeOnRope += e.dt;
@@ -787,16 +826,16 @@ public class Player : FFComponent
         Vector3 characterPos = positionOnRope +                                   // Position on rope
             (angularRotationOnRope * -Vector3.forward * OnRope.distFromRope) +  // set offset out from rope based on rotation
             (ropeVecNorm * -OnRope.distPumpUp);                                  // vertical offset from pumping
-
-
-        transform.position = Vector3.Lerp(OnRope.grabPosition, characterPos, sampleMu);
+        Vector3 newPosition = Vector3.Lerp(OnRope.grabPosition, characterPos, sampleMu);
+        transform.position = newPosition;
 
         // update charater rotation
         var vecToRope = positionOnRope - transform.position;
         var forwardRot = Quaternion.LookRotation(vecToRope, -ropeVecNorm);
         transform.rotation = Quaternion.Lerp(OnRope.grabRotion, forwardRot, sampleMu);
         var characterRot = forwardRot * Quaternion.AngleAxis(OnRope.rotationPitch, transform.right) * Quaternion.AngleAxis(OnRope.rotationYaw, transform.forward);
-        transform.rotation = Quaternion.Lerp(OnRope.grabRotion, characterRot, sampleMu);
+        Quaternion newRotation = Quaternion.Lerp(OnRope.grabRotion, characterRot, sampleMu);
+        transform.rotation = newRotation;
 
 
         // update Snapping IK
@@ -1141,7 +1180,8 @@ public class Player : FFComponent
                 break;
             case Mode.Rope:
                 myBody.useGravity = false;
-                myBody.isKinematic = true;
+                myBody.isKinematic = false;
+                //myBody.velocity = Vector3.zero;
                 break;
             case Mode.Climb:
                 myBody.useGravity = false;

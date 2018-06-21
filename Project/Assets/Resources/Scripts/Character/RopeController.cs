@@ -106,17 +106,24 @@ public class RopeController : MonoBehaviour
         return 1;
     }
 
-    void Update()
+    void FixedUpdate()
+    {
+        float dt = Time.fixedDeltaTime;
+
+    }
+
+    private void Update()
     {
         float dt = Time.deltaTime;
-        if (grapple != null)
-            grapple.GrappleUpdatePath(dt);
 
         UpdateRopeMovement(dt);
         path.SetupPointData(); // calculate updated path data
+        SendUpdateExternalEvent(dt);
         UpdateRopeVisuals();
         UpdateRopeCollision();
-        SendUpdateExternalEvent(dt);
+
+        if (grapple != null)
+            grapple.GrappleUpdatePath(dt);
     }
 
 

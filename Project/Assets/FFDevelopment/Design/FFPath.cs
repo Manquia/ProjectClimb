@@ -157,11 +157,13 @@ public class FFPath : MonoBehaviour
     void OnDrawGizmos() // unselected
     {
         Update();
+        SetupPointData();
         DrawDebugLinesGizmo(DebugLineColorUnselected, DebugLineLengthUnselected);
     }
     void OnDrawGizmosSelected()
     {
         Update();
+        SetupPointData();
         DrawDebugLinesGizmo(DebugLineColorSelected, DebugLineLengthSelected);
     }
     
@@ -594,13 +596,13 @@ public class FFPath : MonoBehaviour
                         return transform.TransformPoint(InterpolateCatmullRomPositionAlongPath(distanceAlongPath));
                 default:
                     Debug.LogError("Unhandled Interpolation Type");
-                    return new Vector3(0, 0, 0);
+                    return transform.position;
             }
         }
         else
         {
-            Debug.LogError("PositionAlongLine failed");
-            return new Vector3(0, 0, 0);
+            Debug.Log("PositionAlongLine failed, Invalid Path");
+            return transform.position;
         }
     }
 
