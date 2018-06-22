@@ -126,7 +126,15 @@ public class RopeController : MonoBehaviour
             grapple.GrappleUpdatePath(dt);
     }
 
-
+    // returns the segmentVec in Local Coordinates to the rope
+    public Vector3 SegmentVec(float distOnPath)
+    {
+        int segmentIndex = 0;
+        path.PrevPoint(distOnPath, out segmentIndex);
+        Vector3 prevSegmentPoint = path.points[segmentIndex];
+        Vector3 nextSegemntPoint = path.points[segmentIndex + 1];
+        return nextSegemntPoint - prevSegmentPoint;
+    }
 
 
     public void UpdateRopeMovement(float dt)
