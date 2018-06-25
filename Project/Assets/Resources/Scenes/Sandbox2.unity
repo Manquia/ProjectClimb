@@ -734,6 +734,86 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 21
   m_LocalEulerAnglesHint: {x: -28.317001, y: 0, z: 0}
+--- !u!1 &361352516
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 1071214144207190, guid: ae2ccc222a3357b49bf03fd7922a1f66,
+    type: 2}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 361352519}
+  - component: {fileID: 361352518}
+  - component: {fileID: 361352517}
+  m_Layer: 0
+  m_Name: Rope (5)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &361352517
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 361352516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f82460dad2f9fd4fb383b21472406d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  length: 10
+  mass: 1.5
+  springForce: 45
+  velocity: {x: 0, y: 0, z: 0}
+  friction: 0
+  ropeRotation: 0
+  distBetweenRopeVisuals: 0.49
+  visualBetweensPrefab: {fileID: 1455767483051634, guid: ae83ec8e87ba68148961df155114ae18,
+    type: 2}
+  visualEndsPrefab: {fileID: 1918244410186040, guid: a3e498afa66a6254d84b7b82c19deb8a,
+    type: 2}
+  collisionPrefab: {fileID: 1436755486166178, guid: 40ca6b9670647d3408dd83acb6082277,
+    type: 2}
+--- !u!114 &361352518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 114458807317781892, guid: ae2ccc222a3357b49bf03fd7922a1f66,
+    type: 2}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 361352516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34c973d364d0d7f4fbcc4ae707d5ea90, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  InterpolationType: 0
+  Circuit: 0
+  DynamicPath: 1
+  SmoothBetweenPoints: 0
+  ModifyAndDraw: 0
+  points:
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: -10, z: -10}
+  linearDistanceAlongPath:
+  - 0
+  - 14.142136
+  - 28.284271
+--- !u!4 &361352519
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 4867723344070594, guid: ae2ccc222a3357b49bf03fd7922a1f66,
+    type: 2}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 361352516}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 14.78, y: 10.96, z: 1.1000001}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 23
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &477464467
 GameObject:
   m_ObjectHideFlags: 0
@@ -2127,7 +2207,7 @@ Prefab:
     - target: {fileID: 54000012368192278, guid: be86daae345e56744957fac80cc1a107,
         type: 2}
       propertyPath: m_Interpolate
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1184103588107062, guid: be86daae345e56744957fac80cc1a107, type: 2}
       propertyPath: m_IsActive
@@ -2144,6 +2224,11 @@ Prefab:
     - target: {fileID: 4869650841716636, guid: be86daae345e56744957fac80cc1a107, type: 2}
       propertyPath: m_RootOrder
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 54000012368192278, guid: be86daae345e56744957fac80cc1a107,
+        type: 2}
+      propertyPath: m_CollisionDetection
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: be86daae345e56744957fac80cc1a107, type: 2}
