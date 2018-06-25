@@ -1162,6 +1162,9 @@ public class Player : FFComponent
         Debug.Assert(OnRope.rope != null, "DestroyOnRope was called when we don't have a rope!!");
 
 
+        var rope = OnRope.rope;
+        var path = rope.GetPath();
+
         // clear orient sequence of anything currently happeneing so we don't additivly hurt anything
         orientSeq.ClearSequence();
 
@@ -1204,7 +1207,7 @@ public class Player : FFComponent
             timeScaleSeq.Property(camFOVRef, camFOVRef + OnRope.releaseAirSlowMotionFOVDelta, OnRope.releaseAirSlowMotionFOVCurve, OnRope.releaseAirSlowMotionTime);
 
             // apply velocity from rope
-            var ropeVelocity = OnRope.rope.VelocityAtDistUpRope(OnRope.distUpRope);
+            var ropeVelocity = rope.VelocityAtDistUpRope(OnRope.distUpRope);
             myBody.velocity = Vector3.zero;
 
             Vector3 playerLaunchVelocity = ropeVelocity +                                                       // Get velocity from rope
@@ -1214,7 +1217,16 @@ public class Player : FFComponent
             myBody.AddForce(playerLaunchVelocity, ForceMode.VelocityChange);
 
             // Reverse force to the rope to make it fly backward from the player. This should make it easier to grab other ropes
-            OnRope.rope.velocity -= playerLaunchVelocity; // * 0.5f;???
+            rope.velocity -= playerLaunchVelocity * 0.15f;
+
+            // Remove rope's circular motion. Make it always go back to base
+            {
+                Vector3 restingPoint = rope.length * Vector3.down;
+                Vector3 vecFromRestNorm = Vector3.Normalize(path.points[1] - restingPoint);
+                Vector3 normalFromRestNorm = Vector3.Normalize(Vector3.Cross(Vector3.down, vecFromRestNorm));
+                float amplitudeToApply = Vector3.Dot(normalFromRestNorm, rope.velocity.normalized) * rope.velocity.magnitude;
+                rope.velocity -= amplitudeToApply * normalFromRestNorm;
+            }
         }
         else // on the ground, we are good
         {
