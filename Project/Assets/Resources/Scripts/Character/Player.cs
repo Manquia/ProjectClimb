@@ -617,7 +617,7 @@ public class Player : FFComponent
 
             // Init controller
             // @POLISH probably just make this an offset value...
-            var pos = cameraTrans.position + cameraTrans.forward * -1.5f + Vector3.down * 0.5f;
+            var pos = cameraTrans.position + cameraTrans.forward * -0.1f + Vector3.down * 0.5f;
             var vel = cameraTrans.rotation * Vector3.forward * grappleGun.projectileSpeed;
             grappleControler.Init(this, pos, vel);
 
@@ -1121,6 +1121,7 @@ public class Player : FFComponent
         OnRope.grabPosition = playerPos;    // Set position for transition
         OnRope.grabRotion = playerRot;      // set rotation for trasitions
         OnRope.transition = transitionType; // set the transition data
+        OnRope.rope.isStatic = false;       // set rope to not be static
 
 
         SwitchMode(Mode.Rope);

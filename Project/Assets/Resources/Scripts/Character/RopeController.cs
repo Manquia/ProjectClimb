@@ -38,6 +38,7 @@ public class RopeController : MonoBehaviour
 
     public float ropeRotation = 0.0f;
     public float distBetweenRopeVisuals = 0.1f;
+    public bool isStatic = true;
 
 
 
@@ -72,16 +73,20 @@ public class RopeController : MonoBehaviour
 
     // Use this for initialization
     void Awake()
-    {
-        //visualCenterPrefab = FFResource.Load_Prefab("RopeSegmentVisual");
-        //collisionPrefab = FFResource.Load_Prefab("RopeSegmentCollision");
-
+    {   
         path = GetComponent<FFPath>();
         grapple = GetComponent<GrappleController>();
         path.DynamicPath = false;
         Debug.Assert(path.points.Length > 1, "Path should alwasy have atleast 2 points");
 
         MakeEnds();
+
+        // set langth to the current point distance
+        if (length < 0.0f)
+        {
+            path.SetupPointData();
+            length = path.PathLength;
+        }
 
         FFMessageBoard<PlayerInteract.Use>.Connect(OnUse, gameObject);
     }
@@ -116,7 +121,9 @@ public class RopeController : MonoBehaviour
     {
         float dt = Time.deltaTime;
 
-        UpdateRopeMovement(dt);
+        if(isStatic == false)
+            UpdateRopeMovement(dt);
+
         path.SetupPointData(); // calculate updated path data
         SendUpdateExternalEvent(dt);
         UpdateRopeVisuals();
