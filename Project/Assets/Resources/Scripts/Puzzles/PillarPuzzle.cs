@@ -65,10 +65,6 @@ public class PillarPuzzle : MonoBehaviour {
     // Update is called once per frame
     void Update ()
     {
-        if(Input.GetKeyDown (KeyCode.Y))
-        {
-            TogglePuzzleState();
-        }
         float dt = Time.deltaTime;
         MovePillars(dt);
 	}
