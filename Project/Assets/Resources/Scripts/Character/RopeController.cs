@@ -3,11 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct RopeControllerUpdate
-{
-    public RopeController controller;
-    public float dt;
-}
 public struct RopeDestroy
 {
     public RopeController controller;
@@ -15,6 +10,16 @@ public struct RopeDestroy
 
 public class RopeController : MonoBehaviour
 {
+    public struct ExternalGraphicsUpdate
+    {
+        public RopeController rope;
+        public float dt;
+    }
+    public struct ExternalPhysicsUpdate
+    {
+        public RopeController rope;
+        public float dt;
+    }
     // @PERF @SPEED Make this not require dynamicPath. Lots of IK samples so
     // if this is slow that is low hanging fruit...
 
@@ -115,17 +120,22 @@ public class RopeController : MonoBehaviour
     {
         float dt = Time.fixedDeltaTime;
 
+        if (isStatic == false)
+            UpdateRopeMovement(dt);
+        path.SetupPointData(); // calculate updated path data
+
+
+        Debug.DrawLine(path.PositionAtPoint(1), path.PositionAtPoint(1) + velocity * 2.0f, Color.red);
+
+        SendExternalPhysicsEvent(dt);
     }
 
     private void Update()
     {
         float dt = Time.deltaTime;
 
-        if(isStatic == false)
-            UpdateRopeMovement(dt);
 
-        path.SetupPointData(); // calculate updated path data
-        SendUpdateExternalEvent(dt);
+        SendUpdateExternalGraphicsEvent(dt);
         UpdateRopeVisuals();
         UpdateRopeCollision();
 
@@ -206,7 +216,6 @@ public class RopeController : MonoBehaviour
         }
 
 
-        Debug.DrawLine(path.PositionAtPoint(1), path.PositionAtPoint(1) + velocity, Color.red);
     }
 
 
@@ -310,12 +319,19 @@ public class RopeController : MonoBehaviour
         visualElementRopeEndBot.SetParent(transform);
     }
 
-    void SendUpdateExternalEvent(float dt)
+    void SendExternalPhysicsEvent(float dt)
     {
-        RopeControllerUpdate rc;
-        rc.controller = this;
-        rc.dt = dt;
-        FFMessageBoard<RopeControllerUpdate>.Send(rc, gameObject, 1000); // other objects listen to use for Update
+        ExternalPhysicsUpdate epu;
+        epu.dt = dt;
+        epu.rope = this;
+        FFMessageBoard<ExternalPhysicsUpdate>.Send(epu, gameObject, 1000);
+    }
+    void SendUpdateExternalGraphicsEvent(float dt)
+    {
+        ExternalGraphicsUpdate egu;
+        egu.rope = this;
+        egu.dt = dt;
+        FFMessageBoard<ExternalGraphicsUpdate>.Send(egu, gameObject, 1000); // other objects listen to use for Update
     }
 
 

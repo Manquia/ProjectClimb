@@ -372,26 +372,20 @@ public class Player : FFComponent
             return;
 
         var rope = OnRope.rope;
-        float dt = Time.fixedDeltaTime; 
+        var path = rope.GetPath();
+        float dt = Time.fixedDeltaTime;
+        var capsule = GetComponent<CapsuleCollider>();
 
-        Vector3 colNormal = Vector3.zero;
-        Vector3 colPoint = Vector3.zero;
-        foreach (var contact in col.contacts)
-        {
-            colNormal += contact.normal;
-            colPoint += contact.point;
-        }
-        colNormal /= col.contacts.Length;
-        colPoint /= col.contacts.Length;
-        
+        Vector3 ropeRootPos = path.PositionAtPoint(0);
+        var contact = col.contacts[0];
+        //foreach (var contact in col.contacts)
+        //{
+            // adjust position (Tested, works as expected)
+            Vector3 ptOnCapsule = capsule.ClosestPoint(contact.point);
+            Vector3 vecToCloseds = ptOnCapsule - contact.point;
+            transform.position += vecToCloseds;
 
-        // Player is authoratative over rope when there is a collision
-        // remove velocity in the direction of -collisionNorm
-        {
-            var path = rope.GetPath();
-            float amplitudeLost = Vector3.Dot(-colNormal, rope.velocity.normalized) * rope.velocity.magnitude;
-            rope.velocity += amplitudeLost * colNormal; // negate all velocity in the direction of the collision
-
+            // adjust rotation to match rope
             Vector3 ropeVecNormAssumed = Vector3.Cross(transform.forward, transform.right); // Assumed normal... Not actual
             Debug.DrawLine(transform.position, transform.position + 4.0f * ropeVecNormAssumed, Color.cyan); // @DEBUG
             var AngleFromDown = Quaternion.FromToRotation(Vector3.down, ropeVecNormAssumed);
@@ -402,18 +396,34 @@ public class Player : FFComponent
                 (angularRotationOnRope * Vector3.forward * OnRope.distFromRope) +          // set offset out from rope based on rotation
                 (ropeVecNormAssumed * OnRope.distPumpUp);                                  // vertical offset from pumping
 
-            Vector3 ropeVec = ropeHoldPos - path.PositionAtPoint(0);
-            Vector3 ropeVecNorm = ropeVec.normalized;
-            float lengthOfRopeToPlayer = ropeVec.magnitude;
 
-            // @RESOUCES @COLLECT ROPE...? Would add code in here to add to rope if we were to real it in as we climb...
-                
-            path.points[1] = ropeVec;
-            path.SetupPointData();
-        }
-        // set velocity of player to zero so we can detect collisions
-        myBody.velocity = Vector3.zero;
+            Vector3 ropeVec = ropeHoldPos - ropeRootPos;
+            Vector3 ropeVecNorm = ropeVec.normalized;
+            transform.rotation = angularRotationOnRope;
+
+            Debug.DrawLine(ropeHoldPos, ropeHoldPos + Vector3.right * 5.0f, Color.blue);
+
+            // constrain distance first
+            Vector3 outPt = ropeVecNorm * (path.points[0] - path.points[1]).magnitude;
         
+            Debug.DrawLine(path.transform.TransformPoint(outPt), path.transform.TransformPoint(outPt) + Vector3.right * 5.0f, Color.red);
+
+            // then constrain to normal of collision
+            Vector3 vecToOutPt = outPt - path.points[1];
+            float deltaInNormal = Vector3.Dot(contact.normal, vecToOutPt) * vecToOutPt.magnitude;
+            Vector3 outVec = deltaInNormal * contact.normal;
+            path.points[1] += outVec;
+
+
+            //Debug.DrawLine(transform.position, transform.position + ropeVec, Color.magenta);
+
+
+            float amplitudeLost = Vector3.Dot(-contact.normal, rope.velocity.normalized) * rope.velocity.magnitude;
+            rope.velocity += amplitudeLost * contact.normal; // negate all velocity in the direction of the collision
+
+            //Debug.DrawLine(contact.point, contact.point + contact.normal * 5.0f, Color.black);
+            path.SetupPointData();
+        //}
     }
     #endregion Collisions
 
@@ -774,6 +784,7 @@ public class Player : FFComponent
 
     }
 
+    
     // @TODO make this work with Vec2 for directional move input
     void UpdateRopeActions(float dt)
     {
@@ -861,11 +872,59 @@ public class Player : FFComponent
 
     }
     
-    private int OnRopeControllerUpdate(RopeControllerUpdate e)
+    private int OnRopeGraphicsUpdate(RopeController.ExternalGraphicsUpdate e)
     {
         Debug.Assert(OnRope.rope != null, "UpdateRope is being called when OnRope is null");
-        Debug.Assert(OnRope.rope == e.controller, "Updating on a rope which we don't have selected!!");
+        Debug.Assert(OnRope.rope == e.rope, "Updating on a rope which we don't have selected!!");
         
+        var rope = OnRope.rope;
+        FFPath ropePath = rope.GetPath();
+        float ropeLength = ropePath.PathLength;
+        ropePath.SetupPointData();
+        float mu = Mathf.Clamp(OnRope.timeOnRope / OnRope.transition.transitionTimeOnRope, 0.0f, 1.0f);
+        float sampleMu = OnRope.transition.grabTransitionCurve.Evaluate(mu);
+
+        // Get Data in roap
+        var distOnPath = Mathf.Clamp(ropeLength - (OnRope.distUpRope), 0.0f, ropeLength);
+        Vector3 ropeVecNorm = rope.SegmentVec(distOnPath).normalized;
+        var AngleFromDown = Quaternion.FromToRotation(Vector3.down, ropeVecNorm);
+        var angularRotationOnRope = Quaternion.AngleAxis(OnRope.angleOnRope, ropeVecNorm) * AngleFromDown;
+
+        // update Character Position
+        var positionOnRope = ropePath.PointAlongPath(distOnPath);
+        transform.position = PlayerPosOnRope(ropeVecNorm, sampleMu, distOnPath);
+
+        // update charater rotation
+        var vecToRope = positionOnRope - transform.position;
+        var forwardRot = Quaternion.LookRotation(vecToRope, -ropeVecNorm);
+        transform.rotation = Quaternion.Lerp(OnRope.grabRotion, forwardRot, sampleMu);
+        var characterRot = forwardRot * Quaternion.AngleAxis(OnRope.rotationPitch, transform.right) * Quaternion.AngleAxis(OnRope.rotationYaw, transform.forward);
+        Quaternion newRotation = Quaternion.Lerp(OnRope.grabRotion, characterRot, sampleMu);
+        transform.rotation = newRotation;
+
+        // update Snapping IK
+        if (ikSnap != null) // @TODO
+        {
+            ikSnap.rightHandPos = ropePath.PointAlongPath(distOnPath - OnRope.rightHandOffsetOnRope) + (angularRotationOnRope * OnRope.rightHandOffset);
+            ikSnap.leftHandPos = ropePath.PointAlongPath(distOnPath - OnRope.leftHandOffsetOnRope) + (angularRotationOnRope * OnRope.leftHandOffset);
+            ikSnap.rightFootPos = ropePath.PointAlongPath(distOnPath - OnRope.rightFootOffsetOnRope) + (angularRotationOnRope * OnRope.rightFootOffset);
+            ikSnap.leftFootPos = ropePath.PointAlongPath(distOnPath - OnRope.leftFootOffsetOnRope) + (angularRotationOnRope * OnRope.leftFootOffset);
+
+            ikSnap.rightHandRot = angularRotationOnRope * Quaternion.Euler(OnRope.rightHandRot);
+            ikSnap.leftHandRot = angularRotationOnRope * Quaternion.Euler(OnRope.leftHandRot);
+            ikSnap.rightFootRot = angularRotationOnRope * Quaternion.Euler(OnRope.rightFootRot);
+            ikSnap.leftFootRot = angularRotationOnRope * Quaternion.Euler(OnRope.leftFootRot);
+        }
+
+
+        return 0;
+    }
+
+    private int OnRopePhysicsUpdate(RopeController.ExternalPhysicsUpdate e)
+    {
+        Debug.Assert(OnRope.rope != null, "UpdateRope is being called when OnRope is null");
+        Debug.Assert(OnRope.rope == e.rope, "Updating on a rope which we don't have selected!!");
+
         // count time for mu on rope
         OnRope.timeOnRope += e.dt;
 
@@ -894,25 +953,11 @@ public class Player : FFComponent
         Quaternion newRotation = Quaternion.Lerp(OnRope.grabRotion, characterRot, sampleMu);
         transform.rotation = newRotation;
 
-
-        // update Snapping IK
-        if (ikSnap != null) // @TODO
-        {
-            ikSnap.rightHandPos = ropePath.PointAlongPath(distOnPath - OnRope.rightHandOffsetOnRope) + (angularRotationOnRope * OnRope.rightHandOffset);
-            ikSnap.leftHandPos = ropePath.PointAlongPath(distOnPath - OnRope.leftHandOffsetOnRope) + (angularRotationOnRope * OnRope.leftHandOffset);
-            ikSnap.rightFootPos = ropePath.PointAlongPath(distOnPath - OnRope.rightFootOffsetOnRope) + (angularRotationOnRope * OnRope.rightFootOffset);
-            ikSnap.leftFootPos = ropePath.PointAlongPath(distOnPath - OnRope.leftFootOffsetOnRope) + (angularRotationOnRope * OnRope.leftFootOffset);
-
-            ikSnap.rightHandRot = angularRotationOnRope * Quaternion.Euler(OnRope.rightHandRot);
-            ikSnap.leftHandRot = angularRotationOnRope * Quaternion.Euler(OnRope.leftHandRot);
-            ikSnap.rightFootRot = angularRotationOnRope * Quaternion.Euler(OnRope.rightFootRot);
-            ikSnap.leftFootRot = angularRotationOnRope * Quaternion.Euler(OnRope.leftFootRot);
-        }
-
-
-        return 0;
+        myBody.velocity = e.rope.VelocityAtDistUpRope(OnRope.distUpRope);
+        return 1;
     }
-    
+
+
     Vector3 PlayerPosOnRope(Vector3 ropeVecNorm, float sampleMu, float distOnPath)
     {
         // update Character Position
@@ -1130,11 +1175,17 @@ public class Player : FFComponent
             () => OnRope.rope.VelocityAtDistUpRope(OnRope.distUpRope),
             (v) => {} ));
 
-        // place ourselves onto the rope
-        RopeControllerUpdate rcu;
-        rcu.controller = rc;
-        rcu.dt = 0.0f;
-        OnRopeControllerUpdate(rcu);
+
+        // place ourselves onto the rope with correct velocity
+        RopeController.ExternalPhysicsUpdate epu;
+        epu.rope = rc;
+        epu.dt = 0.0f;
+        OnRopePhysicsUpdate(epu);
+        RopeController.ExternalGraphicsUpdate egu;
+        egu.rope = rc;
+        egu.dt = 0.0f;
+        OnRopeGraphicsUpdate(egu);
+
 
         // Set Camera Controller's bound b/c unity can't do crap!
         // we should always grab onto the rope with it forward facing
@@ -1143,13 +1194,15 @@ public class Player : FFComponent
         // finish any time slow effects
         timeScaleSeq.RunToEnd();
 
-        FFMessageBoard<RopeControllerUpdate>.Connect(OnRopeControllerUpdate, OnRope.rope.gameObject);
+        FFMessageBoard<RopeController.ExternalGraphicsUpdate>.Connect(OnRopeGraphicsUpdate, OnRope.rope.gameObject);
+        FFMessageBoard<RopeController.ExternalPhysicsUpdate>.Connect(OnRopePhysicsUpdate, OnRope.rope.gameObject);
         FFMessageBoard<RopeDestroy>.Connect(OnRopeDestroyed, OnRope.rope.gameObject);
 
         // wash movement details
         movement.details.groundTouches.Wash(false);
         movement.details.jumping.Wash(false);
     }
+
 
     private int OnRopeDestroyed(RopeDestroy e)
     {
@@ -1239,7 +1292,8 @@ public class Player : FFComponent
     {
         if (OnRope.rope != null)
         {
-            FFMessageBoard<RopeControllerUpdate>.Disconnect(OnRopeControllerUpdate, OnRope.rope.gameObject);
+            FFMessageBoard<RopeController.ExternalGraphicsUpdate>.Disconnect(OnRopeGraphicsUpdate, OnRope.rope.gameObject);
+            FFMessageBoard<RopeController.ExternalPhysicsUpdate>.Disconnect(OnRopePhysicsUpdate, OnRope.rope.gameObject);
             FFMessageBoard<RopeDestroy>.Disconnect(OnRopeDestroyed, OnRope.rope.gameObject);
         }
         OnRope.rope = null;
