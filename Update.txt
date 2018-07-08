@@ -1,0 +1,17 @@
+Hey, Micah! hope things are well with you.
+
+I just got done taking the script I was working on for an auto-rigging skeleton and modifying the joint loactions
+to match the Ethan body type. After the BBQ at cottage lake park today I will come back and do a down and dirty
+rig for Ethan that is built by me. I don't know why but Maya just will not let me import any type of FBX item
+from the past. I have done everything except uninstall and re-install the whole program.
+
+but apperently this was an issue that was cause from an update? atleast that is what is said on the autodesk
+forums and the maya reddit page.
+
+anyway I have a backup on github so that incase stuff doesn't work, I can still have something of site to fall
+ back on. I will also be adding the fbx versions of the skeleton and the headless mesh into
+"Hans' art assets" folder.
+
+anyway I gotta jet, I'll see you later.
+
+Hans.
