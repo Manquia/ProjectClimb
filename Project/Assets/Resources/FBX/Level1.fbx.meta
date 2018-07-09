@@ -88,6 +88,7 @@ ModelImporter:
     100164: Terrain3
     100166: Terrain4
     100168: Terrain5
+    100170: BlackBlock
     400000: //RootNode
     400002: pCube2
     400004: Terrain
@@ -173,6 +174,7 @@ ModelImporter:
     400164: Terrain3
     400166: Terrain4
     400168: Terrain5
+    400170: BlackBlock
     2100000: phong1
     2300000: pCube2
     2300002: Terrain
@@ -258,6 +260,7 @@ ModelImporter:
     2300162: Terrain3
     2300164: Terrain4
     2300166: Terrain5
+    2300168: BlackBlock
     3300000: pCube2
     3300002: Terrain
     3300004: Mountain
@@ -342,6 +345,7 @@ ModelImporter:
     3300162: Terrain3
     3300164: Terrain4
     3300166: Terrain5
+    3300168: BlackBlock
     4300000: Terrain
     4300002: pCube2
     4300004: Mountain
@@ -426,6 +430,7 @@ ModelImporter:
     4300162: AcidFlow1
     4300164: AcidFlow2
     4300166: AcidFlow3
+    4300168: BlackBlock
     6400000: pCube2
     6400002: Terrain
     6400004: Mountain
@@ -510,6 +515,7 @@ ModelImporter:
     6400162: Terrain3
     6400164: Terrain4
     6400166: Terrain5
+    6400168: BlackBlock
   externalObjects: {}
   materials:
     importMaterials: 1
