@@ -1,0 +1,460 @@
+fileFormatVersion: 2
+guid: 65ec323d616302e44b2fcd2b6a3f370d
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: AirLock
+    100002: AirLock 1
+    100004: AirLock 2
+    100006: AirLock 3
+    100008: //RootNode
+    100010: bottom
+    100012: Buttress
+    100014: Buttress 1
+    100016: Buttress 2
+    100018: Buttress 3
+    100020: Buttress1
+    100022: Buttress1 1
+    100024: Buttress1 2
+    100026: Buttress1 3
+    100028: Buttress2
+    100030: Buttress2 1
+    100032: Buttress2 2
+    100034: Buttress2 3
+    100036: Floor
+    100038: Floor 1
+    100040: Floor 2
+    100042: Floor 3
+    100044: Floor 4
+    100046: Glass
+    100048: Glass 1
+    100050: Glass 2
+    100052: Glass 3
+    100054: nurbsCircle1
+    100056: pCircle1
+    100058: pCylinder1
+    100060: pCylinder2
+    100062: Pillar
+    100064: Pillar 1
+    100066: Pillar 2
+    100068: Pillar 3
+    100070: Pillar2
+    100072: Pillar2 1
+    100074: Pillar2 2
+    100076: Pillar2 3
+    100078: Roof
+    100080: Roof 1
+    100082: Roof 2
+    100084: Roof 3
+    100086: Segment
+    100088: Segment1
+    100090: Segment2
+    100092: Segment3
+    100094: TowerLevel
+    100096: TowerLevel 1
+    100098: TowerLevel 2
+    100100: TowerLevel 3
+    100102: TowerLevel1
+    100104: TowerLevel1 1
+    100106: TowerLevel1 2
+    100108: TowerLevel1 3
+    100110: TowerLevel2
+    100112: TowerLevel2 1
+    100114: TowerLevel2 2
+    100116: TowerLevel2 3
+    100118: TowerLevel3
+    100120: TowerLevel3 1
+    100122: TowerLevel3 2
+    100124: TowerLevel3 3
+    100126: TowerLevel4
+    100128: TowerLevel4 1
+    100130: TowerLevel4 2
+    100132: TowerLevel4 3
+    100134: TowerLevel5
+    100136: TowerLevel5 1
+    100138: TowerLevel5 2
+    100140: TowerLevel5 3
+    100142: TowerLevel6
+    100144: TowerLevel6 1
+    100146: TowerLevel6 2
+    100148: TowerLevel6 3
+    100150: TowerPillar
+    100152: TowerPillar 1
+    100154: TowerPillar 2
+    100156: TowerPillar 3
+    400000: AirLock
+    400002: AirLock 1
+    400004: AirLock 2
+    400006: AirLock 3
+    400008: //RootNode
+    400010: bottom
+    400012: Buttress
+    400014: Buttress 1
+    400016: Buttress 2
+    400018: Buttress 3
+    400020: Buttress1
+    400022: Buttress1 1
+    400024: Buttress1 2
+    400026: Buttress1 3
+    400028: Buttress2
+    400030: Buttress2 1
+    400032: Buttress2 2
+    400034: Buttress2 3
+    400036: Floor
+    400038: Floor 1
+    400040: Floor 2
+    400042: Floor 3
+    400044: Floor 4
+    400046: Glass
+    400048: Glass 1
+    400050: Glass 2
+    400052: Glass 3
+    400054: nurbsCircle1
+    400056: pCircle1
+    400058: pCylinder1
+    400060: pCylinder2
+    400062: Pillar
+    400064: Pillar 1
+    400066: Pillar 2
+    400068: Pillar 3
+    400070: Pillar2
+    400072: Pillar2 1
+    400074: Pillar2 2
+    400076: Pillar2 3
+    400078: Roof
+    400080: Roof 1
+    400082: Roof 2
+    400084: Roof 3
+    400086: Segment
+    400088: Segment1
+    400090: Segment2
+    400092: Segment3
+    400094: TowerLevel
+    400096: TowerLevel 1
+    400098: TowerLevel 2
+    400100: TowerLevel 3
+    400102: TowerLevel1
+    400104: TowerLevel1 1
+    400106: TowerLevel1 2
+    400108: TowerLevel1 3
+    400110: TowerLevel2
+    400112: TowerLevel2 1
+    400114: TowerLevel2 2
+    400116: TowerLevel2 3
+    400118: TowerLevel3
+    400120: TowerLevel3 1
+    400122: TowerLevel3 2
+    400124: TowerLevel3 3
+    400126: TowerLevel4
+    400128: TowerLevel4 1
+    400130: TowerLevel4 2
+    400132: TowerLevel4 3
+    400134: TowerLevel5
+    400136: TowerLevel5 1
+    400138: TowerLevel5 2
+    400140: TowerLevel5 3
+    400142: TowerLevel6
+    400144: TowerLevel6 1
+    400146: TowerLevel6 2
+    400148: TowerLevel6 3
+    400150: TowerPillar
+    400152: TowerPillar 1
+    400154: TowerPillar 2
+    400156: TowerPillar 3
+    2000000: bottom
+    2100000: phong1
+    2300000: AirLock
+    2300002: AirLock 1
+    2300004: AirLock 2
+    2300006: AirLock 3
+    2300008: Buttress
+    2300010: Buttress 1
+    2300012: Buttress 2
+    2300014: Buttress 3
+    2300016: Buttress1
+    2300018: Buttress1 1
+    2300020: Buttress1 2
+    2300022: Buttress1 3
+    2300024: Buttress2
+    2300026: Buttress2 1
+    2300028: Buttress2 2
+    2300030: Buttress2 3
+    2300032: Floor 1
+    2300034: Floor 2
+    2300036: Floor 3
+    2300038: Floor 4
+    2300040: Glass
+    2300042: Glass 1
+    2300044: Glass 2
+    2300046: Glass 3
+    2300048: pCircle1
+    2300050: pCylinder1
+    2300052: pCylinder2
+    2300054: Pillar
+    2300056: Pillar 1
+    2300058: Pillar 2
+    2300060: Pillar 3
+    2300062: Pillar2
+    2300064: Pillar2 1
+    2300066: Pillar2 2
+    2300068: Pillar2 3
+    2300070: Roof
+    2300072: Roof 1
+    2300074: Roof 2
+    2300076: Roof 3
+    2300078: TowerLevel
+    2300080: TowerLevel 1
+    2300082: TowerLevel 2
+    2300084: TowerLevel 3
+    2300086: TowerLevel1
+    2300088: TowerLevel1 1
+    2300090: TowerLevel1 2
+    2300092: TowerLevel1 3
+    2300094: TowerLevel2
+    2300096: TowerLevel2 1
+    2300098: TowerLevel2 2
+    2300100: TowerLevel2 3
+    2300102: TowerLevel3
+    2300104: TowerLevel3 1
+    2300106: TowerLevel3 2
+    2300108: TowerLevel3 3
+    2300110: TowerLevel4
+    2300112: TowerLevel4 1
+    2300114: TowerLevel4 2
+    2300116: TowerLevel4 3
+    2300118: TowerLevel5
+    2300120: TowerLevel5 1
+    2300122: TowerLevel5 2
+    2300124: TowerLevel5 3
+    2300126: TowerLevel6
+    2300128: TowerLevel6 1
+    2300130: TowerLevel6 2
+    2300132: TowerLevel6 3
+    2300134: TowerPillar
+    2300136: TowerPillar 1
+    2300138: TowerPillar 2
+    2300140: TowerPillar 3
+    3300000: AirLock
+    3300002: AirLock 1
+    3300004: AirLock 2
+    3300006: AirLock 3
+    3300008: Buttress
+    3300010: Buttress 1
+    3300012: Buttress 2
+    3300014: Buttress 3
+    3300016: Buttress1
+    3300018: Buttress1 1
+    3300020: Buttress1 2
+    3300022: Buttress1 3
+    3300024: Buttress2
+    3300026: Buttress2 1
+    3300028: Buttress2 2
+    3300030: Buttress2 3
+    3300032: Floor 1
+    3300034: Floor 2
+    3300036: Floor 3
+    3300038: Floor 4
+    3300040: Glass
+    3300042: Glass 1
+    3300044: Glass 2
+    3300046: Glass 3
+    3300048: pCircle1
+    3300050: pCylinder1
+    3300052: pCylinder2
+    3300054: Pillar
+    3300056: Pillar 1
+    3300058: Pillar 2
+    3300060: Pillar 3
+    3300062: Pillar2
+    3300064: Pillar2 1
+    3300066: Pillar2 2
+    3300068: Pillar2 3
+    3300070: Roof
+    3300072: Roof 1
+    3300074: Roof 2
+    3300076: Roof 3
+    3300078: TowerLevel
+    3300080: TowerLevel 1
+    3300082: TowerLevel 2
+    3300084: TowerLevel 3
+    3300086: TowerLevel1
+    3300088: TowerLevel1 1
+    3300090: TowerLevel1 2
+    3300092: TowerLevel1 3
+    3300094: TowerLevel2
+    3300096: TowerLevel2 1
+    3300098: TowerLevel2 2
+    3300100: TowerLevel2 3
+    3300102: TowerLevel3
+    3300104: TowerLevel3 1
+    3300106: TowerLevel3 2
+    3300108: TowerLevel3 3
+    3300110: TowerLevel4
+    3300112: TowerLevel4 1
+    3300114: TowerLevel4 2
+    3300116: TowerLevel4 3
+    3300118: TowerLevel5
+    3300120: TowerLevel5 1
+    3300122: TowerLevel5 2
+    3300124: TowerLevel5 3
+    3300126: TowerLevel6
+    3300128: TowerLevel6 1
+    3300130: TowerLevel6 2
+    3300132: TowerLevel6 3
+    3300134: TowerPillar
+    3300136: TowerPillar 1
+    3300138: TowerPillar 2
+    3300140: TowerPillar 3
+    4300000: TowerLevel
+    4300002: Glass
+    4300004: Pillar2
+    4300006: Floor
+    4300008: AirLock
+    4300010: Pillar
+    4300012: Buttress
+    4300014: Buttress1
+    4300016: TowerPillar
+    4300018: Buttress2
+    4300020: TowerLevel1
+    4300022: TowerLevel2
+    4300024: TowerLevel3
+    4300026: TowerLevel4
+    4300028: TowerLevel5
+    4300030: Roof
+    4300032: TowerLevel6
+    4300034: TowerLevel
+    4300036: Glass
+    4300038: Pillar2
+    4300040: Floor
+    4300042: AirLock
+    4300044: Pillar
+    4300046: Buttress
+    4300048: Buttress1
+    4300050: TowerPillar
+    4300052: Buttress2
+    4300054: TowerLevel1
+    4300056: TowerLevel2
+    4300058: TowerLevel3
+    4300060: TowerLevel4
+    4300062: TowerLevel5
+    4300064: Roof
+    4300066: TowerLevel6
+    4300068: TowerLevel
+    4300070: Glass
+    4300072: Pillar2
+    4300074: Floor
+    4300076: AirLock
+    4300078: Pillar
+    4300080: Buttress
+    4300082: Buttress1
+    4300084: TowerPillar
+    4300086: Buttress2
+    4300088: TowerLevel1
+    4300090: TowerLevel2
+    4300092: TowerLevel3
+    4300094: TowerLevel4
+    4300096: TowerLevel5
+    4300098: Roof
+    4300100: TowerLevel6
+    4300102: TowerLevel
+    4300104: Glass
+    4300106: Pillar2
+    4300108: Floor
+    4300110: AirLock
+    4300112: Pillar
+    4300114: Buttress
+    4300116: Buttress1
+    4300118: TowerPillar
+    4300120: Buttress2
+    4300122: TowerLevel1
+    4300124: TowerLevel2
+    4300126: TowerLevel3
+    4300128: TowerLevel4
+    4300130: TowerLevel5
+    4300132: Roof
+    4300134: TowerLevel6
+    4300136: pCylinder1
+    4300138: pCircle1
+    4300140: pCylinder2
+    2186277476908879412: ImportLogs
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 100
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
