@@ -30,6 +30,8 @@ public class Player : FFComponent
     internal CapsuleCollider myCol;
     internal PlayerInteract myPlayerInteract;
 
+    public LayerMask interactMask;
+
 
     FFAction.ActionSequence oneShotSeq; // never call sync OR  ClearSequence on this one...
     FFAction.ActionSequence runEffectSeq;
@@ -220,6 +222,8 @@ public class Player : FFComponent
     [System.Serializable]
     public class GrappleGun
     {
+        public bool enabled;
+        public int ammo;
         public GameObject projectilePrefab;
         public float projectileSpeed;
 
@@ -432,7 +436,9 @@ public class Player : FFComponent
     // Called right after physics, before rendering. Use for Kinimatic player actions
     void Update()
     {
-        myPlayerInteract.UpdateInteract();
+        if (input.right.Recall(0).up())
+            myPlayerInteract.UpdateInteract();
+
         UpdateTimeScale();
         float dt = Time.deltaTime;
         UpdateInput();
@@ -618,8 +624,15 @@ public class Player : FFComponent
 
         // fire grableing gun when we aren't looking at anything
         if(input.mouseRight.Recall(0).down() &&
-           input.mouseLeft.Recall(0).pressed())
+           input.mouseLeft.Recall(0).pressed() &&
+           grappleGun.enabled)
         {
+            // ammo constraint
+            if(grappleGun.ammo < 1)
+            {
+                // @TODO
+            }
+
             var cameraTrans = cameraController.cameraTrans;
             // spawn the projectile with rope extending back to the player
             var grappleObj = Instantiate(grappleGun.projectilePrefab);

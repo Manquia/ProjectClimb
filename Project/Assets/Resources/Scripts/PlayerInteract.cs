@@ -38,15 +38,16 @@ public class PlayerInteract : MonoBehaviour
 
     public float maxInteractDistance = 10.0f;
     public float interactionRadius = 0.5f;
-
     public Camera interactorCamera;
 
     public Transform interactedObject;
     public Transform prevInteractedObject;
+    private Player player;
 
-	// Use this for initialization
-	void Start ()
+    // Use this for initialization
+    void Start ()
     {
+        player = GetComponent<Player>();
 	}
 	
 	// Update is called once per frame
@@ -107,21 +108,21 @@ public class PlayerInteract : MonoBehaviour
         //Debug.Log("PlayerInteract.SendLookAt");
         PlayerIsLookingAt.actor = interactorCamera.transform;
         PlayerIsLookingAt.target = go.transform;
-        FFMessageBoard<LookingAt>.SendAllConnected(PlayerIsLookingAt, go);
+        FFMessageBoard<LookingAt>.Send(PlayerIsLookingAt, go);
     }
     void SendLookAway(GameObject go)
     {
         //Debug.Log("PlayerInteract.SendLookAway");
         playerIsLookingAway.actor = interactorCamera.transform;
         playerIsLookingAway.target = go.transform;
-        FFMessageBoard<LookingAway>.SendAllConnected(playerIsLookingAway, go);
+        FFMessageBoard<LookingAway>.Send(playerIsLookingAway, go);
     }
     void SendLooking(GameObject go)
     {
         //Debug.Log("PlayerInteract.SendLooking");
         playerIsLooking.actor = interactorCamera.transform;
         playerIsLooking.target = go.transform;
-        FFMessageBoard<Looking>.SendAllConnected(playerIsLooking, go);
+        FFMessageBoard<Looking>.Send(playerIsLooking, go);
     }
     void SendUse(GameObject go)
     {
@@ -133,10 +134,18 @@ public class PlayerInteract : MonoBehaviour
 
     bool LookRaycast(out RaycastHit hit)
     {
+        var startPos = interactorCamera.transform.position;
+        var forward = interactorCamera.transform.forward;
+
+        // SphereCast seems to want to do weird things with its "starting"
+        // position so we move it back a bit
         return Physics.SphereCast(
-            interactorCamera.transform.position,
+            startPos + (-forward * interactionRadius*2),
             interactionRadius,
-            interactorCamera.transform.forward,
-            out hit, maxInteractDistance);
+            forward,
+            out hit,
+            maxInteractDistance,
+            player.interactMask);
+
     }
 }
