@@ -1,0 +1,1321 @@
+fileFormatVersion: 2
+guid: ff02320c2ed40614894d93e534e46da5
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: AirLock1
+    100002: AirLock1 1
+    100004: AirLock1 2
+    100006: AirLock1 3
+    100008: //RootNode
+    100010: Buttress
+    100012: Buttress 1
+    100014: Buttress 2
+    100016: Buttress 3
+    100018: Buttress2
+    100020: Buttress2 1
+    100022: Buttress2 2
+    100024: Buttress2 3
+    100026: Buttress3
+    100028: Buttress3 1
+    100030: Buttress3 2
+    100032: Buttress3 3
+    100034: Buttress4
+    100036: Buttress4 1
+    100038: Buttress4 2
+    100040: Buttress4 3
+    100042: enterence
+    100044: enterence 1
+    100046: enterence 2
+    100048: enterence 3
+    100050: enterence1
+    100052: enterence1 1
+    100054: enterence1 2
+    100056: enterence1 3
+    100058: enterence2
+    100060: enterence2 1
+    100062: enterence2 2
+    100064: enterence2 3
+    100066: Floor 1
+    100068: Floor 2
+    100070: Floor 3
+    100072: Floor 4
+    100074: Glass
+    100076: Glass 1
+    100078: Glass 2
+    100080: Glass 3
+    100082: Glass1
+    100084: Glass1 1
+    100086: Glass1 2
+    100088: Glass1 3
+    100090: GlassShlevae
+    100092: GlassShlevae 1
+    100094: GlassShlevae 2
+    100096: GlassShlevae 3
+    100098: OuterCross
+    100100: OuterCross 1
+    100102: OuterCross 2
+    100104: OuterCross 3
+    100106: OuterCross1
+    100108: OuterCross1 1
+    100110: OuterCross1 2
+    100112: OuterCross1 3
+    100114: pCube1
+    100116: pCube1 1
+    100118: pCube1 2
+    100120: pCube1 3
+    100122: Pillar
+    100124: Pillar 1
+    100126: Pillar 2
+    100128: Pillar 3
+    100130: Pillar2
+    100132: Pillar2 1
+    100134: Pillar2 2
+    100136: Pillar2 3
+    100138: Pillar3
+    100140: Pillar3 1
+    100142: Pillar3 2
+    100144: Pillar3 3
+    100146: Pillar4
+    100148: Pillar4 1
+    100150: Pillar4 2
+    100152: Pillar4 3
+    100154: Roof
+    100156: Roof 1
+    100158: Roof 2
+    100160: Roof 3
+    100162: Segment
+    100164: Segment1
+    100166: Segment2
+    100168: Segment3
+    100170: Spike
+    100172: Spike 1
+    100174: Spike 2
+    100176: Spike 3
+    100178: Spike1
+    100180: Spike1 1
+    100182: Spike1 2
+    100184: Spike1 3
+    100186: Spike1 4
+    100188: Spike1 5
+    100190: Spike1 6
+    100192: Spike1 7
+    100194: Spike10
+    100196: Spike10 1
+    100198: Spike10 10
+    100200: Spike10 11
+    100202: Spike10 2
+    100204: Spike10 3
+    100206: Spike10 4
+    100208: Spike10 5
+    100210: Spike10 6
+    100212: Spike10 7
+    100214: Spike10 8
+    100216: Spike10 9
+    100218: Spike2
+    100220: Spike2 1
+    100222: Spike2 2
+    100224: Spike2 3
+    100226: Spike2 4
+    100228: Spike2 5
+    100230: Spike2 6
+    100232: Spike2 7
+    100234: Spike3
+    100236: Spike3 1
+    100238: Spike3 2
+    100240: Spike3 3
+    100242: Spike4
+    100244: Spike4 1
+    100246: Spike4 10
+    100248: Spike4 11
+    100250: Spike4 2
+    100252: Spike4 3
+    100254: Spike4 4
+    100256: Spike4 5
+    100258: Spike4 6
+    100260: Spike4 7
+    100262: Spike4 8
+    100264: Spike4 9
+    100266: Spike5
+    100268: Spike5 1
+    100270: Spike5 10
+    100272: Spike5 11
+    100274: Spike5 2
+    100276: Spike5 3
+    100278: Spike5 4
+    100280: Spike5 5
+    100282: Spike5 6
+    100284: Spike5 7
+    100286: Spike5 8
+    100288: Spike5 9
+    100290: Spike6
+    100292: Spike6 1
+    100294: Spike6 10
+    100296: Spike6 11
+    100298: Spike6 2
+    100300: Spike6 3
+    100302: Spike6 4
+    100304: Spike6 5
+    100306: Spike6 6
+    100308: Spike6 7
+    100310: Spike6 8
+    100312: Spike6 9
+    100314: Spike7
+    100316: Spike7 1
+    100318: Spike7 10
+    100320: Spike7 11
+    100322: Spike7 2
+    100324: Spike7 3
+    100326: Spike7 4
+    100328: Spike7 5
+    100330: Spike7 6
+    100332: Spike7 7
+    100334: Spike7 8
+    100336: Spike7 9
+    100338: Spike8
+    100340: Spike8 1
+    100342: Spike8 10
+    100344: Spike8 11
+    100346: Spike8 2
+    100348: Spike8 3
+    100350: Spike8 4
+    100352: Spike8 5
+    100354: Spike8 6
+    100356: Spike8 7
+    100358: Spike8 8
+    100360: Spike8 9
+    100362: Spike9
+    100364: Spike9 1
+    100366: Spike9 10
+    100368: Spike9 11
+    100370: Spike9 2
+    100372: Spike9 3
+    100374: Spike9 4
+    100376: Spike9 5
+    100378: Spike9 6
+    100380: Spike9 7
+    100382: Spike9 8
+    100384: Spike9 9
+    100386: TopFigure
+    100388: TopFigure 1
+    100390: TopFigure 2
+    100392: TopFigure 3
+    100394: TopFigure1
+    100396: TopFigure1 1
+    100398: TopFigure1 2
+    100400: TopFigure1 3
+    100402: TopFigure2
+    100404: TopFigure2 1
+    100406: TopFigure2 2
+    100408: TopFigure2 3
+    100410: TowerLevel
+    100412: TowerLevel 1
+    100414: TowerLevel 2
+    100416: TowerLevel 3
+    100418: TowerLevel1
+    100420: TowerLevel1 1
+    100422: TowerLevel1 2
+    100424: TowerLevel1 3
+    100426: TowerLevel2
+    100428: TowerLevel2 1
+    100430: TowerLevel2 2
+    100432: TowerLevel2 3
+    100434: TowerLevel3
+    100436: TowerLevel3 1
+    100438: TowerLevel3 2
+    100440: TowerLevel3 3
+    100442: TowerLevel4
+    100444: TowerLevel4 1
+    100446: TowerLevel4 2
+    100448: TowerLevel4 3
+    100450: TowerLevel5
+    100452: TowerLevel5 1
+    100454: TowerLevel5 2
+    100456: TowerLevel5 3
+    100458: TowerLevel6
+    100460: TowerLevel6 1
+    100462: TowerLevel6 2
+    100464: TowerLevel6 3
+    100466: TowerLevel7
+    100468: TowerLevel7 1
+    100470: TowerLevel7 2
+    100472: TowerLevel7 3
+    100474: TowerPillar
+    100476: TowerPillar 1
+    100478: TowerPillar 2
+    100480: TowerPillar 3
+    100482: enterence 4
+    100484: enterence 5
+    100486: enterence 6
+    100488: transform1
+    100490: transform1 1
+    100492: transform1 2
+    100494: transform1 3
+    100496: enterence3
+    100498: enterence3 1
+    100500: enterence3 2
+    100502: enterence3 3
+    400000: AirLock1
+    400002: AirLock1 1
+    400004: AirLock1 2
+    400006: AirLock1 3
+    400008: //RootNode
+    400010: Buttress
+    400012: Buttress 1
+    400014: Buttress 2
+    400016: Buttress 3
+    400018: Buttress2
+    400020: Buttress2 1
+    400022: Buttress2 2
+    400024: Buttress2 3
+    400026: Buttress3
+    400028: Buttress3 1
+    400030: Buttress3 2
+    400032: Buttress3 3
+    400034: Buttress4
+    400036: Buttress4 1
+    400038: Buttress4 2
+    400040: Buttress4 3
+    400042: enterence
+    400044: enterence 1
+    400046: enterence 2
+    400048: enterence 3
+    400050: enterence1
+    400052: enterence1 1
+    400054: enterence1 2
+    400056: enterence1 3
+    400058: enterence2
+    400060: enterence2 1
+    400062: enterence2 2
+    400064: enterence2 3
+    400066: Floor 1
+    400068: Floor 2
+    400070: Floor 3
+    400072: Floor 4
+    400074: Glass
+    400076: Glass 1
+    400078: Glass 2
+    400080: Glass 3
+    400082: Glass1
+    400084: Glass1 1
+    400086: Glass1 2
+    400088: Glass1 3
+    400090: GlassShlevae
+    400092: GlassShlevae 1
+    400094: GlassShlevae 2
+    400096: GlassShlevae 3
+    400098: OuterCross
+    400100: OuterCross 1
+    400102: OuterCross 2
+    400104: OuterCross 3
+    400106: OuterCross1
+    400108: OuterCross1 1
+    400110: OuterCross1 2
+    400112: OuterCross1 3
+    400114: pCube1
+    400116: pCube1 1
+    400118: pCube1 2
+    400120: pCube1 3
+    400122: Pillar
+    400124: Pillar 1
+    400126: Pillar 2
+    400128: Pillar 3
+    400130: Pillar2
+    400132: Pillar2 1
+    400134: Pillar2 2
+    400136: Pillar2 3
+    400138: Pillar3
+    400140: Pillar3 1
+    400142: Pillar3 2
+    400144: Pillar3 3
+    400146: Pillar4
+    400148: Pillar4 1
+    400150: Pillar4 2
+    400152: Pillar4 3
+    400154: Roof
+    400156: Roof 1
+    400158: Roof 2
+    400160: Roof 3
+    400162: Segment
+    400164: Segment1
+    400166: Segment2
+    400168: Segment3
+    400170: Spike
+    400172: Spike 1
+    400174: Spike 2
+    400176: Spike 3
+    400178: Spike1
+    400180: Spike1 1
+    400182: Spike1 2
+    400184: Spike1 3
+    400186: Spike1 4
+    400188: Spike1 5
+    400190: Spike1 6
+    400192: Spike1 7
+    400194: Spike10
+    400196: Spike10 1
+    400198: Spike10 10
+    400200: Spike10 11
+    400202: Spike10 2
+    400204: Spike10 3
+    400206: Spike10 4
+    400208: Spike10 5
+    400210: Spike10 6
+    400212: Spike10 7
+    400214: Spike10 8
+    400216: Spike10 9
+    400218: Spike2
+    400220: Spike2 1
+    400222: Spike2 2
+    400224: Spike2 3
+    400226: Spike2 4
+    400228: Spike2 5
+    400230: Spike2 6
+    400232: Spike2 7
+    400234: Spike3
+    400236: Spike3 1
+    400238: Spike3 2
+    400240: Spike3 3
+    400242: Spike4
+    400244: Spike4 1
+    400246: Spike4 10
+    400248: Spike4 11
+    400250: Spike4 2
+    400252: Spike4 3
+    400254: Spike4 4
+    400256: Spike4 5
+    400258: Spike4 6
+    400260: Spike4 7
+    400262: Spike4 8
+    400264: Spike4 9
+    400266: Spike5
+    400268: Spike5 1
+    400270: Spike5 10
+    400272: Spike5 11
+    400274: Spike5 2
+    400276: Spike5 3
+    400278: Spike5 4
+    400280: Spike5 5
+    400282: Spike5 6
+    400284: Spike5 7
+    400286: Spike5 8
+    400288: Spike5 9
+    400290: Spike6
+    400292: Spike6 1
+    400294: Spike6 10
+    400296: Spike6 11
+    400298: Spike6 2
+    400300: Spike6 3
+    400302: Spike6 4
+    400304: Spike6 5
+    400306: Spike6 6
+    400308: Spike6 7
+    400310: Spike6 8
+    400312: Spike6 9
+    400314: Spike7
+    400316: Spike7 1
+    400318: Spike7 10
+    400320: Spike7 11
+    400322: Spike7 2
+    400324: Spike7 3
+    400326: Spike7 4
+    400328: Spike7 5
+    400330: Spike7 6
+    400332: Spike7 7
+    400334: Spike7 8
+    400336: Spike7 9
+    400338: Spike8
+    400340: Spike8 1
+    400342: Spike8 10
+    400344: Spike8 11
+    400346: Spike8 2
+    400348: Spike8 3
+    400350: Spike8 4
+    400352: Spike8 5
+    400354: Spike8 6
+    400356: Spike8 7
+    400358: Spike8 8
+    400360: Spike8 9
+    400362: Spike9
+    400364: Spike9 1
+    400366: Spike9 10
+    400368: Spike9 11
+    400370: Spike9 2
+    400372: Spike9 3
+    400374: Spike9 4
+    400376: Spike9 5
+    400378: Spike9 6
+    400380: Spike9 7
+    400382: Spike9 8
+    400384: Spike9 9
+    400386: TopFigure
+    400388: TopFigure 1
+    400390: TopFigure 2
+    400392: TopFigure 3
+    400394: TopFigure1
+    400396: TopFigure1 1
+    400398: TopFigure1 2
+    400400: TopFigure1 3
+    400402: TopFigure2
+    400404: TopFigure2 1
+    400406: TopFigure2 2
+    400408: TopFigure2 3
+    400410: TowerLevel
+    400412: TowerLevel 1
+    400414: TowerLevel 2
+    400416: TowerLevel 3
+    400418: TowerLevel1
+    400420: TowerLevel1 1
+    400422: TowerLevel1 2
+    400424: TowerLevel1 3
+    400426: TowerLevel2
+    400428: TowerLevel2 1
+    400430: TowerLevel2 2
+    400432: TowerLevel2 3
+    400434: TowerLevel3
+    400436: TowerLevel3 1
+    400438: TowerLevel3 2
+    400440: TowerLevel3 3
+    400442: TowerLevel4
+    400444: TowerLevel4 1
+    400446: TowerLevel4 2
+    400448: TowerLevel4 3
+    400450: TowerLevel5
+    400452: TowerLevel5 1
+    400454: TowerLevel5 2
+    400456: TowerLevel5 3
+    400458: TowerLevel6
+    400460: TowerLevel6 1
+    400462: TowerLevel6 2
+    400464: TowerLevel6 3
+    400466: TowerLevel7
+    400468: TowerLevel7 1
+    400470: TowerLevel7 2
+    400472: TowerLevel7 3
+    400474: TowerPillar
+    400476: TowerPillar 1
+    400478: TowerPillar 2
+    400480: TowerPillar 3
+    400482: enterence 4
+    400484: enterence 5
+    400486: enterence 6
+    400488: transform1
+    400490: transform1 1
+    400492: transform1 2
+    400494: transform1 3
+    400496: enterence3
+    400498: enterence3 1
+    400500: enterence3 2
+    400502: enterence3 3
+    2100000: phong1
+    2300000: AirLock1
+    2300002: AirLock1 1
+    2300004: AirLock1 2
+    2300006: AirLock1 3
+    2300008: Buttress
+    2300010: Buttress 1
+    2300012: Buttress 2
+    2300014: Buttress 3
+    2300016: Buttress2
+    2300018: Buttress2 1
+    2300020: Buttress2 2
+    2300022: Buttress2 3
+    2300024: Buttress3
+    2300026: Buttress3 1
+    2300028: Buttress3 2
+    2300030: Buttress3 3
+    2300032: Buttress4
+    2300034: Buttress4 1
+    2300036: Buttress4 2
+    2300038: Buttress4 3
+    2300040: enterence
+    2300042: enterence 1
+    2300044: enterence 2
+    2300046: enterence 3
+    2300048: enterence1
+    2300050: enterence1 1
+    2300052: enterence1 2
+    2300054: enterence1 3
+    2300056: enterence2
+    2300058: enterence2 1
+    2300060: enterence2 2
+    2300062: enterence2 3
+    2300064: Floor 1
+    2300066: Floor 2
+    2300068: Floor 3
+    2300070: Floor 4
+    2300072: Glass
+    2300074: Glass 1
+    2300076: Glass 2
+    2300078: Glass 3
+    2300080: Glass1
+    2300082: Glass1 1
+    2300084: Glass1 2
+    2300086: Glass1 3
+    2300088: GlassShlevae
+    2300090: GlassShlevae 1
+    2300092: GlassShlevae 2
+    2300094: GlassShlevae 3
+    2300096: OuterCross
+    2300098: OuterCross 1
+    2300100: OuterCross 2
+    2300102: OuterCross 3
+    2300104: OuterCross1
+    2300106: OuterCross1 1
+    2300108: OuterCross1 2
+    2300110: OuterCross1 3
+    2300112: pCube1
+    2300114: pCube1 1
+    2300116: pCube1 2
+    2300118: pCube1 3
+    2300120: Pillar
+    2300122: Pillar 1
+    2300124: Pillar 2
+    2300126: Pillar 3
+    2300128: Pillar2
+    2300130: Pillar2 1
+    2300132: Pillar2 2
+    2300134: Pillar2 3
+    2300136: Pillar3
+    2300138: Pillar3 1
+    2300140: Pillar3 2
+    2300142: Pillar3 3
+    2300144: Pillar4
+    2300146: Pillar4 1
+    2300148: Pillar4 2
+    2300150: Pillar4 3
+    2300152: Roof
+    2300154: Roof 1
+    2300156: Roof 2
+    2300158: Roof 3
+    2300160: Spike
+    2300162: Spike 1
+    2300164: Spike 2
+    2300166: Spike 3
+    2300168: Spike1
+    2300170: Spike1 1
+    2300172: Spike1 2
+    2300174: Spike1 3
+    2300176: Spike1 4
+    2300178: Spike1 5
+    2300180: Spike1 6
+    2300182: Spike1 7
+    2300184: Spike10
+    2300186: Spike10 1
+    2300188: Spike10 10
+    2300190: Spike10 11
+    2300192: Spike10 2
+    2300194: Spike10 3
+    2300196: Spike10 4
+    2300198: Spike10 5
+    2300200: Spike10 6
+    2300202: Spike10 7
+    2300204: Spike10 8
+    2300206: Spike10 9
+    2300208: Spike2
+    2300210: Spike2 1
+    2300212: Spike2 2
+    2300214: Spike2 3
+    2300216: Spike2 4
+    2300218: Spike2 5
+    2300220: Spike2 6
+    2300222: Spike2 7
+    2300224: Spike3
+    2300226: Spike3 1
+    2300228: Spike3 2
+    2300230: Spike3 3
+    2300232: Spike4
+    2300234: Spike4 1
+    2300236: Spike4 10
+    2300238: Spike4 11
+    2300240: Spike4 2
+    2300242: Spike4 3
+    2300244: Spike4 4
+    2300246: Spike4 5
+    2300248: Spike4 6
+    2300250: Spike4 7
+    2300252: Spike4 8
+    2300254: Spike4 9
+    2300256: Spike5
+    2300258: Spike5 1
+    2300260: Spike5 10
+    2300262: Spike5 11
+    2300264: Spike5 2
+    2300266: Spike5 3
+    2300268: Spike5 4
+    2300270: Spike5 5
+    2300272: Spike5 6
+    2300274: Spike5 7
+    2300276: Spike5 8
+    2300278: Spike5 9
+    2300280: Spike6
+    2300282: Spike6 1
+    2300284: Spike6 10
+    2300286: Spike6 11
+    2300288: Spike6 2
+    2300290: Spike6 3
+    2300292: Spike6 4
+    2300294: Spike6 5
+    2300296: Spike6 6
+    2300298: Spike6 7
+    2300300: Spike6 8
+    2300302: Spike6 9
+    2300304: Spike7
+    2300306: Spike7 1
+    2300308: Spike7 10
+    2300310: Spike7 11
+    2300312: Spike7 2
+    2300314: Spike7 3
+    2300316: Spike7 4
+    2300318: Spike7 5
+    2300320: Spike7 6
+    2300322: Spike7 7
+    2300324: Spike7 8
+    2300326: Spike7 9
+    2300328: Spike8
+    2300330: Spike8 1
+    2300332: Spike8 10
+    2300334: Spike8 11
+    2300336: Spike8 2
+    2300338: Spike8 3
+    2300340: Spike8 4
+    2300342: Spike8 5
+    2300344: Spike8 6
+    2300346: Spike8 7
+    2300348: Spike8 8
+    2300350: Spike8 9
+    2300352: Spike9
+    2300354: Spike9 1
+    2300356: Spike9 10
+    2300358: Spike9 11
+    2300360: Spike9 2
+    2300362: Spike9 3
+    2300364: Spike9 4
+    2300366: Spike9 5
+    2300368: Spike9 6
+    2300370: Spike9 7
+    2300372: Spike9 8
+    2300374: Spike9 9
+    2300376: TopFigure
+    2300378: TopFigure 1
+    2300380: TopFigure 2
+    2300382: TopFigure 3
+    2300384: TopFigure1
+    2300386: TopFigure1 1
+    2300388: TopFigure1 2
+    2300390: TopFigure1 3
+    2300392: TopFigure2
+    2300394: TopFigure2 1
+    2300396: TopFigure2 2
+    2300398: TopFigure2 3
+    2300400: TowerLevel
+    2300402: TowerLevel 1
+    2300404: TowerLevel 2
+    2300406: TowerLevel 3
+    2300408: TowerLevel1
+    2300410: TowerLevel1 1
+    2300412: TowerLevel1 2
+    2300414: TowerLevel1 3
+    2300416: TowerLevel2
+    2300418: TowerLevel2 1
+    2300420: TowerLevel2 2
+    2300422: TowerLevel2 3
+    2300424: TowerLevel3
+    2300426: TowerLevel3 1
+    2300428: TowerLevel3 2
+    2300430: TowerLevel3 3
+    2300432: TowerLevel4
+    2300434: TowerLevel4 1
+    2300436: TowerLevel4 2
+    2300438: TowerLevel4 3
+    2300440: TowerLevel5
+    2300442: TowerLevel5 1
+    2300444: TowerLevel5 2
+    2300446: TowerLevel5 3
+    2300448: TowerLevel6
+    2300450: TowerLevel6 1
+    2300452: TowerLevel6 2
+    2300454: TowerLevel6 3
+    2300456: TowerLevel7
+    2300458: TowerLevel7 1
+    2300460: TowerLevel7 2
+    2300462: TowerLevel7 3
+    2300464: TowerPillar
+    2300466: TowerPillar 1
+    2300468: TowerPillar 2
+    2300470: TowerPillar 3
+    2300472: enterence 4
+    2300474: enterence 5
+    2300476: enterence 6
+    2300478: enterence3
+    2300480: enterence3 1
+    2300482: enterence3 2
+    2300484: enterence3 3
+    3300000: AirLock1
+    3300002: AirLock1 1
+    3300004: AirLock1 2
+    3300006: AirLock1 3
+    3300008: Buttress
+    3300010: Buttress 1
+    3300012: Buttress 2
+    3300014: Buttress 3
+    3300016: Buttress2
+    3300018: Buttress2 1
+    3300020: Buttress2 2
+    3300022: Buttress2 3
+    3300024: Buttress3
+    3300026: Buttress3 1
+    3300028: Buttress3 2
+    3300030: Buttress3 3
+    3300032: Buttress4
+    3300034: Buttress4 1
+    3300036: Buttress4 2
+    3300038: Buttress4 3
+    3300040: enterence
+    3300042: enterence 1
+    3300044: enterence 2
+    3300046: enterence 3
+    3300048: enterence1
+    3300050: enterence1 1
+    3300052: enterence1 2
+    3300054: enterence1 3
+    3300056: enterence2
+    3300058: enterence2 1
+    3300060: enterence2 2
+    3300062: enterence2 3
+    3300064: Floor 1
+    3300066: Floor 2
+    3300068: Floor 3
+    3300070: Floor 4
+    3300072: Glass
+    3300074: Glass 1
+    3300076: Glass 2
+    3300078: Glass 3
+    3300080: Glass1
+    3300082: Glass1 1
+    3300084: Glass1 2
+    3300086: Glass1 3
+    3300088: GlassShlevae
+    3300090: GlassShlevae 1
+    3300092: GlassShlevae 2
+    3300094: GlassShlevae 3
+    3300096: OuterCross
+    3300098: OuterCross 1
+    3300100: OuterCross 2
+    3300102: OuterCross 3
+    3300104: OuterCross1
+    3300106: OuterCross1 1
+    3300108: OuterCross1 2
+    3300110: OuterCross1 3
+    3300112: pCube1
+    3300114: pCube1 1
+    3300116: pCube1 2
+    3300118: pCube1 3
+    3300120: Pillar
+    3300122: Pillar 1
+    3300124: Pillar 2
+    3300126: Pillar 3
+    3300128: Pillar2
+    3300130: Pillar2 1
+    3300132: Pillar2 2
+    3300134: Pillar2 3
+    3300136: Pillar3
+    3300138: Pillar3 1
+    3300140: Pillar3 2
+    3300142: Pillar3 3
+    3300144: Pillar4
+    3300146: Pillar4 1
+    3300148: Pillar4 2
+    3300150: Pillar4 3
+    3300152: Roof
+    3300154: Roof 1
+    3300156: Roof 2
+    3300158: Roof 3
+    3300160: Spike
+    3300162: Spike 1
+    3300164: Spike 2
+    3300166: Spike 3
+    3300168: Spike1
+    3300170: Spike1 1
+    3300172: Spike1 2
+    3300174: Spike1 3
+    3300176: Spike1 4
+    3300178: Spike1 5
+    3300180: Spike1 6
+    3300182: Spike1 7
+    3300184: Spike10
+    3300186: Spike10 1
+    3300188: Spike10 10
+    3300190: Spike10 11
+    3300192: Spike10 2
+    3300194: Spike10 3
+    3300196: Spike10 4
+    3300198: Spike10 5
+    3300200: Spike10 6
+    3300202: Spike10 7
+    3300204: Spike10 8
+    3300206: Spike10 9
+    3300208: Spike2
+    3300210: Spike2 1
+    3300212: Spike2 2
+    3300214: Spike2 3
+    3300216: Spike2 4
+    3300218: Spike2 5
+    3300220: Spike2 6
+    3300222: Spike2 7
+    3300224: Spike3
+    3300226: Spike3 1
+    3300228: Spike3 2
+    3300230: Spike3 3
+    3300232: Spike4
+    3300234: Spike4 1
+    3300236: Spike4 10
+    3300238: Spike4 11
+    3300240: Spike4 2
+    3300242: Spike4 3
+    3300244: Spike4 4
+    3300246: Spike4 5
+    3300248: Spike4 6
+    3300250: Spike4 7
+    3300252: Spike4 8
+    3300254: Spike4 9
+    3300256: Spike5
+    3300258: Spike5 1
+    3300260: Spike5 10
+    3300262: Spike5 11
+    3300264: Spike5 2
+    3300266: Spike5 3
+    3300268: Spike5 4
+    3300270: Spike5 5
+    3300272: Spike5 6
+    3300274: Spike5 7
+    3300276: Spike5 8
+    3300278: Spike5 9
+    3300280: Spike6
+    3300282: Spike6 1
+    3300284: Spike6 10
+    3300286: Spike6 11
+    3300288: Spike6 2
+    3300290: Spike6 3
+    3300292: Spike6 4
+    3300294: Spike6 5
+    3300296: Spike6 6
+    3300298: Spike6 7
+    3300300: Spike6 8
+    3300302: Spike6 9
+    3300304: Spike7
+    3300306: Spike7 1
+    3300308: Spike7 10
+    3300310: Spike7 11
+    3300312: Spike7 2
+    3300314: Spike7 3
+    3300316: Spike7 4
+    3300318: Spike7 5
+    3300320: Spike7 6
+    3300322: Spike7 7
+    3300324: Spike7 8
+    3300326: Spike7 9
+    3300328: Spike8
+    3300330: Spike8 1
+    3300332: Spike8 10
+    3300334: Spike8 11
+    3300336: Spike8 2
+    3300338: Spike8 3
+    3300340: Spike8 4
+    3300342: Spike8 5
+    3300344: Spike8 6
+    3300346: Spike8 7
+    3300348: Spike8 8
+    3300350: Spike8 9
+    3300352: Spike9
+    3300354: Spike9 1
+    3300356: Spike9 10
+    3300358: Spike9 11
+    3300360: Spike9 2
+    3300362: Spike9 3
+    3300364: Spike9 4
+    3300366: Spike9 5
+    3300368: Spike9 6
+    3300370: Spike9 7
+    3300372: Spike9 8
+    3300374: Spike9 9
+    3300376: TopFigure
+    3300378: TopFigure 1
+    3300380: TopFigure 2
+    3300382: TopFigure 3
+    3300384: TopFigure1
+    3300386: TopFigure1 1
+    3300388: TopFigure1 2
+    3300390: TopFigure1 3
+    3300392: TopFigure2
+    3300394: TopFigure2 1
+    3300396: TopFigure2 2
+    3300398: TopFigure2 3
+    3300400: TowerLevel
+    3300402: TowerLevel 1
+    3300404: TowerLevel 2
+    3300406: TowerLevel 3
+    3300408: TowerLevel1
+    3300410: TowerLevel1 1
+    3300412: TowerLevel1 2
+    3300414: TowerLevel1 3
+    3300416: TowerLevel2
+    3300418: TowerLevel2 1
+    3300420: TowerLevel2 2
+    3300422: TowerLevel2 3
+    3300424: TowerLevel3
+    3300426: TowerLevel3 1
+    3300428: TowerLevel3 2
+    3300430: TowerLevel3 3
+    3300432: TowerLevel4
+    3300434: TowerLevel4 1
+    3300436: TowerLevel4 2
+    3300438: TowerLevel4 3
+    3300440: TowerLevel5
+    3300442: TowerLevel5 1
+    3300444: TowerLevel5 2
+    3300446: TowerLevel5 3
+    3300448: TowerLevel6
+    3300450: TowerLevel6 1
+    3300452: TowerLevel6 2
+    3300454: TowerLevel6 3
+    3300456: TowerLevel7
+    3300458: TowerLevel7 1
+    3300460: TowerLevel7 2
+    3300462: TowerLevel7 3
+    3300464: TowerPillar
+    3300466: TowerPillar 1
+    3300468: TowerPillar 2
+    3300470: TowerPillar 3
+    3300472: enterence 4
+    3300474: enterence 5
+    3300476: enterence 6
+    3300478: enterence3
+    3300480: enterence3 1
+    3300482: enterence3 2
+    3300484: enterence3 3
+    4300000: GlassShlevae
+    4300002: Pillar2
+    4300004: OuterCross
+    4300006: Floor
+    4300008: Pillar
+    4300010: Buttress
+    4300012: TowerPillar
+    4300014: Buttress2
+    4300016: pCube1
+    4300018: Roof
+    4300020: TowerLevel
+    4300022: TowerLevel1
+    4300024: TowerLevel2
+    4300026: TowerLevel3
+    4300028: TowerLevel4
+    4300030: TowerLevel5
+    4300032: TowerLevel6
+    4300034: TowerLevel7
+    4300036: enterence
+    4300038: Glass
+    4300040: AirLock1
+    4300042: Buttress3
+    4300044: Glass1
+    4300046: Pillar3
+    4300048: Pillar4
+    4300050: Buttress4
+    4300052: enterence1
+    4300054: enterence2
+    4300056: OuterCross1
+    4300058: TopFigure
+    4300060: Spike
+    4300062: Spike1
+    4300064: Spike2
+    4300066: Spike3
+    4300068: Spike4
+    4300070: Spike5
+    4300072: Spike6
+    4300074: Spike7
+    4300076: Spike8
+    4300078: Spike9
+    4300080: Spike10
+    4300082: TopFigure1
+    4300084: Spike1
+    4300086: Spike2
+    4300088: Spike4
+    4300090: Spike5
+    4300092: Spike6
+    4300094: Spike7
+    4300096: Spike8
+    4300098: Spike9
+    4300100: Spike10
+    4300102: TopFigure2
+    4300104: Spike4
+    4300106: Spike5
+    4300108: Spike6
+    4300110: Spike7
+    4300112: Spike8
+    4300114: Spike9
+    4300116: Spike10
+    4300118: GlassShlevae
+    4300120: Pillar2
+    4300122: OuterCross
+    4300124: Floor
+    4300126: Pillar
+    4300128: Buttress
+    4300130: TowerPillar
+    4300132: Buttress2
+    4300134: pCube1
+    4300136: Roof
+    4300138: TowerLevel
+    4300140: TowerLevel1
+    4300142: TowerLevel2
+    4300144: TowerLevel3
+    4300146: TowerLevel4
+    4300148: TowerLevel5
+    4300150: TowerLevel6
+    4300152: TowerLevel7
+    4300154: enterence
+    4300156: Glass
+    4300158: AirLock1
+    4300160: Buttress3
+    4300162: Glass1
+    4300164: Pillar3
+    4300166: Pillar4
+    4300168: Buttress4
+    4300170: enterence1
+    4300172: enterence2
+    4300174: OuterCross1
+    4300176: TopFigure
+    4300178: Spike
+    4300180: Spike1
+    4300182: Spike2
+    4300184: Spike3
+    4300186: Spike4
+    4300188: Spike5
+    4300190: Spike6
+    4300192: Spike7
+    4300194: Spike8
+    4300196: Spike9
+    4300198: Spike10
+    4300200: TopFigure1
+    4300202: Spike1
+    4300204: Spike2
+    4300206: Spike4
+    4300208: Spike5
+    4300210: Spike6
+    4300212: Spike7
+    4300214: Spike8
+    4300216: Spike9
+    4300218: Spike10
+    4300220: TopFigure2
+    4300222: Spike4
+    4300224: Spike5
+    4300226: Spike6
+    4300228: Spike7
+    4300230: Spike8
+    4300232: Spike9
+    4300234: Spike10
+    4300236: GlassShlevae
+    4300238: Pillar2
+    4300240: OuterCross
+    4300242: Floor
+    4300244: Pillar
+    4300246: Buttress
+    4300248: TowerPillar
+    4300250: Buttress2
+    4300252: pCube1
+    4300254: Roof
+    4300256: TowerLevel
+    4300258: TowerLevel1
+    4300260: TowerLevel2
+    4300262: TowerLevel3
+    4300264: TowerLevel4
+    4300266: TowerLevel5
+    4300268: TowerLevel6
+    4300270: TowerLevel7
+    4300272: enterence
+    4300274: Glass
+    4300276: AirLock1
+    4300278: Buttress3
+    4300280: Glass1
+    4300282: Pillar3
+    4300284: Pillar4
+    4300286: Buttress4
+    4300288: enterence1
+    4300290: enterence2
+    4300292: OuterCross1
+    4300294: TopFigure
+    4300296: Spike
+    4300298: Spike1
+    4300300: Spike2
+    4300302: Spike3
+    4300304: Spike4
+    4300306: Spike5
+    4300308: Spike6
+    4300310: Spike7
+    4300312: Spike8
+    4300314: Spike9
+    4300316: Spike10
+    4300318: TopFigure1
+    4300320: Spike1
+    4300322: Spike2
+    4300324: Spike4
+    4300326: Spike5
+    4300328: Spike6
+    4300330: Spike7
+    4300332: Spike8
+    4300334: Spike9
+    4300336: Spike10
+    4300338: TopFigure2
+    4300340: Spike4
+    4300342: Spike5
+    4300344: Spike6
+    4300346: Spike7
+    4300348: Spike8
+    4300350: Spike9
+    4300352: Spike10
+    4300354: GlassShlevae
+    4300356: Pillar2
+    4300358: OuterCross
+    4300360: Floor
+    4300362: Pillar
+    4300364: Buttress
+    4300366: TowerPillar
+    4300368: Buttress2
+    4300370: pCube1
+    4300372: Roof
+    4300374: TowerLevel
+    4300376: TowerLevel1
+    4300378: TowerLevel2
+    4300380: TowerLevel3
+    4300382: TowerLevel4
+    4300384: TowerLevel5
+    4300386: TowerLevel6
+    4300388: TowerLevel7
+    4300390: enterence
+    4300392: Glass
+    4300394: AirLock1
+    4300396: Buttress3
+    4300398: Glass1
+    4300400: Pillar3
+    4300402: Pillar4
+    4300404: Buttress4
+    4300406: enterence1
+    4300408: enterence2
+    4300410: OuterCross1
+    4300412: TopFigure
+    4300414: Spike
+    4300416: Spike1
+    4300418: Spike2
+    4300420: Spike3
+    4300422: Spike4
+    4300424: Spike5
+    4300426: Spike6
+    4300428: Spike7
+    4300430: Spike8
+    4300432: Spike9
+    4300434: Spike10
+    4300436: TopFigure1
+    4300438: Spike1
+    4300440: Spike2
+    4300442: Spike4
+    4300444: Spike5
+    4300446: Spike6
+    4300448: Spike7
+    4300450: Spike8
+    4300452: Spike9
+    4300454: Spike10
+    4300456: TopFigure2
+    4300458: Spike4
+    4300460: Spike5
+    4300462: Spike6
+    4300464: Spike7
+    4300466: Spike8
+    4300468: Spike9
+    4300470: Spike10
+    4300472: enterence
+    4300474: enterence
+    4300476: enterence
+    4300478: enterence3
+    4300480: enterence3
+    4300482: enterence3
+    4300484: enterence3
+    2186277476908879412: ImportLogs
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 100
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
