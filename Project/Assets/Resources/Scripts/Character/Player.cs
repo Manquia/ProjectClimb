@@ -33,6 +33,7 @@ public class Player : FFComponent
     public LayerMask interactMask;
 
 
+
     FFAction.ActionSequence oneShotSeq; // never call sync OR  ClearSequence on this one...
     FFAction.ActionSequence runEffectSeq;
     FFAction.ActionSequence orientSeq;
@@ -89,6 +90,8 @@ public class Player : FFComponent
     public class RopeConnection
     {
         public RopeController rope;
+
+        public SphereCollider ropeCollider;
 
         public float pumpSpeed = 0.003f;
         public float pumpAcceleration = 0.5f;
@@ -161,6 +164,9 @@ public class Player : FFComponent
         public LayerMask groundPhysicsMask;
         public float maxSpeed = 2.5f;
         public float runMultiplier = 2.0f;
+
+        public float jumpCooldown = 0.25f;
+        internal float jumpCooldownTimer = 0;
 
         public float jumpForce = 1000.0f;
         public float maxSlopeAngle = 55.0f;
@@ -494,10 +500,13 @@ public class Player : FFComponent
         UpdateCameraTurn();
         UpdateMoveActions();
 
+        // jumpCooldownTimer
+        movement.jumpCooldownTimer += dt;
+
         if (movement.grounded)
         {
             UpdateMoveType(dt, OnGroundData);
-            CheckJump();
+            CheckJump(dt);
         }
         else
         {
@@ -716,14 +725,17 @@ public class Player : FFComponent
             transform.localRotation = transform.localRotation * rotation;
         }
     }
-    void CheckJump()
+    void CheckJump(float dt)
     {
         var rotOfPlane = Quaternion.FromToRotation(movement.up, Vector3.up);
         var revRotOfPlane = Quaternion.FromToRotation(Vector3.up, movement.up);
 
+
         // movement in the Y axis (jump), Grounded && space in the last few frames?
-        if (movement.grounded && input.space.Contains((v) => v.down()))
+        if (movement.grounded && input.space.Contains((v) => v.down()) &&
+            movement.jumpCooldownTimer > movement.jumpCooldown)
         {
+            movement.jumpCooldownTimer = 0;
             SnapToGround(maxDistToFloor);
             movement.details.jumping.Record(true);
             movement.details.groundTouches.Wash(false);
@@ -809,10 +821,6 @@ public class Player : FFComponent
         Vector3 leanVec = Vector3.zero;
         float climbVec = 0.0f;
 
-        if (input.space.Recall(0).pressed())
-        {
-            RopePump(pumpAmount);
-        }
 
         bool flipClimbMod = false;
         // going up
@@ -847,7 +855,7 @@ public class Player : FFComponent
         }
 
         // Pump
-        if (input.space.Recall(0).down())
+        if (input.mouseRight.Recall(0).down())
         {
             RopePump(pumpAmount);
         }
@@ -878,7 +886,7 @@ public class Player : FFComponent
         }
 
         // Remove self from rope?
-        if (input.mouseRight.Recall(0).pressed())
+        if (input.space.Recall(0).pressed())
         {
             DestroyOnRope();
         }
@@ -1010,6 +1018,7 @@ public class Player : FFComponent
         {
             // apply movement
             myBody.AddForce(forceRot * input.moveDirRel * magnitude * fps * dt, ForceMode.Acceleration);
+            Debug.DrawLine(transform.position, transform.position + (forceRot * input.moveDirRel * magnitude * fps * dt * 10.0f), Color.cyan);
         }
         else if (velocity != Vector3.zero && mode != Mode.FreeFall) // no given movement direction, and have a velocity
         {
@@ -1078,7 +1087,7 @@ public class Player : FFComponent
         Debug.DrawRay(raycastOrigin, Vector3.down, Color.yellow);
         if (Physics.Raycast(raycastOrigin, Vector3.down, out hit, dist, mask))
         {
-            float angleFromUp = Vector3.Angle(-hit.normal.normalized, -Vector3.up);
+            float angleFromUp = Math.Abs(Vector3.Angle(-hit.normal.normalized, -Vector3.up));
 
             // Ground not too steep to be considered ground
             if (angleFromUp <= movement.maxSlopeAngle)
@@ -1323,23 +1332,28 @@ public class Player : FFComponent
             case Mode.Frozen:
                 myBody.useGravity = false;
                 myBody.isKinematic = true;
+                OnRope.ropeCollider.enabled = false;
                 break;
             case Mode.Movement:
                 myBody.useGravity = true;
                 myBody.isKinematic = false;
+                OnRope.ropeCollider.enabled = false;
                 break;
             case Mode.Rope:
                 myBody.useGravity = false;
                 myBody.isKinematic = false;
+                OnRope.ropeCollider.enabled = true;
                 //myBody.velocity = Vector3.zero;
                 break;
             case Mode.Climb:
                 myBody.useGravity = false;
                 myBody.isKinematic = true;
+                OnRope.ropeCollider.enabled = true;
                 break;
             case Mode.FreeFall:
                 myBody.useGravity = true;
                 myBody.isKinematic = false;
+                OnRope.ropeCollider.enabled = false;
                 break;
         }
     }

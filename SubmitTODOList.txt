@@ -1,0 +1,22 @@
+
+Tutorial Segment
+Level 3
+Fog
+Outline Effect
+Menu Level
+Contextual Action Icon (Grab, nothing (dot), use)
+
+Controls rework
+- Space bar
+
+
+
+Sound Effects
+- Walking
+- Jumping
+- Death
+
+- Rope
+-- Grab
+-- Release
+-- Pump
