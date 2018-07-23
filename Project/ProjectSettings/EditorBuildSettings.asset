@@ -6,32 +6,18 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/SplashScreen.unity
-    guid: 94aa082de7b423b40af3af8b012ddbc8
+    path: Assets/GATPack/CreditsLevel.unity
+    guid: 4eeafbf970463ec4e9b0009faaec2d93
   - enabled: 1
-    path: Assets/Menu.unity
-    guid: 7d76d1d77cc7b3c4e9bc6edb8f347d03
+    path: Assets/GATPack/DeathLevel.unity
+    guid: 5041682488561084e9a1300eb1a40298
   - enabled: 1
-    path: Assets/HW1.unity
-    guid: 22306d4fb09f8de4dbb0464a10c574eb
+    path: Assets/GATPack/SplashScreen.unity
+    guid: f2b23a0d07677ef45b5924e4d8dc12d8
   - enabled: 1
-    path: Assets/HW2.unity
-    guid: 01f1f400d676d2d48aae80e2b8ec4588
+    path: Assets/Resources/Scenes/Level1.unity
+    guid: 331c961e31f1d624f86075d007a4a3d2
   - enabled: 1
-    path: Assets/HW3.unity
-    guid: 00d0c7c31e415024180fd8d0af2c1b89
-  - enabled: 1
-    path: Assets/HW4.unity
-    guid: d4454d2c872ad1b439404a78d6b9b895
-  - enabled: 1
-    path: Assets/HW5.unity
-    guid: 6150d214fc803ca42b71ad4d93bc0ef5
-  - enabled: 1
-    path: Assets/HW6.unity
-    guid: 4878729788e417b47b481e9e69d79b23
-  - enabled: 1
-    path: Assets/HW7.unity
-    guid: ea98c600228e65f4c8bf6ec89010e29c
-  - enabled: 1
-    path: Assets/VictoryScreen.unity
-    guid: fa703e147570766438074c87d98b1a38
+    path: Assets/Resources/Scenes/Level2.unity
+    guid: 01f4b6601abf12846acb6a40967e627f
+  m_configObjects: {}
