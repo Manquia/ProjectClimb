@@ -21,7 +21,7 @@ public class Player : FFComponent
     public DynamicAudioPlayer dynAudioPlayer;
     public IK_Snap ikSnap;
 
-    public SpriteRenderer fadeScreenMaskSprite;
+    //public SpriteRenderer fadeScreenMaskSprite;
     public UnityEngine.UI.Image fadeScreenMaskImage;
     public float fadeTime = 1.5f;
     FFAction.ActionSequence fadeScreenSeq;
@@ -174,7 +174,8 @@ public class Player : FFComponent
         public class Details
         {
             public Annal<bool> groundTouches = new Annal<bool>(16, false);
-            public Annal<bool> jumping = new Annal<bool>(7, false);
+            public bool jumping = false;
+            public Annal<bool> tryJump = new Annal<bool>(7, false);
         }
         public Details details = new Details();
         public float climbRadius = 0.45f;
@@ -273,26 +274,26 @@ public class Player : FFComponent
         // Fade Screen
         {
             // init
-            //fadeScreenSeq = action.Sequence();
-            //fadeScreenSeq.affectedByTimeScale = false;
-            //Seq_FadeOutScreenMasks();
+            fadeScreenSeq = action.Sequence();
+            fadeScreenSeq.affectedByTimeScale = false;
+            Seq_FadeOutScreenMasks();
         }
     }
     void Seq_FadeOutScreenMasks()
     {
-        fadeScreenMaskSprite.gameObject.SetActive(true);
+        //fadeScreenMaskSprite.gameObject.SetActive(true);
         fadeScreenMaskImage.gameObject.SetActive(true);
         
-        fadeScreenSeq.Property(new FFRef<Color>(() => fadeScreenMaskSprite.color, (v) => fadeScreenMaskSprite.color = v), fadeScreenMaskSprite.color.MakeClear(), FFEase.E_Continuous, fadeTime);
+        //fadeScreenSeq.Property(new FFRef<Color>(() => fadeScreenMaskSprite.color, (v) => fadeScreenMaskSprite.color = v), fadeScreenMaskSprite.color.MakeClear(), FFEase.E_Continuous, fadeTime);
         fadeScreenSeq.Property(new FFRef<Color>(() => fadeScreenMaskImage.color, (v) => fadeScreenMaskImage.color = v), fadeScreenMaskImage.color.MakeClear(), FFEase.E_Continuous, fadeTime);
         Seq_DisableScreenMasks();
     }
     void Seq_FadeScreenMasksToColor(Color color)
     {
-        fadeScreenMaskSprite.gameObject.SetActive(true);
+        //fadeScreenMaskSprite.gameObject.SetActive(true);
         fadeScreenMaskImage.gameObject.SetActive(true);
 
-        fadeScreenSeq.Property(new FFRef<Color>(() => fadeScreenMaskSprite.color, (v) => fadeScreenMaskSprite.color = v), color, FFEase.E_Continuous, fadeTime);
+        //fadeScreenSeq.Property(new FFRef<Color>(() => fadeScreenMaskSprite.color, (v) => fadeScreenMaskSprite.color = v), color, FFEase.E_Continuous, fadeTime);
         fadeScreenSeq.Property(new FFRef<Color>(() => fadeScreenMaskImage.color, (v) => fadeScreenMaskImage.color = v), color, FFEase.E_Continuous, fadeTime);
 
         fadeScreenSeq.Sync();
@@ -300,21 +301,23 @@ public class Player : FFComponent
     void Seq_DisableScreenMasks()
     {
         fadeScreenSeq.Sync();
-        fadeScreenSeq.Call(DisableGameObject, fadeScreenMaskSprite.gameObject);
+        //fadeScreenSeq.Call(DisableGameObject, fadeScreenMaskSprite.gameObject);
         fadeScreenSeq.Call(DisableGameObject, fadeScreenMaskImage.gameObject);
     }
     void Seq_FadeInScreenMasks()
     {
-        fadeScreenMaskSprite.gameObject.SetActive(true);
+        //fadeScreenMaskSprite.gameObject.SetActive(true);
         fadeScreenMaskImage.gameObject.SetActive(true);
         
-        fadeScreenSeq.Property(new FFRef<Color>(() => fadeScreenMaskSprite.color, (v) => fadeScreenMaskSprite.color = v), fadeScreenMaskSprite.color.MakeOpaque(), FFEase.E_Continuous, fadeTime);
+        //fadeScreenSeq.Property(new FFRef<Color>(() => fadeScreenMaskSprite.color, (v) => fadeScreenMaskSprite.color = v), fadeScreenMaskSprite.color.MakeOpaque(), FFEase.E_Continuous, fadeTime);
         fadeScreenSeq.Property(new FFRef<Color>(() => fadeScreenMaskImage.color, (v) => fadeScreenMaskImage.color = v), fadeScreenMaskImage.color.MakeOpaque(), FFEase.E_Continuous, fadeTime);
         
         fadeScreenSeq.Sync();
     }
 
     // @Cleanup, @Move?
+    // @Cleanup, @Move?
+    // @HUD->PauseScreen->QuitToMenuButton uses this
     public void LoadMainMenu()
     {
         Seq_FadeInScreenMasks();
@@ -471,14 +474,14 @@ public class Player : FFComponent
         }
 
         // @DEBUG @TODO @REMOVE @DELETE ME!!! ##@#@#@#@#@#@#@#@#@#@#
-        if (Input.GetKeyDown(KeyCode.T) && Input.GetKey(KeyCode.LeftShift))
-        {
-            miscellaneous.timeScaleVar.Setter(miscellaneous.timeScaleVar * 1.2f);
-        }
-        else if (Input.GetKeyDown(KeyCode.T))
-        {
-            miscellaneous.timeScaleVar.Setter(miscellaneous.timeScaleVar * 0.8f);
-        }
+        //if (Input.GetKeyDown(KeyCode.T) && Input.GetKey(KeyCode.LeftShift))
+        //{
+        //    miscellaneous.timeScaleVar.Setter(miscellaneous.timeScaleVar * 1.2f);
+        //}
+        //else if (Input.GetKeyDown(KeyCode.T))
+        //{
+        //    miscellaneous.timeScaleVar.Setter(miscellaneous.timeScaleVar * 0.8f);
+        //}
 
         // @DEBUG @TODO @REMOVE @DELETE ME!!! ##@#@#@#@#@#@#@#@#@#@#
 #if UNITY_EDITOR
@@ -570,11 +573,25 @@ public class Player : FFComponent
 
     private void UpdateJumpState()
     {
-        // grounded && !jumping && spacePressed -> jumping = true
-        // grounded && jumping -> jumping = false
+        // Try jumping
+        if(input.space.Recall(0).down())
+        {
+            movement.details.tryJump.Record(true);
+        }
+        else
+        {
+            movement.details.tryJump.Record(false);
+        }
+
+        // stopped trying to jump
+        if (input.space.Recall(0).released())
+        {
+            movement.details.tryJump.Wash(false);
+        }
         
+        // Finsihed Jumping
         if (movement.grounded && movement.jumping)
-            movement.details.jumping.Record(false);
+            movement.details.jumping = false;
     }
 
     private void UpdateMoveEffects()
@@ -730,14 +747,15 @@ public class Player : FFComponent
         var rotOfPlane = Quaternion.FromToRotation(movement.up, Vector3.up);
         var revRotOfPlane = Quaternion.FromToRotation(Vector3.up, movement.up);
 
-
+        // Do jump!
         // movement in the Y axis (jump), Grounded && space in the last few frames?
-        if (movement.grounded && input.space.Contains((v) => v.down()) &&
+        if (movement.grounded &&
+            movement.details.tryJump.Contains((v) => v) &&
             movement.jumpCooldownTimer > movement.jumpCooldown)
         {
             movement.jumpCooldownTimer = 0;
             SnapToGround(maxDistToFloor);
-            movement.details.jumping.Record(true);
+            movement.details.jumping = true;
             movement.details.groundTouches.Wash(false);
 
 
@@ -1222,7 +1240,7 @@ public class Player : FFComponent
 
         // wash movement details
         movement.details.groundTouches.Wash(false);
-        movement.details.jumping.Wash(false);
+        movement.details.tryJump.Wash(false);
     }
 
 

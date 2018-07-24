@@ -1,0 +1,1009 @@
+fileFormatVersion: 2
+guid: 633164730695e2f428906092c79e54f7
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: Ceiling
+    100002: Floor
+    100004: Floor1
+    100006: //RootNode
+    100008: Pillar
+    100010: Pillar 1
+    100012: Pillar 10
+    100014: Pillar 11
+    100016: Pillar 12
+    100018: Pillar 13
+    100020: Pillar 14
+    100022: Pillar 15
+    100024: Pillar 2
+    100026: Pillar 3
+    100028: Pillar 4
+    100030: Pillar 5
+    100032: Pillar 6
+    100034: Pillar 7
+    100036: Pillar 8
+    100038: Pillar 9
+    100040: pPipe1
+    100042: pPipe2
+    100044: pPipe4
+    100046: pPipe5
+    100048: StarCollumn
+    100050: StarCollumn1
+    100052: StarCollumn2
+    100054: StarCollumn3
+    100056: StarPillar
+    100058: StarPillar 1
+    100060: StarPillar 2
+    100062: StarPillar 3
+    100064: StarPillar1
+    100066: StarPillar1 1
+    100068: StarPillar1 2
+    100070: StarPillar1 3
+    100072: StarPillar2
+    100074: StarPillar2 1
+    100076: StarPillar2 2
+    100078: StarPillar2 3
+    100080: StarPillar3
+    100082: StarPillar3 1
+    100084: StarPillar3 2
+    100086: StarPillar3 3
+    100088: StarPillar4
+    100090: StarPillar4 1
+    100092: StarPillar4 2
+    100094: StarPillar4 3
+    100096: Tooth
+    100098: Tooth 1
+    100100: Tooth 10
+    100102: Tooth 11
+    100104: Tooth 12
+    100106: Tooth 13
+    100108: Tooth 14
+    100110: Tooth 15
+    100112: Tooth 16
+    100114: Tooth 17
+    100116: Tooth 18
+    100118: Tooth 2
+    100120: Tooth 3
+    100122: Tooth 4
+    100124: Tooth 5
+    100126: Tooth 6
+    100128: Tooth 7
+    100130: Tooth 8
+    100132: Tooth 9
+    100134: Tooth1
+    100136: Tooth1 1
+    100138: Tooth1 10
+    100140: Tooth1 11
+    100142: Tooth1 12
+    100144: Tooth1 13
+    100146: Tooth1 14
+    100148: Tooth1 15
+    100150: Tooth1 16
+    100152: Tooth1 17
+    100154: Tooth1 2
+    100156: Tooth1 3
+    100158: Tooth1 4
+    100160: Tooth1 5
+    100162: Tooth1 6
+    100164: Tooth1 7
+    100166: Tooth1 8
+    100168: Tooth1 9
+    100170: Tooth2
+    100172: Tooth2 1
+    100174: Tooth2 10
+    100176: Tooth2 11
+    100178: Tooth2 12
+    100180: Tooth2 13
+    100182: Tooth2 14
+    100184: Tooth2 15
+    100186: Tooth2 16
+    100188: Tooth2 17
+    100190: Tooth2 2
+    100192: Tooth2 3
+    100194: Tooth2 4
+    100196: Tooth2 5
+    100198: Tooth2 6
+    100200: Tooth2 7
+    100202: Tooth2 8
+    100204: Tooth2 9
+    100206: Tooth3
+    100208: Tooth3 1
+    100210: Tooth3 10
+    100212: Tooth3 11
+    100214: Tooth3 12
+    100216: Tooth3 13
+    100218: Tooth3 14
+    100220: Tooth3 15
+    100222: Tooth3 16
+    100224: Tooth3 17
+    100226: Tooth3 2
+    100228: Tooth3 3
+    100230: Tooth3 4
+    100232: Tooth3 5
+    100234: Tooth3 6
+    100236: Tooth3 7
+    100238: Tooth3 8
+    100240: Tooth3 9
+    100242: Tooth4
+    100244: Tooth5
+    100246: Tooth6
+    100248: Tooth7
+    100250: Wall
+    100252: Wall1
+    100254: Wall2
+    100256: Wall3
+    100258: Tooth12
+    100260: Tooth14
+    100262: Tooth8
+    100264: Tooth9
+    100266: pPipe10
+    100268: pPipe11
+    100270: pPipe12
+    100272: pPipe13
+    100274: pPipe14
+    100276: pPipe15
+    100278: pPipe16
+    100280: pPipe17
+    100282: pPipe18
+    100284: pPipe6
+    100286: pPipe7
+    100288: pPipe8
+    100290: pPipe9
+    100292: StarPillar5
+    100294: StarPillar6
+    100296: Tooth 19
+    100298: Tooth 20
+    100300: Tooth1 18
+    100302: Tooth1 19
+    100304: Tooth2 18
+    100306: Tooth2 19
+    100308: Tooth3 18
+    100310: Tooth3 19
+    100312: pPipe19
+    100314: pPipe20
+    100316: pPipe21
+    100318: pPipe22
+    100320: pPipe23
+    100322: pPipe24
+    100324: pCone1
+    100326: Wall4
+    100328: Wall5
+    100330: Wall6
+    100332: pCone2
+    100334: pCube2
+    100336: PuzzleRoom
+    100338: ceiling
+    100340: ceiling1
+    400000: Ceiling
+    400002: Floor
+    400004: Floor1
+    400006: //RootNode
+    400008: Pillar
+    400010: Pillar 1
+    400012: Pillar 10
+    400014: Pillar 11
+    400016: Pillar 12
+    400018: Pillar 13
+    400020: Pillar 14
+    400022: Pillar 15
+    400024: Pillar 2
+    400026: Pillar 3
+    400028: Pillar 4
+    400030: Pillar 5
+    400032: Pillar 6
+    400034: Pillar 7
+    400036: Pillar 8
+    400038: Pillar 9
+    400040: pPipe1
+    400042: pPipe2
+    400044: pPipe4
+    400046: pPipe5
+    400048: StarCollumn
+    400050: StarCollumn1
+    400052: StarCollumn2
+    400054: StarCollumn3
+    400056: StarPillar
+    400058: StarPillar 1
+    400060: StarPillar 2
+    400062: StarPillar 3
+    400064: StarPillar1
+    400066: StarPillar1 1
+    400068: StarPillar1 2
+    400070: StarPillar1 3
+    400072: StarPillar2
+    400074: StarPillar2 1
+    400076: StarPillar2 2
+    400078: StarPillar2 3
+    400080: StarPillar3
+    400082: StarPillar3 1
+    400084: StarPillar3 2
+    400086: StarPillar3 3
+    400088: StarPillar4
+    400090: StarPillar4 1
+    400092: StarPillar4 2
+    400094: StarPillar4 3
+    400096: Tooth
+    400098: Tooth 1
+    400100: Tooth 10
+    400102: Tooth 11
+    400104: Tooth 12
+    400106: Tooth 13
+    400108: Tooth 14
+    400110: Tooth 15
+    400112: Tooth 16
+    400114: Tooth 17
+    400116: Tooth 18
+    400118: Tooth 2
+    400120: Tooth 3
+    400122: Tooth 4
+    400124: Tooth 5
+    400126: Tooth 6
+    400128: Tooth 7
+    400130: Tooth 8
+    400132: Tooth 9
+    400134: Tooth1
+    400136: Tooth1 1
+    400138: Tooth1 10
+    400140: Tooth1 11
+    400142: Tooth1 12
+    400144: Tooth1 13
+    400146: Tooth1 14
+    400148: Tooth1 15
+    400150: Tooth1 16
+    400152: Tooth1 17
+    400154: Tooth1 2
+    400156: Tooth1 3
+    400158: Tooth1 4
+    400160: Tooth1 5
+    400162: Tooth1 6
+    400164: Tooth1 7
+    400166: Tooth1 8
+    400168: Tooth1 9
+    400170: Tooth2
+    400172: Tooth2 1
+    400174: Tooth2 10
+    400176: Tooth2 11
+    400178: Tooth2 12
+    400180: Tooth2 13
+    400182: Tooth2 14
+    400184: Tooth2 15
+    400186: Tooth2 16
+    400188: Tooth2 17
+    400190: Tooth2 2
+    400192: Tooth2 3
+    400194: Tooth2 4
+    400196: Tooth2 5
+    400198: Tooth2 6
+    400200: Tooth2 7
+    400202: Tooth2 8
+    400204: Tooth2 9
+    400206: Tooth3
+    400208: Tooth3 1
+    400210: Tooth3 10
+    400212: Tooth3 11
+    400214: Tooth3 12
+    400216: Tooth3 13
+    400218: Tooth3 14
+    400220: Tooth3 15
+    400222: Tooth3 16
+    400224: Tooth3 17
+    400226: Tooth3 2
+    400228: Tooth3 3
+    400230: Tooth3 4
+    400232: Tooth3 5
+    400234: Tooth3 6
+    400236: Tooth3 7
+    400238: Tooth3 8
+    400240: Tooth3 9
+    400242: Tooth4
+    400244: Tooth5
+    400246: Tooth6
+    400248: Tooth7
+    400250: Wall
+    400252: Wall1
+    400254: Wall2
+    400256: Wall3
+    400258: Tooth12
+    400260: Tooth14
+    400262: Tooth8
+    400264: Tooth9
+    400266: pPipe10
+    400268: pPipe11
+    400270: pPipe12
+    400272: pPipe13
+    400274: pPipe14
+    400276: pPipe15
+    400278: pPipe16
+    400280: pPipe17
+    400282: pPipe18
+    400284: pPipe6
+    400286: pPipe7
+    400288: pPipe8
+    400290: pPipe9
+    400292: StarPillar5
+    400294: StarPillar6
+    400296: Tooth 19
+    400298: Tooth 20
+    400300: Tooth1 18
+    400302: Tooth1 19
+    400304: Tooth2 18
+    400306: Tooth2 19
+    400308: Tooth3 18
+    400310: Tooth3 19
+    400312: pPipe19
+    400314: pPipe20
+    400316: pPipe21
+    400318: pPipe22
+    400320: pPipe23
+    400322: pPipe24
+    400324: pCone1
+    400326: Wall4
+    400328: Wall5
+    400330: Wall6
+    400332: pCone2
+    400334: pCube2
+    400336: PuzzleRoom
+    400338: ceiling
+    400340: ceiling1
+    2100000: phong1
+    2300000: Ceiling
+    2300002: Floor
+    2300004: Floor1
+    2300006: Pillar
+    2300008: Pillar 1
+    2300010: Pillar 10
+    2300012: Pillar 11
+    2300014: Pillar 12
+    2300016: Pillar 13
+    2300018: Pillar 14
+    2300020: Pillar 15
+    2300022: Pillar 2
+    2300024: Pillar 3
+    2300026: Pillar 4
+    2300028: Pillar 5
+    2300030: Pillar 6
+    2300032: Pillar 7
+    2300034: Pillar 8
+    2300036: Pillar 9
+    2300038: pPipe1
+    2300040: pPipe2
+    2300042: pPipe4
+    2300044: pPipe5
+    2300046: Tooth
+    2300048: Tooth 1
+    2300050: Tooth 10
+    2300052: Tooth 11
+    2300054: Tooth 12
+    2300056: Tooth 13
+    2300058: Tooth 14
+    2300060: Tooth 15
+    2300062: Tooth 16
+    2300064: Tooth 17
+    2300066: Tooth 18
+    2300068: Tooth 2
+    2300070: Tooth 3
+    2300072: Tooth 4
+    2300074: Tooth 5
+    2300076: Tooth 6
+    2300078: Tooth 7
+    2300080: Tooth 8
+    2300082: Tooth 9
+    2300084: Tooth1
+    2300086: Tooth1 1
+    2300088: Tooth1 10
+    2300090: Tooth1 11
+    2300092: Tooth1 12
+    2300094: Tooth1 13
+    2300096: Tooth1 14
+    2300098: Tooth1 15
+    2300100: Tooth1 16
+    2300102: Tooth1 17
+    2300104: Tooth1 2
+    2300106: Tooth1 3
+    2300108: Tooth1 4
+    2300110: Tooth1 5
+    2300112: Tooth1 6
+    2300114: Tooth1 7
+    2300116: Tooth1 8
+    2300118: Tooth1 9
+    2300120: Tooth2
+    2300122: Tooth2 1
+    2300124: Tooth2 10
+    2300126: Tooth2 11
+    2300128: Tooth2 12
+    2300130: Tooth2 13
+    2300132: Tooth2 14
+    2300134: Tooth2 15
+    2300136: Tooth2 16
+    2300138: Tooth2 17
+    2300140: Tooth2 2
+    2300142: Tooth2 3
+    2300144: Tooth2 4
+    2300146: Tooth2 5
+    2300148: Tooth2 6
+    2300150: Tooth2 7
+    2300152: Tooth2 8
+    2300154: Tooth2 9
+    2300156: Tooth3
+    2300158: Tooth3 1
+    2300160: Tooth3 10
+    2300162: Tooth3 11
+    2300164: Tooth3 12
+    2300166: Tooth3 13
+    2300168: Tooth3 14
+    2300170: Tooth3 15
+    2300172: Tooth3 16
+    2300174: Tooth3 17
+    2300176: Tooth3 2
+    2300178: Tooth3 3
+    2300180: Tooth3 4
+    2300182: Tooth3 5
+    2300184: Tooth3 6
+    2300186: Tooth3 7
+    2300188: Tooth3 8
+    2300190: Tooth3 9
+    2300192: Tooth4
+    2300194: Tooth5
+    2300196: Tooth6
+    2300198: Tooth7
+    2300200: Wall
+    2300202: Wall1
+    2300204: Wall2
+    2300206: Wall3
+    2300208: Tooth12
+    2300210: Tooth14
+    2300212: Tooth8
+    2300214: Tooth9
+    2300216: //RootNode
+    2300218: pPipe10
+    2300220: pPipe11
+    2300222: pPipe12
+    2300224: pPipe13
+    2300226: pPipe14
+    2300228: pPipe15
+    2300230: pPipe16
+    2300232: pPipe17
+    2300234: pPipe18
+    2300236: pPipe6
+    2300238: pPipe7
+    2300240: pPipe8
+    2300242: pPipe9
+    2300244: Tooth 19
+    2300246: Tooth 20
+    2300248: Tooth1 18
+    2300250: Tooth1 19
+    2300252: Tooth2 18
+    2300254: Tooth2 19
+    2300256: Tooth3 18
+    2300258: Tooth3 19
+    2300260: pPipe19
+    2300262: pPipe20
+    2300264: pPipe21
+    2300266: pPipe22
+    2300268: pPipe23
+    2300270: pPipe24
+    2300272: pCone1
+    2300274: Wall4
+    2300276: Wall5
+    2300278: Wall6
+    2300280: pCone2
+    2300282: pCube2
+    2300284: PuzzleRoom
+    2300286: ceiling
+    2300288: ceiling1
+    3300000: Ceiling
+    3300002: Floor
+    3300004: Floor1
+    3300006: Pillar
+    3300008: Pillar 1
+    3300010: Pillar 10
+    3300012: Pillar 11
+    3300014: Pillar 12
+    3300016: Pillar 13
+    3300018: Pillar 14
+    3300020: Pillar 15
+    3300022: Pillar 2
+    3300024: Pillar 3
+    3300026: Pillar 4
+    3300028: Pillar 5
+    3300030: Pillar 6
+    3300032: Pillar 7
+    3300034: Pillar 8
+    3300036: Pillar 9
+    3300038: pPipe1
+    3300040: pPipe2
+    3300042: pPipe4
+    3300044: pPipe5
+    3300046: Tooth
+    3300048: Tooth 1
+    3300050: Tooth 10
+    3300052: Tooth 11
+    3300054: Tooth 12
+    3300056: Tooth 13
+    3300058: Tooth 14
+    3300060: Tooth 15
+    3300062: Tooth 16
+    3300064: Tooth 17
+    3300066: Tooth 18
+    3300068: Tooth 2
+    3300070: Tooth 3
+    3300072: Tooth 4
+    3300074: Tooth 5
+    3300076: Tooth 6
+    3300078: Tooth 7
+    3300080: Tooth 8
+    3300082: Tooth 9
+    3300084: Tooth1
+    3300086: Tooth1 1
+    3300088: Tooth1 10
+    3300090: Tooth1 11
+    3300092: Tooth1 12
+    3300094: Tooth1 13
+    3300096: Tooth1 14
+    3300098: Tooth1 15
+    3300100: Tooth1 16
+    3300102: Tooth1 17
+    3300104: Tooth1 2
+    3300106: Tooth1 3
+    3300108: Tooth1 4
+    3300110: Tooth1 5
+    3300112: Tooth1 6
+    3300114: Tooth1 7
+    3300116: Tooth1 8
+    3300118: Tooth1 9
+    3300120: Tooth2
+    3300122: Tooth2 1
+    3300124: Tooth2 10
+    3300126: Tooth2 11
+    3300128: Tooth2 12
+    3300130: Tooth2 13
+    3300132: Tooth2 14
+    3300134: Tooth2 15
+    3300136: Tooth2 16
+    3300138: Tooth2 17
+    3300140: Tooth2 2
+    3300142: Tooth2 3
+    3300144: Tooth2 4
+    3300146: Tooth2 5
+    3300148: Tooth2 6
+    3300150: Tooth2 7
+    3300152: Tooth2 8
+    3300154: Tooth2 9
+    3300156: Tooth3
+    3300158: Tooth3 1
+    3300160: Tooth3 10
+    3300162: Tooth3 11
+    3300164: Tooth3 12
+    3300166: Tooth3 13
+    3300168: Tooth3 14
+    3300170: Tooth3 15
+    3300172: Tooth3 16
+    3300174: Tooth3 17
+    3300176: Tooth3 2
+    3300178: Tooth3 3
+    3300180: Tooth3 4
+    3300182: Tooth3 5
+    3300184: Tooth3 6
+    3300186: Tooth3 7
+    3300188: Tooth3 8
+    3300190: Tooth3 9
+    3300192: Tooth4
+    3300194: Tooth5
+    3300196: Tooth6
+    3300198: Tooth7
+    3300200: Wall
+    3300202: Wall1
+    3300204: Wall2
+    3300206: Wall3
+    3300208: Tooth12
+    3300210: Tooth14
+    3300212: Tooth8
+    3300214: Tooth9
+    3300216: //RootNode
+    3300218: pPipe10
+    3300220: pPipe11
+    3300222: pPipe12
+    3300224: pPipe13
+    3300226: pPipe14
+    3300228: pPipe15
+    3300230: pPipe16
+    3300232: pPipe17
+    3300234: pPipe18
+    3300236: pPipe6
+    3300238: pPipe7
+    3300240: pPipe8
+    3300242: pPipe9
+    3300244: Tooth 19
+    3300246: Tooth 20
+    3300248: Tooth1 18
+    3300250: Tooth1 19
+    3300252: Tooth2 18
+    3300254: Tooth2 19
+    3300256: Tooth3 18
+    3300258: Tooth3 19
+    3300260: pPipe19
+    3300262: pPipe20
+    3300264: pPipe21
+    3300266: pPipe22
+    3300268: pPipe23
+    3300270: pPipe24
+    3300272: pCone1
+    3300274: Wall4
+    3300276: Wall5
+    3300278: Wall6
+    3300280: pCone2
+    3300282: pCube2
+    3300284: PuzzleRoom
+    3300286: ceiling
+    3300288: ceiling1
+    4300000: Floor1
+    4300002: Floor
+    4300004: pPipe1
+    4300006: Wall
+    4300008: Wall1
+    4300010: pPipe2
+    4300012: pPipe4
+    4300014: pPipe5
+    4300016: Tooth
+    4300018: Tooth1
+    4300020: Tooth2
+    4300022: Tooth3
+    4300024: Pillar
+    4300026: Tooth
+    4300028: Tooth1
+    4300030: Tooth2
+    4300032: Tooth3
+    4300034: Pillar
+    4300036: Tooth
+    4300038: Tooth1
+    4300040: Tooth2
+    4300042: Tooth3
+    4300044: Pillar
+    4300046: Tooth
+    4300048: Tooth1
+    4300050: Tooth2
+    4300052: Tooth3
+    4300054: Pillar
+    4300056: Tooth
+    4300058: Tooth1
+    4300060: Tooth2
+    4300062: Tooth3
+    4300064: Tooth
+    4300066: Tooth1
+    4300068: Tooth2
+    4300070: Tooth3
+    4300072: Pillar
+    4300074: Tooth
+    4300076: Tooth1
+    4300078: Tooth2
+    4300080: Tooth3
+    4300082: Pillar
+    4300084: Tooth
+    4300086: Tooth1
+    4300088: Tooth2
+    4300090: Tooth3
+    4300092: Pillar
+    4300094: Tooth
+    4300096: Tooth1
+    4300098: Tooth2
+    4300100: Tooth3
+    4300102: Pillar
+    4300104: Tooth
+    4300106: Tooth1
+    4300108: Tooth2
+    4300110: Tooth3
+    4300112: Pillar
+    4300114: Tooth
+    4300116: Tooth1
+    4300118: Tooth2
+    4300120: Tooth3
+    4300122: Pillar
+    4300124: Tooth
+    4300126: Tooth1
+    4300128: Tooth2
+    4300130: Tooth3
+    4300132: Pillar
+    4300134: Tooth
+    4300136: Tooth1
+    4300138: Tooth2
+    4300140: Tooth3
+    4300142: Pillar
+    4300144: Tooth
+    4300146: Tooth1
+    4300148: Tooth2
+    4300150: Tooth3
+    4300152: Pillar
+    4300154: Tooth
+    4300156: Tooth1
+    4300158: Tooth2
+    4300160: Tooth3
+    4300162: Pillar
+    4300164: Tooth
+    4300166: Tooth1
+    4300168: Tooth2
+    4300170: Tooth3
+    4300172: Pillar
+    4300174: Tooth
+    4300176: Tooth1
+    4300178: Tooth2
+    4300180: Tooth3
+    4300182: Pillar
+    4300184: Tooth
+    4300186: Tooth1
+    4300188: Tooth2
+    4300190: Tooth3
+    4300192: Ceiling
+    4300194: Wall2
+    4300196: Wall3
+    4300198: Tooth
+    4300200: Tooth4
+    4300202: Tooth5
+    4300204: Tooth6
+    4300206: Tooth7
+    4300208: Tooth8
+    4300210: Tooth9
+    4300212: Tooth12
+    4300214: Tooth14
+    4300216: Tooth1
+    4300218: Tooth2
+    4300220: Tooth3
+    4300222: Tooth
+    4300224: Tooth
+    4300226: Tooth1
+    4300228: Tooth2
+    4300230: Tooth3
+    4300232: pPipe6
+    4300234: pPipe7
+    4300236: pPipe8
+    4300238: pPipe9
+    4300240: pPipe10
+    4300242: pPipe11
+    4300244: pPipe12
+    4300246: pPipe13
+    4300248: pPipe14
+    4300250: pPipe15
+    4300252: pPipe16
+    4300254: pPipe17
+    4300256: pPipe18
+    4300258: pPipe19
+    4300260: pPipe20
+    4300262: pPipe21
+    4300264: pPipe22
+    4300266: pPipe23
+    4300268: pPipe24
+    4300270: pCone1
+    4300272: Wall6
+    4300274: Wall5
+    4300276: Wall4
+    4300278: PuzzleRoom
+    4300280: pCube2
+    4300282: pCone2
+    4300284: ceiling
+    4300286: ceiling1
+    6400000: Ceiling
+    6400002: Floor
+    6400004: Floor1
+    6400006: Pillar
+    6400008: Pillar 1
+    6400010: Pillar 10
+    6400012: Pillar 11
+    6400014: Pillar 12
+    6400016: Pillar 13
+    6400018: Pillar 14
+    6400020: Pillar 15
+    6400022: Pillar 2
+    6400024: Pillar 3
+    6400026: Pillar 4
+    6400028: Pillar 5
+    6400030: Pillar 6
+    6400032: Pillar 7
+    6400034: Pillar 8
+    6400036: Pillar 9
+    6400038: pPipe1
+    6400040: pPipe2
+    6400042: pPipe4
+    6400044: pPipe5
+    6400046: Tooth
+    6400048: Tooth 1
+    6400050: Tooth 10
+    6400052: Tooth 11
+    6400054: Tooth 12
+    6400056: Tooth 13
+    6400058: Tooth 14
+    6400060: Tooth 15
+    6400062: Tooth 16
+    6400064: Tooth 17
+    6400066: Tooth 18
+    6400068: Tooth 2
+    6400070: Tooth 3
+    6400072: Tooth 4
+    6400074: Tooth 5
+    6400076: Tooth 6
+    6400078: Tooth 7
+    6400080: Tooth 8
+    6400082: Tooth 9
+    6400084: Tooth1
+    6400086: Tooth1 1
+    6400088: Tooth1 10
+    6400090: Tooth1 11
+    6400092: Tooth1 12
+    6400094: Tooth1 13
+    6400096: Tooth1 14
+    6400098: Tooth1 15
+    6400100: Tooth1 16
+    6400102: Tooth1 17
+    6400104: Tooth1 2
+    6400106: Tooth1 3
+    6400108: Tooth1 4
+    6400110: Tooth1 5
+    6400112: Tooth1 6
+    6400114: Tooth1 7
+    6400116: Tooth1 8
+    6400118: Tooth1 9
+    6400120: Tooth12
+    6400122: Tooth14
+    6400124: Tooth2
+    6400126: Tooth2 1
+    6400128: Tooth2 10
+    6400130: Tooth2 11
+    6400132: Tooth2 12
+    6400134: Tooth2 13
+    6400136: Tooth2 14
+    6400138: Tooth2 15
+    6400140: Tooth2 16
+    6400142: Tooth2 17
+    6400144: Tooth2 2
+    6400146: Tooth2 3
+    6400148: Tooth2 4
+    6400150: Tooth2 5
+    6400152: Tooth2 6
+    6400154: Tooth2 7
+    6400156: Tooth2 8
+    6400158: Tooth2 9
+    6400160: Tooth3
+    6400162: Tooth3 1
+    6400164: Tooth3 10
+    6400166: Tooth3 11
+    6400168: Tooth3 12
+    6400170: Tooth3 13
+    6400172: Tooth3 14
+    6400174: Tooth3 15
+    6400176: Tooth3 16
+    6400178: Tooth3 17
+    6400180: Tooth3 2
+    6400182: Tooth3 3
+    6400184: Tooth3 4
+    6400186: Tooth3 5
+    6400188: Tooth3 6
+    6400190: Tooth3 7
+    6400192: Tooth3 8
+    6400194: Tooth3 9
+    6400196: Tooth4
+    6400198: Tooth5
+    6400200: Tooth6
+    6400202: Tooth7
+    6400204: Tooth8
+    6400206: Tooth9
+    6400208: Wall
+    6400210: Wall1
+    6400212: Wall2
+    6400214: Wall3
+    6400216: //RootNode
+    6400218: pPipe10
+    6400220: pPipe11
+    6400222: pPipe12
+    6400224: pPipe13
+    6400226: pPipe14
+    6400228: pPipe15
+    6400230: pPipe16
+    6400232: pPipe17
+    6400234: pPipe18
+    6400236: pPipe6
+    6400238: pPipe7
+    6400240: pPipe8
+    6400242: pPipe9
+    6400244: Tooth 19
+    6400246: Tooth 20
+    6400248: Tooth1 18
+    6400250: Tooth1 19
+    6400252: Tooth2 18
+    6400254: Tooth2 19
+    6400256: Tooth3 18
+    6400258: Tooth3 19
+    6400260: pPipe19
+    6400262: pPipe20
+    6400264: pPipe21
+    6400266: pPipe22
+    6400268: pPipe23
+    6400270: pPipe24
+    6400272: pCone1
+    6400274: Wall4
+    6400276: Wall5
+    6400278: Wall6
+    6400280: pCone2
+    6400282: pCube2
+    6400284: PuzzleRoom
+    6400286: ceiling
+    6400288: ceiling1
+    2186277476908879412: ImportLogs
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 100
+    meshCompression: 0
+    addColliders: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

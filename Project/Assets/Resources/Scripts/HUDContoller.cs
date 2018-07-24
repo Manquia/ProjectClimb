@@ -1,16 +1,44 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class HUDContoller : MonoBehaviour {
+public class HUDContoller : FFComponent {
 
-
+    public Image fadeImage;
+    public float fadeTime = 1.2f;
     public Animator anim;
 
+
+    FFAction.ActionSequence fadeSeq;
 	// Use this for initialization
 	void Start () {
-		
-	}
+
+        //fadeSeq = action.Sequence();
+        //FadeIn();
+    }
+
+
+    // @REPEAT CODE from player
+    void FadeOut()
+    {
+        fadeImage.gameObject.SetActive(true);
+        fadeSeq.Property(new FFRef<Color>(() => fadeImage.color, (v) => fadeImage.color = v),fadeImage.color.MakeOpaque(), FFEase.E_Continuous, fadeTime);
+        fadeSeq.Sync();
+    }
+    void FadeIn()
+    {
+        fadeSeq.Property(new FFRef<Color>(() => fadeImage.color, (v) => fadeImage.color = v), fadeImage.color.MakeClear(), FFEase.E_Continuous, fadeTime);
+        fadeSeq.Sync();
+        fadeSeq.Call(DisableGameObject, fadeImage.gameObject);
+        fadeSeq.Sync();
+    }
+
+    void DisableGameObject(object go)
+    {
+        GameObject gomeObject = (GameObject)go;
+        gomeObject.SetActive(false);
+    }
 	
 	// Update is called once per frame
 	void Update ()

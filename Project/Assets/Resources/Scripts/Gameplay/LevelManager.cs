@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+struct ResetLevel
+{
+}
+
 public class LevelManager : MonoBehaviour
 {
     public string nextLevelName;
@@ -84,6 +88,12 @@ public class LevelManager : MonoBehaviour
         var cp = checkPointList[index];
 
         player.transform.position = cp.position;
+    }
+
+    void Resetlevel()
+    {
+        ResetLevel rl;
+        FFMessage<ResetLevel>.SendToLocal(rl);
     }
 
 }

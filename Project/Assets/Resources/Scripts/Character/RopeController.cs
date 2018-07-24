@@ -76,6 +76,9 @@ public class RopeController : MonoBehaviour
     public GameObject visualEndsPrefab;
     public GameObject collisionPrefab;
 
+    Vector3 ropeStartPos;
+    Vector3 ropeStartVel;
+
     // Use this for initialization
     void Awake()
     {   
@@ -86,6 +89,7 @@ public class RopeController : MonoBehaviour
 
         MakeEnds();
 
+
         // set langth to the current point distance
         if (length < 0.0f)
         {
@@ -94,10 +98,41 @@ public class RopeController : MonoBehaviour
         }
 
         FFMessageBoard<PlayerInteract.Use>.Connect(OnUse, gameObject);
+
+        if(GetComponent<GrappleController>() == null)
+        {
+            ropeStartPos = path.points[1];
+            ropeStartVel = velocity;
+        }
+        FFMessage<ResetLevel>.Connect(OnResetlevel);
     }
+
+    private int OnResetlevel(ResetLevel e)
+    {
+
+        if (GetComponent<GrappleController>() == null)
+        {
+            ResetRope();
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+        return 0;
+    }
+    public void ResetRope()
+    {
+        Debug.Assert(GetComponent<GrappleController>() == null, "Cannot reset a grappleing hook, this should be destroyed instaed");
+
+        path.points[1] = ropeStartPos;
+        velocity       = ropeStartVel; 
+
+    }
+
     private void OnDestroy()
     {
         FFMessageBoard<PlayerInteract.Use>.Disconnect(OnUse, gameObject);
+        FFMessage<ResetLevel>.Disconnect(OnResetlevel);
 
         RopeDestroy rd;
         rd.controller = this;
