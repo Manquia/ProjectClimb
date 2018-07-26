@@ -17,10 +17,9 @@ Rope Sound Effects
 - Wind moving effects (Add these back in)
 
 Environment
-Lvl1
 - Wind Sound
-- Distant factory
--
+- Distant factory Noise
+- Self distruct warning or Visual
 
 Sound Effects
 - Walking
