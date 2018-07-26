@@ -79,6 +79,7 @@ public class LevelManager : MonoBehaviour
     public void ResetPlayer()
     {
         TeleportToCheckPoint(currentCheckPointIndex);
+        ResetLevel();
         // @TODO you died b/c you fell or something!!! or something...
     }
 
@@ -90,7 +91,7 @@ public class LevelManager : MonoBehaviour
         player.transform.position = cp.position;
     }
 
-    void Resetlevel()
+    void ResetLevel()
     {
         ResetLevel rl;
         FFMessage<ResetLevel>.SendToLocal(rl);

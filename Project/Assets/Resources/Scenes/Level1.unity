@@ -366,6 +366,8 @@ MonoBehaviour:
     type: 2}
   visualEndsPrefab: {fileID: 1918244410186040, guid: a3e498afa66a6254d84b7b82c19deb8a,
     type: 2}
+  visualTopPrefab: {fileID: 1918244410186040, guid: ec5e89e853148274ba44c8a616a2579e,
+    type: 2}
   collisionPrefab: {fileID: 1436755486166178, guid: 40ca6b9670647d3408dd83acb6082277,
     type: 2}
 --- !u!114 &357651080
@@ -387,11 +389,11 @@ MonoBehaviour:
   ModifyAndDraw: 0
   points:
   - {x: 0, y: 0, z: 0}
-  - {x: 0.80424976, y: -6.395, z: 4.244437}
+  - {x: 0.7581253, y: -6.0585003, z: 3.5362186}
   linearDistanceAlongPath:
   - 0
-  - 7.7173886
-  - 15.434777
+  - 7.05585
+  - 14.1117
 --- !u!4 &357651081
 Transform:
   m_ObjectHideFlags: 0
@@ -400,7 +402,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 357651078}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 15.492, y: 10.03, z: -14.366}
+  m_LocalPosition: {x: 15.5, y: 9.7, z: -13.73}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1084,6 +1086,8 @@ MonoBehaviour:
     type: 2}
   visualEndsPrefab: {fileID: 1918244410186040, guid: a3e498afa66a6254d84b7b82c19deb8a,
     type: 2}
+  visualTopPrefab: {fileID: 1918244410186040, guid: ec5e89e853148274ba44c8a616a2579e,
+    type: 2}
   collisionPrefab: {fileID: 1436755486166178, guid: 40ca6b9670647d3408dd83acb6082277,
     type: 2}
 --- !u!114 &1445715869
@@ -1105,11 +1109,11 @@ MonoBehaviour:
   ModifyAndDraw: 0
   points:
   - {x: 0, y: 0, z: 0}
-  - {x: 0, y: -9, z: 0}
+  - {x: 0, y: -8.190001, z: 0}
   linearDistanceAlongPath:
   - 0
-  - 9
-  - 18
+  - 8.190001
+  - 16.380001
 --- !u!4 &1445715870
 Transform:
   m_ObjectHideFlags: 0
@@ -1118,7 +1122,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1445715867}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 45.5482, y: 1.6106, z: -20.3919}
+  m_LocalPosition: {x: 45.74, y: 1.01, z: -20.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1165,6 +1169,8 @@ MonoBehaviour:
     type: 2}
   visualEndsPrefab: {fileID: 1918244410186040, guid: a3e498afa66a6254d84b7b82c19deb8a,
     type: 2}
+  visualTopPrefab: {fileID: 1918244410186040, guid: ec5e89e853148274ba44c8a616a2579e,
+    type: 2}
   collisionPrefab: {fileID: 1436755486166178, guid: 40ca6b9670647d3408dd83acb6082277,
     type: 2}
 --- !u!114 &1449731023
@@ -1186,11 +1192,11 @@ MonoBehaviour:
   ModifyAndDraw: 0
   points:
   - {x: 0, y: 0, z: 0}
-  - {x: 0, y: -7.36, z: 0}
+  - {x: 0, y: -6.7250004, z: 0}
   linearDistanceAlongPath:
   - 0
-  - 7.36
-  - 14.72
+  - 6.7250004
+  - 13.450001
 --- !u!4 &1449731024
 Transform:
   m_ObjectHideFlags: 0
@@ -1199,7 +1205,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1449731021}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 11.3, y: 8.41, z: -31.2}
+  m_LocalPosition: {x: 11.3, y: 7.848, z: -31.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

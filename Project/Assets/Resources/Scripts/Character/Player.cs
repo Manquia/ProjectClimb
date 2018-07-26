@@ -260,12 +260,14 @@ public class Player : FFComponent
         // @TODO make FOV controlled by SetVelocityRef ...?? @POLISH @CLEANUP 
         // This would be addative to some of the other FOV features like sprint, and jump
         // off rope...
-        SetVelocityRef(new FFVar<Vector3>(Vector3.zero));
+        SetVelocityRef(new FFRef<Vector3>(() => GetComponent<Rigidbody>().velocity, (v) => { }));
+        // have the dynamicAudioPlayer Reference VelictyRef
         if (dynAudioPlayer != null)
         {
-            dynAudioPlayer.SetDynamicValue(new FFRef<float>(
+            var valueRef = new FFRef<float>(
                     () => GetVelocityRef().Getter().magnitude,
-                    (v) => { }));
+                    (v) => { });
+            dynAudioPlayer.SetDynamicValue(valueRef);
         }
 
         Debug.Assert(GetComponent<PlayerInteract>() != null, "Player must also have player Interact on it");
@@ -1210,10 +1212,6 @@ public class Player : FFComponent
 
 
         SwitchMode(Mode.Rope);
-
-        SetVelocityRef(new FFRef<Vector3>(
-            () => OnRope.rope.VelocityAtDistUpRope(OnRope.distUpRope),
-            (v) => {} ));
 
 
         // place ourselves onto the rope with correct velocity

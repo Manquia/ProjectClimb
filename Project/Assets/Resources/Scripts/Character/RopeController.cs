@@ -74,6 +74,7 @@ public class RopeController : MonoBehaviour
 
     public GameObject visualBetweensPrefab;
     public GameObject visualEndsPrefab;
+    public GameObject visualTopPrefab;
     public GameObject collisionPrefab;
 
     Vector3 ropeStartPos;
@@ -262,8 +263,13 @@ public class RopeController : MonoBehaviour
         // Calculate the first rotation relative to an absolute down
         var angularRotationOnRope = Quaternion.AngleAxis(ropeRotation, ropeVecNorm) * Quaternion.FromToRotation(Vector3.down, ropeVecNorm);
 
-        visualElementRopeEndTop.position = path.PositionAtPoint(0);
-        visualElementRopeEndTop.rotation = angularRotationOnRope;
+        if (visualElementRopeEndTop != null)
+        {
+            visualElementRopeEndTop.position = path.PositionAtPoint(0);
+            var staticRotation = Quaternion.FromToRotation(Vector3.up, Vector3.Normalize(-ropeStartPos));
+            //visualElementRopeEndTop.rotation = angularRotationOnRope;
+            visualElementRopeEndTop.rotation = staticRotation;
+        }
 
         // Draw visuals along rope
         int indexElement = 0;
@@ -290,9 +296,11 @@ public class RopeController : MonoBehaviour
             element.rotation = angularRotationOnRope;
         }
 
-        visualElementRopeEndBot.position = path.PositionAtPoint(path.points.Length - 1);
-        visualElementRopeEndBot.rotation = angularRotationOnRope;
-
+        if (visualElementRopeEndBot != null)
+        {
+            visualElementRopeEndBot.position = path.PositionAtPoint(path.points.Length - 1);
+            visualElementRopeEndBot.rotation = angularRotationOnRope;
+        }
 
         for(;indexElement < visualElements.Count; ++indexElement)
         {
@@ -347,11 +355,18 @@ public class RopeController : MonoBehaviour
     }
     void MakeEnds()
     {
-        visualElementRopeEndTop = Instantiate(visualEndsPrefab).transform;
-        visualElementRopeEndBot = Instantiate(visualEndsPrefab).transform;
+        if (visualTopPrefab != null)
+        { 
+            visualElementRopeEndTop = Instantiate(visualTopPrefab).transform;
+            visualElementRopeEndTop.SetParent(transform);
+        }
 
-        visualElementRopeEndTop.SetParent(transform);
-        visualElementRopeEndBot.SetParent(transform);
+        if (visualEndsPrefab != null)
+        {
+            visualElementRopeEndBot = Instantiate(visualEndsPrefab).transform;
+            visualElementRopeEndBot.SetParent(transform);
+        }
+        
     }
 
     void SendExternalPhysicsEvent(float dt)
