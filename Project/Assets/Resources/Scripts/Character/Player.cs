@@ -21,7 +21,7 @@ public class Player : FFComponent
     public DynamicAudioPlayer dynAudioPlayer;
     public IK_Snap ikSnap;
 
-    public SpriteRenderer fadeScreenMaskSprite;
+    //public SpriteRenderer fadeScreenMaskSprite;
     public UnityEngine.UI.Image fadeScreenMaskImage;
     public float fadeTime = 1.5f;
     FFAction.ActionSequence fadeScreenSeq;
@@ -31,6 +31,9 @@ public class Player : FFComponent
     internal PlayerInteract myPlayerInteract;
 
     public LayerMask interactMask;
+
+    public Animator characterAnim;
+
 
 
     FFAction.ActionSequence oneShotSeq; // never call sync OR  ClearSequence on this one...
@@ -89,6 +92,8 @@ public class Player : FFComponent
     public class RopeConnection
     {
         public RopeController rope;
+
+        public SphereCollider ropeCollider;
 
         public float pumpSpeed = 0.003f;
         public float pumpAcceleration = 0.5f;
@@ -162,13 +167,17 @@ public class Player : FFComponent
         public float maxSpeed = 2.5f;
         public float runMultiplier = 2.0f;
 
+        public float jumpCooldown = 0.25f;
+        internal float jumpCooldownTimer = 0;
+
         public float jumpForce = 1000.0f;
         public float maxSlopeAngle = 55.0f;
         public float groundTouchHeight = 0.2f;
         public class Details
         {
             public Annal<bool> groundTouches = new Annal<bool>(16, false);
-            public Annal<bool> jumping = new Annal<bool>(7, false);
+            public bool jumping = false;
+            public Annal<bool> tryJump = new Annal<bool>(7, false);
         }
         public Details details = new Details();
         public float climbRadius = 0.45f;
@@ -253,12 +262,14 @@ public class Player : FFComponent
         // @TODO make FOV controlled by SetVelocityRef ...?? @POLISH @CLEANUP 
         // This would be addative to some of the other FOV features like sprint, and jump
         // off rope...
-        SetVelocityRef(new FFVar<Vector3>(Vector3.zero));
+        SetVelocityRef(new FFRef<Vector3>(() => GetComponent<Rigidbody>().velocity, (v) => { }));
+        // have the dynamicAudioPlayer Reference VelictyRef
         if (dynAudioPlayer != null)
         {
-            dynAudioPlayer.SetDynamicValue(new FFRef<float>(
+            var valueRef = new FFRef<float>(
                     () => GetVelocityRef().Getter().magnitude,
-                    (v) => { }));
+                    (v) => { });
+            dynAudioPlayer.SetDynamicValue(valueRef);
         }
 
         Debug.Assert(GetComponent<PlayerInteract>() != null, "Player must also have player Interact on it");
@@ -267,26 +278,26 @@ public class Player : FFComponent
         // Fade Screen
         {
             // init
-            //fadeScreenSeq = action.Sequence();
-            //fadeScreenSeq.affectedByTimeScale = false;
-            //Seq_FadeOutScreenMasks();
+            fadeScreenSeq = action.Sequence();
+            fadeScreenSeq.affectedByTimeScale = false;
+            Seq_FadeOutScreenMasks();
         }
     }
     void Seq_FadeOutScreenMasks()
     {
-        fadeScreenMaskSprite.gameObject.SetActive(true);
+        //fadeScreenMaskSprite.gameObject.SetActive(true);
         fadeScreenMaskImage.gameObject.SetActive(true);
         
-        fadeScreenSeq.Property(new FFRef<Color>(() => fadeScreenMaskSprite.color, (v) => fadeScreenMaskSprite.color = v), fadeScreenMaskSprite.color.MakeClear(), FFEase.E_Continuous, fadeTime);
+        //fadeScreenSeq.Property(new FFRef<Color>(() => fadeScreenMaskSprite.color, (v) => fadeScreenMaskSprite.color = v), fadeScreenMaskSprite.color.MakeClear(), FFEase.E_Continuous, fadeTime);
         fadeScreenSeq.Property(new FFRef<Color>(() => fadeScreenMaskImage.color, (v) => fadeScreenMaskImage.color = v), fadeScreenMaskImage.color.MakeClear(), FFEase.E_Continuous, fadeTime);
         Seq_DisableScreenMasks();
     }
     void Seq_FadeScreenMasksToColor(Color color)
     {
-        fadeScreenMaskSprite.gameObject.SetActive(true);
+        //fadeScreenMaskSprite.gameObject.SetActive(true);
         fadeScreenMaskImage.gameObject.SetActive(true);
 
-        fadeScreenSeq.Property(new FFRef<Color>(() => fadeScreenMaskSprite.color, (v) => fadeScreenMaskSprite.color = v), color, FFEase.E_Continuous, fadeTime);
+        //fadeScreenSeq.Property(new FFRef<Color>(() => fadeScreenMaskSprite.color, (v) => fadeScreenMaskSprite.color = v), color, FFEase.E_Continuous, fadeTime);
         fadeScreenSeq.Property(new FFRef<Color>(() => fadeScreenMaskImage.color, (v) => fadeScreenMaskImage.color = v), color, FFEase.E_Continuous, fadeTime);
 
         fadeScreenSeq.Sync();
@@ -294,21 +305,23 @@ public class Player : FFComponent
     void Seq_DisableScreenMasks()
     {
         fadeScreenSeq.Sync();
-        fadeScreenSeq.Call(DisableGameObject, fadeScreenMaskSprite.gameObject);
+        //fadeScreenSeq.Call(DisableGameObject, fadeScreenMaskSprite.gameObject);
         fadeScreenSeq.Call(DisableGameObject, fadeScreenMaskImage.gameObject);
     }
     void Seq_FadeInScreenMasks()
     {
-        fadeScreenMaskSprite.gameObject.SetActive(true);
+        //fadeScreenMaskSprite.gameObject.SetActive(true);
         fadeScreenMaskImage.gameObject.SetActive(true);
         
-        fadeScreenSeq.Property(new FFRef<Color>(() => fadeScreenMaskSprite.color, (v) => fadeScreenMaskSprite.color = v), fadeScreenMaskSprite.color.MakeOpaque(), FFEase.E_Continuous, fadeTime);
+        //fadeScreenSeq.Property(new FFRef<Color>(() => fadeScreenMaskSprite.color, (v) => fadeScreenMaskSprite.color = v), fadeScreenMaskSprite.color.MakeOpaque(), FFEase.E_Continuous, fadeTime);
         fadeScreenSeq.Property(new FFRef<Color>(() => fadeScreenMaskImage.color, (v) => fadeScreenMaskImage.color = v), fadeScreenMaskImage.color.MakeOpaque(), FFEase.E_Continuous, fadeTime);
         
         fadeScreenSeq.Sync();
     }
 
     // @Cleanup, @Move?
+    // @Cleanup, @Move?
+    // @HUD->PauseScreen->QuitToMenuButton uses this
     public void LoadMainMenu()
     {
         Seq_FadeInScreenMasks();
@@ -465,14 +478,14 @@ public class Player : FFComponent
         }
 
         // @DEBUG @TODO @REMOVE @DELETE ME!!! ##@#@#@#@#@#@#@#@#@#@#
-        if (Input.GetKeyDown(KeyCode.T) && Input.GetKey(KeyCode.LeftShift))
-        {
-            miscellaneous.timeScaleVar.Setter(miscellaneous.timeScaleVar * 1.2f);
-        }
-        else if (Input.GetKeyDown(KeyCode.T))
-        {
-            miscellaneous.timeScaleVar.Setter(miscellaneous.timeScaleVar * 0.8f);
-        }
+        //if (Input.GetKeyDown(KeyCode.T) && Input.GetKey(KeyCode.LeftShift))
+        //{
+        //    miscellaneous.timeScaleVar.Setter(miscellaneous.timeScaleVar * 1.2f);
+        //}
+        //else if (Input.GetKeyDown(KeyCode.T))
+        //{
+        //    miscellaneous.timeScaleVar.Setter(miscellaneous.timeScaleVar * 0.8f);
+        //}
 
         // @DEBUG @TODO @REMOVE @DELETE ME!!! ##@#@#@#@#@#@#@#@#@#@#
 #if UNITY_EDITOR
@@ -494,10 +507,13 @@ public class Player : FFComponent
         UpdateCameraTurn();
         UpdateMoveActions();
 
+        // jumpCooldownTimer
+        movement.jumpCooldownTimer += dt;
+
         if (movement.grounded)
         {
             UpdateMoveType(dt, OnGroundData);
-            CheckJump();
+            CheckJump(dt);
         }
         else
         {
@@ -561,11 +577,25 @@ public class Player : FFComponent
 
     private void UpdateJumpState()
     {
-        // grounded && !jumping && spacePressed -> jumping = true
-        // grounded && jumping -> jumping = false
+        // Try jumping
+        if(input.space.Recall(0).down())
+        {
+            movement.details.tryJump.Record(true);
+        }
+        else
+        {
+            movement.details.tryJump.Record(false);
+        }
+
+        // stopped trying to jump
+        if (input.space.Recall(0).released())
+        {
+            movement.details.tryJump.Wash(false);
+        }
         
+        // Finsihed Jumping
         if (movement.grounded && movement.jumping)
-            movement.details.jumping.Record(false);
+            movement.details.jumping = false;
     }
 
     private void UpdateMoveEffects()
@@ -582,6 +612,7 @@ public class Player : FFComponent
             (!wasMovingForward && areMovingForward && input.modifier.Recall(0).down()) ||
             (areMovingForward && input.modifier.Recall(0).pressed()))
         {
+            characterAnim.SetBool("IsRunning", true);
             const float startTime = 0.25f;
             float fovDeltaValue = -movement.sprintFOVDifference;
             float fovDeltaStart = fovDeltaValue - movement.sprintFOVDeltaTracker.Val;
@@ -596,6 +627,7 @@ public class Player : FFComponent
             (!areMovingForward && wasMovingForward && input.modifier.Recall(1).down()) ||
             (areMovingForward && input.modifier.Recall(0).released()))
         {
+            characterAnim.SetBool("IsRunning", false);
             runEffectSeq.ClearSequence();
             const float resetTime = 0.2f;
             float fovDeltaToNormal = movement.sprintFOVDeltaTracker.Val;
@@ -716,16 +748,20 @@ public class Player : FFComponent
             transform.localRotation = transform.localRotation * rotation;
         }
     }
-    void CheckJump()
+    void CheckJump(float dt)
     {
         var rotOfPlane = Quaternion.FromToRotation(movement.up, Vector3.up);
         var revRotOfPlane = Quaternion.FromToRotation(Vector3.up, movement.up);
 
+        // Do jump!
         // movement in the Y axis (jump), Grounded && space in the last few frames?
-        if (movement.grounded && input.space.Contains((v) => v.down()))
+        if (movement.grounded &&
+            movement.details.tryJump.Contains((v) => v) &&
+            movement.jumpCooldownTimer > movement.jumpCooldown)
         {
+            movement.jumpCooldownTimer = 0;
             SnapToGround(maxDistToFloor);
-            movement.details.jumping.Record(true);
+            movement.details.jumping = true;
             movement.details.groundTouches.Wash(false);
 
 
@@ -809,10 +845,6 @@ public class Player : FFComponent
         Vector3 leanVec = Vector3.zero;
         float climbVec = 0.0f;
 
-        if (input.space.Recall(0).pressed())
-        {
-            RopePump(pumpAmount);
-        }
 
         bool flipClimbMod = false;
         // going up
@@ -847,7 +879,7 @@ public class Player : FFComponent
         }
 
         // Pump
-        if (input.space.Recall(0).down())
+        if (input.mouseRight.Recall(0).down())
         {
             RopePump(pumpAmount);
         }
@@ -878,7 +910,7 @@ public class Player : FFComponent
         }
 
         // Remove self from rope?
-        if (input.mouseRight.Recall(0).pressed())
+        if (input.space.Recall(0).pressed())
         {
             DestroyOnRope();
         }
@@ -1010,6 +1042,7 @@ public class Player : FFComponent
         {
             // apply movement
             myBody.AddForce(forceRot * input.moveDirRel * magnitude * fps * dt, ForceMode.Acceleration);
+            Debug.DrawLine(transform.position, transform.position + (forceRot * input.moveDirRel * magnitude * fps * dt * 10.0f), Color.cyan);
         }
         else if (velocity != Vector3.zero && mode != Mode.FreeFall) // no given movement direction, and have a velocity
         {
@@ -1078,7 +1111,7 @@ public class Player : FFComponent
         Debug.DrawRay(raycastOrigin, Vector3.down, Color.yellow);
         if (Physics.Raycast(raycastOrigin, Vector3.down, out hit, dist, mask))
         {
-            float angleFromUp = Vector3.Angle(-hit.normal.normalized, -Vector3.up);
+            float angleFromUp = Math.Abs(Vector3.Angle(-hit.normal.normalized, -Vector3.up));
 
             // Ground not too steep to be considered ground
             if (angleFromUp <= movement.maxSlopeAngle)
@@ -1184,10 +1217,6 @@ public class Player : FFComponent
 
         SwitchMode(Mode.Rope);
 
-        SetVelocityRef(new FFRef<Vector3>(
-            () => OnRope.rope.VelocityAtDistUpRope(OnRope.distUpRope),
-            (v) => {} ));
-
 
         // place ourselves onto the rope with correct velocity
         RopeController.ExternalPhysicsUpdate epu;
@@ -1213,7 +1242,7 @@ public class Player : FFComponent
 
         // wash movement details
         movement.details.groundTouches.Wash(false);
-        movement.details.jumping.Wash(false);
+        movement.details.tryJump.Wash(false);
     }
 
 
@@ -1323,23 +1352,28 @@ public class Player : FFComponent
             case Mode.Frozen:
                 myBody.useGravity = false;
                 myBody.isKinematic = true;
+                OnRope.ropeCollider.enabled = false;
                 break;
             case Mode.Movement:
                 myBody.useGravity = true;
                 myBody.isKinematic = false;
+                OnRope.ropeCollider.enabled = false;
                 break;
             case Mode.Rope:
                 myBody.useGravity = false;
                 myBody.isKinematic = false;
+                OnRope.ropeCollider.enabled = true;
                 //myBody.velocity = Vector3.zero;
                 break;
             case Mode.Climb:
                 myBody.useGravity = false;
                 myBody.isKinematic = true;
+                OnRope.ropeCollider.enabled = true;
                 break;
             case Mode.FreeFall:
                 myBody.useGravity = true;
                 myBody.isKinematic = false;
+                OnRope.ropeCollider.enabled = false;
                 break;
         }
     }

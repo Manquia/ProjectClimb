@@ -1,0 +1,36 @@
+Menu Level (Optional)
+
+Credits Screen (2 hr)
+- Score collectables
+- Finaly words
+
+Tutorial Segment (4 hr)
+Level 3 (6 hr)
+Fog
+Outline Effect
+Contextual Action Icon (Grab, nothing (dot), use)
+
+Controls rework
+- Space bar
+
+Rope Sound Effects
+- Wind moving effects (Add these back in)
+
+Environment
+Lvl1
+- Wind Sound
+- Distant factory
+-
+
+Sound Effects
+- Walking
+- Jumping
+- Death
+- Landing
+
+- Rope
+-- Grab
+-- Release
+-- Pump
+
++Grapple Hook Model

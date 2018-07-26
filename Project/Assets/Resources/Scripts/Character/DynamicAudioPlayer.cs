@@ -8,16 +8,7 @@ public class DynamicAudioPlayer : MonoBehaviour {
     [Serializable]
     public class DynamicAudioElement
     {
-        //public enum Type
-        //{
-        //    Constant,
-        //    Pulse,
-        //}
-
-        //public Type type;
-        public bool fPulse = false;
-        public AnimationCurve pulseCurve;
-
+        public float toleranceThreshold;
         public AnimationCurve volumeCurve;
         public AnimationCurve pitchCurve;
         public AudioClip clip;
@@ -25,9 +16,8 @@ public class DynamicAudioPlayer : MonoBehaviour {
     }
 
 
-    private AudioSource audioSrc;
     private FFRef<float> valueRef;
-    public float toleranceThreshold;
+    private AudioSource audioSrc;
     public DynamicAudioElement[] elements;
 
 	// Use this for initialization
@@ -37,11 +27,10 @@ public class DynamicAudioPlayer : MonoBehaviour {
         {
             element.src = gameObject.AddComponent<AudioSource>();
             element.src.clip = element.clip;
-            element.src.loop = !element.fPulse;
+            element.src.loop = true;
             element.src.volume = 0.0f;
-
-            if(element.fPulse == false)
-                element.src.Play();
+            
+            element.src.Play();
         }
 	}
 	
@@ -70,21 +59,9 @@ public class DynamicAudioPlayer : MonoBehaviour {
         var src = element.src;
 
         var value = valueRef;
-        var samplePoint = value / (toleranceThreshold + value);
+        var samplePoint = value / (element.toleranceThreshold + value);
         
         src.volume = element.volumeCurve.Evaluate(samplePoint);
         src.pitch =  element.pitchCurve.Evaluate(samplePoint);
-
-        if(element.fPulse) // check to see if we should play the sound since we aren't looping
-        {
-            var roll = UnityEngine.Random.Range(
-                Mathf.Min(0.99f, element.pulseCurve.Evaluate(valueRef)),
-                1.0f);
-            
-            if(roll > 1.0f - dt)
-            {
-                src.Play();
-            }
-        }
     }
 }

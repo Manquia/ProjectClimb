@@ -74,7 +74,11 @@ public class RopeController : MonoBehaviour
 
     public GameObject visualBetweensPrefab;
     public GameObject visualEndsPrefab;
+    public GameObject visualTopPrefab;
     public GameObject collisionPrefab;
+
+    Vector3 ropeStartPos;
+    Vector3 ropeStartVel;
 
     // Use this for initialization
     void Awake()
@@ -86,6 +90,7 @@ public class RopeController : MonoBehaviour
 
         MakeEnds();
 
+
         // set langth to the current point distance
         if (length < 0.0f)
         {
@@ -94,10 +99,41 @@ public class RopeController : MonoBehaviour
         }
 
         FFMessageBoard<PlayerInteract.Use>.Connect(OnUse, gameObject);
+
+        if(GetComponent<GrappleController>() == null)
+        {
+            ropeStartPos = path.points[1];
+            ropeStartVel = velocity;
+        }
+        FFMessage<ResetLevel>.Connect(OnResetlevel);
     }
+
+    private int OnResetlevel(ResetLevel e)
+    {
+
+        if (GetComponent<GrappleController>() == null)
+        {
+            ResetRope();
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+        return 0;
+    }
+    public void ResetRope()
+    {
+        Debug.Assert(GetComponent<GrappleController>() == null, "Cannot reset a grappleing hook, this should be destroyed instaed");
+
+        path.points[1] = ropeStartPos;
+        velocity       = ropeStartVel; 
+
+    }
+
     private void OnDestroy()
     {
         FFMessageBoard<PlayerInteract.Use>.Disconnect(OnUse, gameObject);
+        FFMessage<ResetLevel>.Disconnect(OnResetlevel);
 
         RopeDestroy rd;
         rd.controller = this;
@@ -227,8 +263,13 @@ public class RopeController : MonoBehaviour
         // Calculate the first rotation relative to an absolute down
         var angularRotationOnRope = Quaternion.AngleAxis(ropeRotation, ropeVecNorm) * Quaternion.FromToRotation(Vector3.down, ropeVecNorm);
 
-        visualElementRopeEndTop.position = path.PositionAtPoint(0);
-        visualElementRopeEndTop.rotation = angularRotationOnRope;
+        if (visualElementRopeEndTop != null)
+        {
+            visualElementRopeEndTop.position = path.PositionAtPoint(0);
+            var staticRotation = Quaternion.FromToRotation(Vector3.up, Vector3.Normalize(-ropeStartPos));
+            //visualElementRopeEndTop.rotation = angularRotationOnRope;
+            visualElementRopeEndTop.rotation = staticRotation;
+        }
 
         // Draw visuals along rope
         int indexElement = 0;
@@ -255,9 +296,11 @@ public class RopeController : MonoBehaviour
             element.rotation = angularRotationOnRope;
         }
 
-        visualElementRopeEndBot.position = path.PositionAtPoint(path.points.Length - 1);
-        visualElementRopeEndBot.rotation = angularRotationOnRope;
-
+        if (visualElementRopeEndBot != null)
+        {
+            visualElementRopeEndBot.position = path.PositionAtPoint(path.points.Length - 1);
+            visualElementRopeEndBot.rotation = angularRotationOnRope;
+        }
 
         for(;indexElement < visualElements.Count; ++indexElement)
         {
@@ -312,11 +355,18 @@ public class RopeController : MonoBehaviour
     }
     void MakeEnds()
     {
-        visualElementRopeEndTop = Instantiate(visualEndsPrefab).transform;
-        visualElementRopeEndBot = Instantiate(visualEndsPrefab).transform;
+        if (visualTopPrefab != null)
+        { 
+            visualElementRopeEndTop = Instantiate(visualTopPrefab).transform;
+            visualElementRopeEndTop.SetParent(transform);
+        }
 
-        visualElementRopeEndTop.SetParent(transform);
-        visualElementRopeEndBot.SetParent(transform);
+        if (visualEndsPrefab != null)
+        {
+            visualElementRopeEndBot = Instantiate(visualEndsPrefab).transform;
+            visualElementRopeEndBot.SetParent(transform);
+        }
+        
     }
 
     void SendExternalPhysicsEvent(float dt)
