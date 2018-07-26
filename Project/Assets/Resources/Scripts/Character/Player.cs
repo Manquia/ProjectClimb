@@ -1041,12 +1041,14 @@ public class Player : FFComponent
         if (input.moveDirRel != Vector3.zero)
         {
             // apply movement
+            characterAnim.SetBool("IsMoving", true);
             myBody.AddForce(forceRot * input.moveDirRel * magnitude * fps * dt, ForceMode.Acceleration);
             Debug.DrawLine(transform.position, transform.position + (forceRot * input.moveDirRel * magnitude * fps * dt * 10.0f), Color.cyan);
         }
         else if (velocity != Vector3.zero && mode != Mode.FreeFall) // no given movement direction, and have a velocity
         {
             // apply slowing movement
+            characterAnim.SetBool("IsMoving", false);
             if (!movement.jumping && velocity.y > 0.0f) // when not jumping and going up
                 myBody.velocity = Vector3.Lerp(velocity, new Vector3(0.0f, 0.0f, 0.0f), stoppingSpeed * dt);
             else
@@ -1216,6 +1218,7 @@ public class Player : FFComponent
 
 
         SwitchMode(Mode.Rope);
+        characterAnim.SetBool("IsOnRope", true);
 
 
         // place ourselves onto the rope with correct velocity
@@ -1328,10 +1331,12 @@ public class Player : FFComponent
             SwitchMode(Mode.Movement);
         }
 
+        characterAnim.SetBool("IsOnRope", false);
         DetachRopeConnection();
     }
     void DetachRopeConnection()
     {
+        characterAnim.SetBool("IsOnRope", false);
         if (OnRope.rope != null)
         {
             FFMessageBoard<RopeController.ExternalGraphicsUpdate>.Disconnect(OnRopeGraphicsUpdate, OnRope.rope.gameObject);
