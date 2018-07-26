@@ -32,6 +32,8 @@ public class Player : FFComponent
 
     public LayerMask interactMask;
 
+    public Animator characterAnim;
+
 
 
     FFAction.ActionSequence oneShotSeq; // never call sync OR  ClearSequence on this one...
@@ -610,6 +612,7 @@ public class Player : FFComponent
             (!wasMovingForward && areMovingForward && input.modifier.Recall(0).down()) ||
             (areMovingForward && input.modifier.Recall(0).pressed()))
         {
+            characterAnim.SetBool("IsRunning", true);
             const float startTime = 0.25f;
             float fovDeltaValue = -movement.sprintFOVDifference;
             float fovDeltaStart = fovDeltaValue - movement.sprintFOVDeltaTracker.Val;
@@ -624,6 +627,7 @@ public class Player : FFComponent
             (!areMovingForward && wasMovingForward && input.modifier.Recall(1).down()) ||
             (areMovingForward && input.modifier.Recall(0).released()))
         {
+            characterAnim.SetBool("IsRunning", false);
             runEffectSeq.ClearSequence();
             const float resetTime = 0.2f;
             float fovDeltaToNormal = movement.sprintFOVDeltaTracker.Val;
