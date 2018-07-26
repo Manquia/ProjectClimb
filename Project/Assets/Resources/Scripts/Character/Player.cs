@@ -249,7 +249,7 @@ public class Player : FFComponent
         OnRope.cameraUprightForwardStart = cameraController.transform.localRotation;
 
         if (ikSnap != null)
-            ikSnap.SetIK(true);
+            ikSnap.SetIK(false);
 
         // start in movement state
         SwitchMode(Mode.Movement);
@@ -1226,7 +1226,9 @@ public class Player : FFComponent
         // inheret whose ever velocity was greater!
         OnRope.rope.velocity = rigid.velocity.magnitude > rc.velocity.magnitude ? rigid.velocity : rc.velocity;
 
-
+        // turn IK on
+        if (ikSnap != null)
+            ikSnap.SetIK(true);
 
         SwitchMode(Mode.Rope);
         characterAnim.SetBool("IsOnRope", true);
@@ -1341,6 +1343,11 @@ public class Player : FFComponent
         {
             SwitchMode(Mode.Movement);
         }
+
+
+        // turn IK on
+        if (ikSnap != null)
+            ikSnap.SetIK(false);
 
         characterAnim.SetBool("IsOnRope", false);
         DetachRopeConnection();

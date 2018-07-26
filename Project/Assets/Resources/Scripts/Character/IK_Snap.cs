@@ -3,19 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
-public class IK_Snap : MonoBehaviour {
+public class IK_Snap : MonoBehaviour
+{
 
-    
+
     public void SetIK(bool active)
     {
         // Set all IK to active
-        if(active)
+        if (active)
         {
             useIK = leftHandIK = rightHandIK = leftFootIK = rightFootIK = active;
         }
         else
         {
-
+            useIK = leftHandIK = rightHandIK = leftFootIK = rightFootIK = active;
+            ResetIKValues();
         }
     }
 
@@ -37,24 +39,70 @@ public class IK_Snap : MonoBehaviour {
 
     private Animator anim;
 
-	// Use this for initialization
-	void Start ()
+    // Use this for initialization
+    void Start()
     {
         anim = GetComponent<Animator>();
-	}
-	
-	// Update is called once per frame
-	void Update ()
-    {
-		
-	}
 
-    void FixedUpdate()
-    {
-        
+        // record animation data from the start so that we can revert back from whatever IK we had...
+        {
+            IKPoint pt;
+            pt.rotWeight = 0.0f;
+            pt.posWeight = 0.0f;
+            pt.rot = Quaternion.identity;
+            pt.pos = Vector3.zero;
+
+            pt.goal = AvatarIKGoal.LeftFoot; startingIKPoints.Add(pt);
+            pt.goal = AvatarIKGoal.LeftHand; startingIKPoints.Add(pt);
+            pt.goal = AvatarIKGoal.RightFoot; startingIKPoints.Add(pt);
+            pt.goal = AvatarIKGoal.RightHand; startingIKPoints.Add(pt);
+
+            for (int i = 0; i < startingIKPoints.Count; ++i)
+            {
+                pt = startingIKPoints[i];
+                pt.rotWeight = anim.GetIKRotationWeight(pt.goal);
+                pt.posWeight = anim.GetIKPositionWeight(pt.goal);
+                pt.rot = anim.GetIKRotation(pt.goal);
+                pt.pos = anim.GetIKPosition(pt.goal);
+                startingIKPoints[i] = pt;
+            }
+        }
+
 
     }
 
+    void ResetIKValues()
+    {
+        foreach (var pt in startingIKPoints)
+        {
+            anim.SetIKRotationWeight(pt.goal, pt.rotWeight);
+            anim.SetIKPositionWeight(pt.goal, pt.posWeight);
+            anim.SetIKRotation(pt.goal, pt.rot);
+            anim.SetIKPosition(pt.goal, pt.pos);
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
+
+    void FixedUpdate()
+    {
+
+
+    }
+
+    struct IKPoint
+    {
+        public AvatarIKGoal goal;
+        public float rotWeight;
+        public Quaternion rot;
+        public float posWeight;
+        public Vector3 pos;
+    }
+    List<IKPoint> startingIKPoints = new List<IKPoint>();
 
     void OnAnimatorIK()
     {
@@ -62,7 +110,7 @@ public class IK_Snap : MonoBehaviour {
             return;
 
         //Debug.Log("Doing IK");
-        if(leftHandIK)
+        if (leftHandIK)
         {
             anim.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1.0f);
             anim.SetIKPosition(AvatarIKGoal.LeftHand, leftHandPos);
@@ -80,7 +128,7 @@ public class IK_Snap : MonoBehaviour {
             anim.SetIKRotation(AvatarIKGoal.RightHand, rightHandRot);
         }
 
-        if(leftFootIK)
+        if (leftFootIK)
         {
             anim.SetIKPositionWeight(AvatarIKGoal.LeftFoot, 1.0f);
             anim.SetIKPosition(AvatarIKGoal.LeftFoot, leftFootPos);
@@ -89,7 +137,7 @@ public class IK_Snap : MonoBehaviour {
             anim.SetIKRotation(AvatarIKGoal.LeftFoot, leftFootRot);
         }
 
-        if(rightFootIK)
+        if (rightFootIK)
         {
             anim.SetIKPositionWeight(AvatarIKGoal.RightFoot, 1.0f);
             anim.SetIKPosition(AvatarIKGoal.RightFoot, rightFootPos);
@@ -100,41 +148,3 @@ public class IK_Snap : MonoBehaviour {
 
     }
 }
-
-
-/*
-        // right hand IK check
-        {
-            var posRay = transform.position + (transform.forward * 0.25f) + (Vector3.up * 2.0f);
-var vecRay = Vector3.Normalize(-transform.up + (Vector3.right * 0.5f));
-var distOfRay = 1.0f;
-Debug.DrawLine(posRay, posRay + vecRay* distOfRay, Color.red);
-            if (Physics.Raycast(posRay, vecRay, out leftHit, distOfRay))
-            {
-                rightHandIK = true;
-                rightHandPos = leftHit.point;
-            }
-            else
-            {
-                rightHandIK = false;
-            }
-        }
-
-        // left hand IK check
-        {
-            var posRay = transform.position + (transform.forward * 0.25f) + (Vector3.up * 2.0f);
-var vecRay = Vector3.Normalize(-transform.up + (-Vector3.right * 0.5f));
-var distOfRay = 1.0f;
-Debug.DrawLine(posRay, posRay + vecRay* distOfRay, Color.red);
-            if (Physics.Raycast(posRay, vecRay, out rightHit, distOfRay))
-            {
-                leftHandIK = true;
-                leftHandPos = rightHit.point;
-            }
-            else
-            {
-                leftHandIK = false;
-            }
-
-        }
-        */
