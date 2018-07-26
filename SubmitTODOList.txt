@@ -7,8 +7,9 @@ Credits Screen (2 hr)
 Tutorial Segment (4 hr)
 Level 3 (6 hr)
 Fog
-Outline Effect
+Outline Effect for rope...?
 Contextual Action Icon (Grab, nothing (dot), use)
+Fix guidance on LVL 1 last jump
 
 Controls rework
 - Space bar
