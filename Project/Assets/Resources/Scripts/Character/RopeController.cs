@@ -79,6 +79,7 @@ public class RopeController : MonoBehaviour
 
     Vector3 ropeStartPos;
     Vector3 ropeStartVel;
+    bool ropeStateIsStatic;
 
     // Use this for initialization
     void Awake()
@@ -104,6 +105,7 @@ public class RopeController : MonoBehaviour
         {
             ropeStartPos = path.points[1];
             ropeStartVel = velocity;
+            ropeStateIsStatic = isStatic;
         }
         FFMessage<ResetLevel>.Connect(OnResetlevel);
     }
@@ -127,6 +129,7 @@ public class RopeController : MonoBehaviour
 
         path.points[1] = ropeStartPos;
         velocity       = ropeStartVel; 
+        isStatic       = ropeStateIsStatic;
 
     }
 

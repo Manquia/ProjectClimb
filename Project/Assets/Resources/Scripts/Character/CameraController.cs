@@ -15,7 +15,11 @@ public class CameraController : FFComponent {
     public float maxPitchDownAngle = 70.0f;
     public float maxTurnAngle = 75.0f;
 
+    public Transform LerpTarget;
+    public float lerpFraction;
+
     internal Transform cameraTrans;
+
 
 	
     public void SetupCameraController(Player player)
@@ -37,6 +41,7 @@ public class CameraController : FFComponent {
 	void Update ()
     {
         UpdateRotation();
+        UpdatePosition();
     }
     
     // return look vector
@@ -85,7 +90,18 @@ public class CameraController : FFComponent {
 
             cameraPitch = pitchAngle;
         }
+
     }
+
+
+    void UpdatePosition()
+    {
+        if(LerpTarget != null)
+        {
+            transform.position = Vector3.Lerp(transform.position, LerpTarget.position, lerpFraction);
+        }
+    }
+    
 
 
     void SetCursorState(CursorLockMode mode)

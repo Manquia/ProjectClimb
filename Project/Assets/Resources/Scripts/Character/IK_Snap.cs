@@ -9,7 +9,14 @@ public class IK_Snap : MonoBehaviour {
     public void SetIK(bool active)
     {
         // Set all IK to active
-        useIK = leftHandIK = rightHandIK = leftFootIK = rightFootIK = active;
+        if(active)
+        {
+            useIK = leftHandIK = rightHandIK = leftFootIK = rightFootIK = active;
+        }
+        else
+        {
+
+        }
     }
 
     public bool useIK = true;

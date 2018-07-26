@@ -53,16 +53,20 @@ public class AudioSourceWalker : FFComponent {
         walkerSeq.ClearSequence();
         var pitchDeltaSeq = Random.Range(-pitchDelta, pitchDelta);
         var volumeDeltaSeq = Random.Range(-volumeDelta, volumeDelta);
+        var sterioPanDeltaSeq = Random.Range(-sterioPanDelta, sterioPanDelta);
+
         var audioPitchReference = audioPitchRef();
         var audioVolumeReference = audioVolumeRef();
 
-        walkerSeq.Property(audioPitchReference, basePitch         + pitchDeltaSeq,     FFEase.E_SmoothStartEnd, time);
-        walkerSeq.Property(audioVolumeReference, baseVolume       + volumeDeltaSeq,    FFEase.E_SmoothStartEnd, time);
-        walkerSeq.Property(audioSterioPanRef(), baseSterioPan + Random.Range(-sterioPanDelta, sterioPanDelta), FFEase.E_SmoothStartEnd, time);
+        if(pitchDeltaSeq != 0.0f)       walkerSeq.Property(audioPitchReference, basePitch       + pitchDeltaSeq,     FFEase.E_SmoothStartEnd, time); // below is not indendent @TODO?
+        if(volumeDeltaSeq != 0.0f)      walkerSeq.Property(audioVolumeReference, baseVolume     + volumeDeltaSeq,    FFEase.E_SmoothStartEnd, time); // below is not indendent @TODO?
+        if(sterioPanDeltaSeq != 0.0f)   walkerSeq.Property(audioSterioPanRef(), baseSterioPan   + sterioPanDeltaSeq, FFEase.E_SmoothStartEnd, time); // below is not indendent @TODO?
 
         var pitchVolumeDelta = Random.Range(-pitchVolumePairDelta, pitchVolumePairDelta);
-        walkerSeq.Property(audioPitchReference, audioPitchReference + pitchDeltaSeq + pitchVolumeDelta, FFEase.E_SmoothStartEnd, time);
-        walkerSeq.Property(audioVolumeReference, audioVolumeReference + volumeDeltaSeq + pitchVolumeDelta, FFEase.E_SmoothStartEnd, time);
+        if(pitchVolumeDelta != 0.0f) walkerSeq.Property(audioPitchReference, audioPitchReference + pitchDeltaSeq + pitchVolumeDelta, FFEase.E_SmoothStartEnd, time);
+        if(pitchVolumeDelta != 0.0f) walkerSeq.Property(audioVolumeReference, audioVolumeReference + volumeDeltaSeq + pitchVolumeDelta, FFEase.E_SmoothStartEnd, time);
+
+        walkerSeq.Delay(time);
 
         walkerSeq.Sync();
         walkerSeq.Call(WalkAudio);

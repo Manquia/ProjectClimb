@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 #if UNITY_EDITOR
-using UnityEditor;
 #endif
 
 public class Player : FFComponent
@@ -157,6 +154,8 @@ public class Player : FFComponent
         internal Vector3 grabPosition;
         internal Quaternion grabRotion;
 
+        internal Quaternion cameraUprightForwardStart;
+
     }
     public RopeConnection OnRope;
 
@@ -247,6 +246,10 @@ public class Player : FFComponent
         myCol = GetComponent<CapsuleCollider>();
         cameraController.SetupCameraController(this);
 
+        OnRope.cameraUprightForwardStart = cameraController.transform.localRotation;
+
+        if (ikSnap != null)
+            ikSnap.SetIK(true);
 
         // start in movement state
         SwitchMode(Mode.Movement);
@@ -613,6 +616,7 @@ public class Player : FFComponent
             (areMovingForward && input.modifier.Recall(0).pressed()))
         {
             characterAnim.SetBool("IsRunning", true);
+
             const float startTime = 0.25f;
             float fovDeltaValue = -movement.sprintFOVDifference;
             float fovDeltaStart = fovDeltaValue - movement.sprintFOVDeltaTracker.Val;
@@ -767,9 +771,10 @@ public class Player : FFComponent
 
             var relVel = rotOfPlane * myBody.velocity;
             var relVelXY = new Vector3(relVel.x, 0.0f, relVel.z);
-            myBody.velocity = revRotOfPlane * relVelXY;
+            myBody.velocity = revRotOfPlane * relVelXY + (transform.up * movement.jumpForce);
 
-            myBody.AddForce(transform.up * movement.jumpForce);
+            // doesn't seem to be working put it in the velocity change above
+            //myBody.AddForce(transform.up * movement.jumpForce, ForceMode.VelocityChange);
         }
     }
     private void UpdateAir()
@@ -1191,6 +1196,8 @@ public class Player : FFComponent
 
     public void SetupOnRope(RopeController rc, RopeConnection.RopeTransitionData transitionType)
     {
+        var rigid = GetComponent<Rigidbody>();
+
         if(mode == Mode.Rope) // already on a rope
         {
             DetachRopeConnection();
@@ -1215,6 +1222,10 @@ public class Player : FFComponent
         OnRope.grabRotion = playerRot;      // set rotation for trasitions
         OnRope.transition = transitionType; // set the transition data
         OnRope.rope.isStatic = false;       // set rope to not be static
+
+        // inheret whose ever velocity was greater!
+        OnRope.rope.velocity = rigid.velocity.magnitude > rc.velocity.magnitude ? rigid.velocity : rc.velocity;
+
 
 
         SwitchMode(Mode.Rope);
@@ -1280,7 +1291,7 @@ public class Player : FFComponent
 
         // orient the player's camera for movement Move
         {
-            Quaternion cameraUprightForward = Quaternion.identity;
+            Quaternion cameraUprightForward = OnRope.cameraUprightForwardStart;
             float anglesTowardForwardAlignment = Quaternion.Angle(cameraUprightForward, cameraController.transform.localRotation);
             float anglesPerSecond = 90.0f;
             float timeToAlign = anglesTowardForwardAlignment / anglesPerSecond;
