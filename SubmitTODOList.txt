@@ -9,13 +9,13 @@ Level 3 (6 hr)
 Fog
 Outline Effect for rope...?
 Contextual Action Icon (Grab, nothing (dot), use)
-Fix guidance on LVL 1 last jump
+- Add low-poly environmental rocks/bushes to lvl 1
 
 Controls rework
 - Space bar
 
 Rope Sound Effects
-- Wind moving effects (Add these back in)
+- Wind moving effects Rope swinging sounds
 
 Environment
 - Wind Sound
@@ -33,4 +33,4 @@ Sound Effects
 -- Release
 -- Pump
 
-+Grapple Hook Model
++Grapple Hook Model+Fix guidance on LVL 1 last jump
