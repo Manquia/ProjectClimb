@@ -76,13 +76,30 @@ public class LevelManager : MonoBehaviour
             currentCheckPointIndex = cpIndex;
     }
 
-    public void ResetPlayer()
+    bool IsInDeathPit = false;
+    public void PlayerFellIntoDeathPit()
     {
-        TeleportToCheckPoint(currentCheckPointIndex);
-        ResetLevel();
-        // @TODO you died b/c you fell or something!!! or something...
+        if (IsInDeathPit)
+            return;
+
+        IsInDeathPit = true;
+        player.Seq_FadeInScreenMasks(0.3f);
+        player.fadeScreenSeq.Sync();
+        player.fadeScreenSeq.Call(player.PlayDeathLandingSound);
+        player.fadeScreenSeq.Call(ResetPlayer);
+        player.fadeScreenSeq.Delay(0.9f);
+        player.fadeScreenSeq.Sync();
+        player.fadeScreenSeq.Call(player.Seq_FadeOutScreenMasks, 1.3f);
     }
 
+    public void ResetPlayer()
+    {
+        IsInDeathPit = false;
+        TeleportToCheckPoint(currentCheckPointIndex);
+        ResetLevel();
+    }
+
+    // Helpers
     void TeleportToCheckPoint(int index)
     {
         index = Mathf.Min(index, checkPointList.Count - 1);
@@ -90,7 +107,6 @@ public class LevelManager : MonoBehaviour
 
         player.transform.position = cp.position;
     }
-
     void ResetLevel()
     {
         ResetLevel rl;

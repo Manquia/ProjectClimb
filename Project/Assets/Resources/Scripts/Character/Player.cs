@@ -17,11 +17,12 @@ public class Player : FFComponent
     public CameraController cameraController;
     public DynamicAudioPlayer dynAudioPlayer;
     public IK_Snap ikSnap;
+    public AudioSource oneShotPlayer;
 
     //public SpriteRenderer fadeScreenMaskSprite;
     public UnityEngine.UI.Image fadeScreenMaskImage;
     public float fadeTime = 1.5f;
-    FFAction.ActionSequence fadeScreenSeq;
+    internal FFAction.ActionSequence fadeScreenSeq;
 
     internal Rigidbody myBody;
     internal CapsuleCollider myCol;
@@ -68,7 +69,8 @@ public class Player : FFComponent
         public Annal<Vector3> moveDirRel = new Annal<Vector3>(15, Vector3.zero);
 
         public Annal<KeyState> use = new Annal<KeyState>(15, KeyState.Constructor);
-        public Annal<KeyState> modifier = new Annal<KeyState>(15, KeyState.Constructor);
+        public Annal<KeyState> leftShift = new Annal<KeyState>(15, KeyState.Constructor);
+        public Annal<KeyState> leftCtrl = new Annal<KeyState>(15, KeyState.Constructor);
         public Annal<KeyState> up = new Annal<KeyState>(15, KeyState.Constructor);
         public Annal<KeyState> down = new Annal<KeyState>(15, KeyState.Constructor);
         public Annal<KeyState> left = new Annal<KeyState>(15, KeyState.Constructor);
@@ -101,6 +103,9 @@ public class Player : FFComponent
         public float leanSpeed = 0.9f;
 
         public float distUpRope;
+        public float distUpRopeTopLimit = 0.6f;
+        public float distUpRopeBotLimit = 1.0f;
+
         public float distPumpUp = 0.0f;
 
         public float maxPumpUpDist = 0.1f;
@@ -156,6 +161,13 @@ public class Player : FFComponent
 
         internal Quaternion cameraUprightForwardStart;
 
+
+        public AudioClip grabRopeSound;
+        public AudioClip releaseRopeSound;
+        public AudioClip pumpRopeSound;
+        internal float pumpRopeSoundCooldown = 0.5f;
+        internal float pumpRopeSoundCooldownTimer = 0.5f;
+
     }
     public RopeConnection OnRope;
 
@@ -174,6 +186,7 @@ public class Player : FFComponent
         public float groundTouchHeight = 0.2f;
         public class Details
         {
+            public Annal<Vector3> velocity = new Annal<Vector3>(4, Vector3.zero);
             public Annal<bool> groundTouches = new Annal<bool>(16, false);
             public bool jumping = false;
             public Annal<bool> tryJump = new Annal<bool>(7, false);
@@ -201,6 +214,15 @@ public class Player : FFComponent
         public AnimationCurve sprintEndFOVCurve;
         public float          sprintFOVDifference;
         internal FFVar<float> sprintFOVDeltaTracker = new FFVar<float>(0.0f);
+
+        public AudioClip softLandingSound;
+        public AudioClip hardLandingSound;
+        public AudioClip deathLandingSound; // used by death pits
+
+        public float softLandingVelocityDeltaThreshold;
+        public float hardLandingVelocityDeltaThreshold;
+
+        public AudioClip[] jumpSounds;
 
     }
     public Movement movement;
@@ -286,16 +308,23 @@ public class Player : FFComponent
             Seq_FadeOutScreenMasks();
         }
     }
-    void Seq_FadeOutScreenMasks()
+
+    // Fade Sequence stuff
+    public void Seq_FadeOutScreenMasks(object f32_timeOverride) { Seq_FadeOutScreenMasks((float)f32_timeOverride); }
+    public void Seq_FadeOutScreenMasks(float timeOverride = -1.0f)
     {
+        float time = fadeTime;
+        if (timeOverride != -1.0f)
+            time = timeOverride;
+
         //fadeScreenMaskSprite.gameObject.SetActive(true);
         fadeScreenMaskImage.gameObject.SetActive(true);
-        
-        //fadeScreenSeq.Property(new FFRef<Color>(() => fadeScreenMaskSprite.color, (v) => fadeScreenMaskSprite.color = v), fadeScreenMaskSprite.color.MakeClear(), FFEase.E_Continuous, fadeTime);
-        fadeScreenSeq.Property(new FFRef<Color>(() => fadeScreenMaskImage.color, (v) => fadeScreenMaskImage.color = v), fadeScreenMaskImage.color.MakeClear(), FFEase.E_Continuous, fadeTime);
+
+        //fadeScreenSeq.Property(new FFRef<Color>(() => fadeScreenMaskSprite.color, (v) => fadeScreenMaskSprite.color = v), fadeScreenMaskSprite.color.MakeClear(), FFEase.E_Continuous, time);
+        fadeScreenSeq.Property(new FFRef<Color>(() => fadeScreenMaskImage.color, (v) => fadeScreenMaskImage.color = v), fadeScreenMaskImage.color.MakeClear(), FFEase.E_Continuous, time);
         Seq_DisableScreenMasks();
     }
-    void Seq_FadeScreenMasksToColor(Color color)
+    public void Seq_FadeScreenMasksToColor(Color color)
     {
         //fadeScreenMaskSprite.gameObject.SetActive(true);
         fadeScreenMaskImage.gameObject.SetActive(true);
@@ -305,19 +334,24 @@ public class Player : FFComponent
 
         fadeScreenSeq.Sync();
     }
-    void Seq_DisableScreenMasks()
+    public void Seq_DisableScreenMasks()
     {
         fadeScreenSeq.Sync();
         //fadeScreenSeq.Call(DisableGameObject, fadeScreenMaskSprite.gameObject);
         fadeScreenSeq.Call(DisableGameObject, fadeScreenMaskImage.gameObject);
     }
-    void Seq_FadeInScreenMasks()
+    public void Seq_FadeInScreenMasks(object f32_timeOverride) { Seq_FadeInScreenMasks((float)f32_timeOverride); }
+    public void Seq_FadeInScreenMasks(float timeOverride = -1.0f)
     {
+        float time = fadeTime;
+        if (timeOverride != -1.0f)
+            time = timeOverride;
+
         //fadeScreenMaskSprite.gameObject.SetActive(true);
         fadeScreenMaskImage.gameObject.SetActive(true);
-        
-        //fadeScreenSeq.Property(new FFRef<Color>(() => fadeScreenMaskSprite.color, (v) => fadeScreenMaskSprite.color = v), fadeScreenMaskSprite.color.MakeOpaque(), FFEase.E_Continuous, fadeTime);
-        fadeScreenSeq.Property(new FFRef<Color>(() => fadeScreenMaskImage.color, (v) => fadeScreenMaskImage.color = v), fadeScreenMaskImage.color.MakeOpaque(), FFEase.E_Continuous, fadeTime);
+
+        //fadeScreenSeq.Property(new FFRef<Color>(() => fadeScreenMaskSprite.color, (v) => fadeScreenMaskSprite.color = v), fadeScreenMaskSprite.color.MakeOpaque(), FFEase.E_Continuous, time);
+        fadeScreenSeq.Property(new FFRef<Color>(() => fadeScreenMaskImage.color, (v) => fadeScreenMaskImage.color = v), fadeScreenMaskImage.color.MakeOpaque(), FFEase.E_Continuous, time);
         
         fadeScreenSeq.Sync();
     }
@@ -327,6 +361,7 @@ public class Player : FFComponent
     // @HUD->PauseScreen->QuitToMenuButton uses this
     public void LoadMainMenu()
     {
+        Debug.Log("LoadMainMenu");
         Seq_FadeInScreenMasks();
         fadeScreenSeq.Call(LoadLevelOfName, "Menu");
     }
@@ -343,6 +378,31 @@ public class Player : FFComponent
             DestroyOnRope();
     }
 
+
+    // Audio Interface 
+    // @TODO @POLISH add pitch variation to these...
+    public void PlaySoftLandingSound() { oneShotPlayer.PlayOneShot(movement.softLandingSound); }
+    public void PlayHardLandingSound() { oneShotPlayer.PlayOneShot(movement.hardLandingSound); }
+    public void PlayDeathLandingSound() { oneShotPlayer.PlayOneShot(movement.deathLandingSound); }
+    public void PlayJumpSound()
+    {
+        var clip = movement.jumpSounds.SampleRandom(null);
+        if (clip != null)
+            oneShotPlayer.PlayOneShot(clip);
+    }
+    public void PlayRopeReleasedSound() { oneShotPlayer.PlayOneShot(OnRope.releaseRopeSound); }
+    public void PlayRopeGrabSound() { oneShotPlayer.PlayOneShot(OnRope.grabRopeSound); }
+    public void PlayRopePumpSound(bool startedPump)
+    {
+        // @MESSY @CLEANUP
+        if (startedPump && OnRope.pumpRopeSoundCooldownTimer > OnRope.pumpRopeSoundCooldown)
+        {
+            OnRope.pumpRopeSoundCooldownTimer = 0.0f;
+            oneShotPlayer.PlayOneShot(OnRope.pumpRopeSound);
+        }
+
+        OnRope.pumpRopeSoundCooldownTimer += Time.deltaTime;
+    }
 
     #region Collisions
     private void OnCollisionEnter(Collision col)
@@ -452,12 +512,16 @@ public class Player : FFComponent
     // Called right after physics, before rendering. Use for Kinimatic player actions
     void Update()
     {
+        var rigid = GetComponent<Rigidbody>();
+
         if (input.right.Recall(0).up())
             myPlayerInteract.UpdateInteract();
 
         UpdateTimeScale();
         float dt = Time.deltaTime;
         UpdateInput();
+
+        movement.details.velocity.Record(rigid.velocity);
 
         switch (mode.Recall(0))
         {
@@ -517,6 +581,7 @@ public class Player : FFComponent
         {
             UpdateMoveType(dt, OnGroundData);
             CheckJump(dt);
+            CheckLandSounds(dt);
         }
         else
         {
@@ -524,6 +589,8 @@ public class Player : FFComponent
             UpdateAir();
         }
     }
+
+
     void UpdateModeRope(float dt)
     {
         // @TODO maybe make this a limited action instead of no action...
@@ -612,8 +679,8 @@ public class Player : FFComponent
 
         // Start Effects for sprint
         if (
-            (!wasMovingForward && areMovingForward && input.modifier.Recall(0).down()) ||
-            (areMovingForward && input.modifier.Recall(0).pressed()))
+            (!wasMovingForward && areMovingForward && input.leftShift.Recall(0).down()) ||
+            (areMovingForward && input.leftShift.Recall(0).pressed()))
         {
             characterAnim.SetBool("IsRunning", true);
 
@@ -628,8 +695,8 @@ public class Player : FFComponent
         }
         // Stop Effects for sprint
         else if (
-            (!areMovingForward && wasMovingForward && input.modifier.Recall(1).down()) ||
-            (areMovingForward && input.modifier.Recall(0).released()))
+            (!areMovingForward && wasMovingForward && input.leftShift.Recall(1).down()) ||
+            (areMovingForward && input.leftShift.Recall(0).released()))
         {
             characterAnim.SetBool("IsRunning", false);
             runEffectSeq.ClearSequence();
@@ -641,7 +708,7 @@ public class Player : FFComponent
             // we do this addativly b/c it could be interrupted by starting to sprint again
         }
         // Are sprinting && run effects need to be refreshed...
-        else if(areMovingForward && input.modifier.Recall(0).down() && runEffectSeq.TimeUntilEnd() < 0.02f)
+        else if(areMovingForward && input.leftShift.Recall(0).down() && runEffectSeq.TimeUntilEnd() < 0.02f)
         {
             const float repeatTime = 0.5f; // @TODO @POLISH should be connected to walk cycle sound
             const float fovDeltaValue = -1.0f;
@@ -708,7 +775,8 @@ public class Player : FFComponent
         UpdateKeyState(input.left, KeyCode.A);
         UpdateKeyState(input.right, KeyCode.D);
         UpdateKeyState(input.space, KeyCode.Space);
-        UpdateKeyState(input.modifier, KeyCode.LeftShift);
+        UpdateKeyState(input.leftShift, KeyCode.LeftShift);
+        UpdateKeyState(input.leftCtrl, KeyCode.LeftControl);
         UpdateKeyState(input.use, KeyCode.E);
 
         UpdateMouseState(input.mouseLeft,    0);
@@ -768,6 +836,7 @@ public class Player : FFComponent
             movement.details.jumping = true;
             movement.details.groundTouches.Wash(false);
 
+            PlayJumpSound();
 
             var relVel = rotOfPlane * myBody.velocity;
             var relVelXY = new Vector3(relVel.x, 0.0f, relVel.z);
@@ -776,6 +845,51 @@ public class Player : FFComponent
             // doesn't seem to be working put it in the velocity change above
             //myBody.AddForce(transform.up * movement.jumpForce, ForceMode.VelocityChange);
         }
+    }
+    private void CheckLandSounds(float dt)
+    {
+        // if we arn't on the ground we can't have landed
+        if(movement.grounded == false)    
+            return;
+    
+            var velocities = movement.details.velocity;
+
+        var vel0 = velocities.Recall(0);
+        var vel1 = velocities.Recall(1);
+        var vel0Norm = vel0.normalized;
+        var vel1Norm = vel1.normalized;
+
+
+        for (uint i = 2; i < velocities.size; ++i)
+        {
+            // positive when we changed directions up
+            float deltaVel = vel0.y - vel1.y;
+
+            bool deltaIsSoft = deltaVel > movement.softLandingVelocityDeltaThreshold;
+            bool deltaIsHard = deltaVel > movement.hardLandingVelocityDeltaThreshold;
+
+            if(deltaIsHard)
+            {
+                PlayHardLandingSound();
+            }
+            else if(deltaIsSoft)
+            {
+                PlaySoftLandingSound();
+            }
+
+            if(deltaIsSoft || deltaIsSoft)
+            {
+                velocities.Wash(Vector3.zero);
+                break;
+            }
+
+            vel0 = vel1;
+            vel1 = velocities.Recall(i);
+            vel0Norm = vel1Norm;
+            vel1Norm = vel1.normalized;
+        }
+
+
     }
     private void UpdateAir()
     {
@@ -792,7 +906,7 @@ public class Player : FFComponent
         var revRotOfPlane = Quaternion.FromToRotation(Vector3.up, movement.up);
 
         var maxSpeed = moveData.maxSpeed;
-        if (input.modifier.Recall(0).down())
+        if (input.leftShift.Recall(0).down())
         {
             maxSpeed *= movement.runMultiplier;
         }
@@ -855,7 +969,7 @@ public class Player : FFComponent
         // going up
         if (input.up.Recall(0).down())
         {
-            if (input.modifier.Recall(0).down() == flipClimbMod)
+            if (input.leftCtrl.Recall(0).down() == flipClimbMod)
                 leanVec += new Vector3(0.0f, 0.0f, 1.0f);
             else
                 climbVec += 1.0f;
@@ -863,7 +977,7 @@ public class Player : FFComponent
         // going down
         if (input.down.Recall(0).down())
         {
-            if (input.modifier.Recall(0).down() == flipClimbMod)
+            if (input.leftCtrl.Recall(0).down() == flipClimbMod)
                 leanVec += new Vector3(0.0f, 0.0f, -1.0f);
             else
                 climbVec += -1.0f;
@@ -873,23 +987,29 @@ public class Player : FFComponent
         // going right
         if (input.right.Recall(0).down() && !input.left.Recall(0).down())
         {
-            if (input.modifier.Recall(0).down() == flipRotateMod)
+            if (input.leftShift.Recall(0).down() == flipRotateMod)
                 leanVec += new Vector3(1.0f, 0.0f, 0.0f);
         }
         // going left
         if (input.left.Recall(0).down() && !input.right.Recall(0).down())
         {
-            if (input.modifier.Recall(0).down() == flipRotateMod)
+            if (input.leftShift.Recall(0).down() == flipRotateMod)
                 leanVec += new Vector3(-1.0f, 0.0f, 0.0f);
         }
 
         // Pump
-        if (input.mouseRight.Recall(0).down())
+        if (input.leftShift.Recall(0).down())
         {
+            if (input.leftShift.Recall(0).pressed())
+                PlayRopePumpSound(true);
+            else
+                PlayRopePumpSound(false);
+
             RopePump(pumpAmount);
         }
         else
         {
+            PlayRopePumpSound(false);
             var vecToRestingPump = Mathf.Clamp(
                 -OnRope.distPumpUp,
                 -OnRope.pumpResetSpeed * dt,
@@ -917,6 +1037,7 @@ public class Player : FFComponent
         // Remove self from rope?
         if (input.space.Recall(0).pressed())
         {
+            PlayRopeReleasedSound();
             DestroyOnRope();
         }
 
@@ -1145,8 +1266,8 @@ public class Player : FFComponent
     {
         OnRope.distUpRope = Mathf.Clamp(
             amountUp + OnRope.distUpRope,
-            0.0f,
-            OnRope.rope.GetPath().PathLength);
+            0.0f + OnRope.distUpRopeBotLimit,
+            OnRope.rope.GetPath().PathLength - OnRope.distUpRopeTopLimit);
     }
     void RopeRotateOn(float amountRight)
     {
@@ -1225,6 +1346,8 @@ public class Player : FFComponent
 
         // inheret whose ever velocity was greater!
         OnRope.rope.velocity = rigid.velocity.magnitude > rc.velocity.magnitude ? rigid.velocity : rc.velocity;
+
+        PlayRopeGrabSound();
 
         // dynamic rope sound
         if (dynAudioPlayer != null)

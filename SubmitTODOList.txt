@@ -1,49 +1,56 @@
-Menu Level (Optional)
-
 Credits Screen (2 hr)
 - Score collectables
-- Finaly words
+- Final words
 
 Tutorial Segment (4 hr)
-Level 3 (6 hr)
+
+
+LEVEL 3 (6 hr)
 Fog
-Outline Effect for rope...?
-Contextual Action Icon (Grab, nothing (dot), use)
+Environment
+- Self distruct warning or Visual
+LEVEL 3
+
+-Contextual Action Icon (Grab, nothing (dot), use)
+
 -POST PROCESSING!!! (Bloom will do wonders!!!)
 
-
-Controls rework
-- Remove Rope climbing functionality!@!!! TODO SUBMIT Or Limit it to parts of the rope
-We already need to do this for the grabbing onto the rope so might just give it 2 limits, top + bot.
-
-
-- Line of sight sound from fractory!!! to show direction of the noise.
-
 Puzzle Level 2
-- Turn on sound!!!
-
-Environment
-- Distant factory Noise
-- Self distruct warning or Visual
+- Turn on sound of factory with walker
 
 Sound Effects
 - Walking
 
-- Death
-
-- Landing
-- Jumping
-
-- Rope
--- Grab
--- Release
--- Pump
 
 
 
+
+
+@POLISH
+- Outline Effect for rope...?
+- Distant factory Noise *** Line of sight sound from fractory!!! to show direction of the noise.
+- Rope Sounds
+-+ Grab
+-+ Release
+-+ Pump
+
+
+
+
+Controls rework
++ Remove Rope climbing functionality!@!!! TODO SUBMIT Or Limit it to parts of the rope
+We already need to do this for the grabbing onto the rope so might just give it 2 limits, top + bot.
++Menu Level (Optional)
++- Rope
++ Grab
++ Release
++ Pump
 +Grapple Hook Model+Fix guidance on LVL 1 last jump
 Rope Sound Effects
 ++ Wind moving effects Rope swinging sounds
 + Space bar
 + Wind Sound
 + Add low-poly environmental rocks/bushes to lvl 1
++ Death
++ Landing
++ Jumping

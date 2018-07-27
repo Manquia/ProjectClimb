@@ -20,7 +20,7 @@ public class DeathPit : MonoBehaviour {
         if(other.tag == "Player")
         {
             var lm = FindObjectOfType<LevelManager>();
-            lm.ResetPlayer();
+            lm.PlayerFellIntoDeathPit();
         }
     }
 

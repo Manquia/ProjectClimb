@@ -109,5 +109,15 @@ static class FFExtensionMethods
             objs[rand2] = temp;
         }
     }
+
+    public static T SampleRandom<T>(this T[] objs, T notFoundValue)
+    {
+        int objCount = objs.Length;
+        if (objs == null || objs.Length == 0)
+            return notFoundValue;
+
+        int randomIndex = UnityEngine.Random.Range(0, objs.Length);
+        return objs[randomIndex];
+    }
     #endregion
 }
