@@ -15,8 +15,10 @@ public class SplashScreen : FFComponent
     public float fadeInTime = 1.5f;
     public float fadeOutTime = 0.9f;
     public float waitTime = 2.0f;
-    public TextMesh pressAnyKeyText;
+    public float textFadeTime = 0.7f;
 
+    public TextMesh pressAnyKeyTextMesh;
+    public UnityEngine.UI.Text pressAnyKeyTextUI;
 
     FFAction.ActionSequence seq;
     // Use this for initialization
@@ -38,9 +40,19 @@ public class SplashScreen : FFComponent
         seq.Sync();
 
         // show text
-        var textColorRef = new FFRef<Color>(() => pressAnyKeyText.color, (v) => pressAnyKeyText.color = v);
-        textColorRef.Setter(textColorRef.Val.MakeClear());
-        seq.Property(textColorRef, textColorRef.Val.MakeOpaque(), FFEase.E_Continuous, 0.45f);
+        if(pressAnyKeyTextMesh != null)
+        {
+            var textColorRef = new FFRef<Color>(() => pressAnyKeyTextMesh.color, (v) => pressAnyKeyTextMesh.color = v);
+            textColorRef.Setter(textColorRef.Val.MakeClear());
+            seq.Property(textColorRef, textColorRef.Val.MakeOpaque(), FFEase.E_Continuous, textFadeTime);
+        }
+
+        if (pressAnyKeyTextUI != null)
+        {
+            var textColorRef = new FFRef<Color>(() => pressAnyKeyTextUI.color, (v) => pressAnyKeyTextUI.color = v);
+            textColorRef.Setter(textColorRef.Val.MakeClear());
+            seq.Property(textColorRef, textColorRef.Val.MakeOpaque(), FFEase.E_Continuous, textFadeTime);
+        }
 
         // Update Sequence for press any key
         seq.Sync();

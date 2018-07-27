@@ -8,8 +8,6 @@ Environment
 - Self distruct warning or Visual
 LEVEL 3
 
-Credits Screen (1 hr)
-- Final words
 
 - POST PROCESSING!!! (Bloom will do wonders!!!) (.5 hr)
 
@@ -54,6 +52,8 @@ Lighting pass
 -+ Grab
 -+ Release
 -+ Pump
+Credits Screen (1 hr)
+- Final words
 
 
 
