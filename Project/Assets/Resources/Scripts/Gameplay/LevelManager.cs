@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 struct ResetLevel
 {
@@ -44,6 +45,14 @@ public class LevelManager : MonoBehaviour
         if (Input.GetKey(KeyCode.Alpha8)) TeleportToCheckPoint(7);
         if (Input.GetKey(KeyCode.Alpha9)) TeleportToCheckPoint(8);
         if (Input.GetKey(KeyCode.Alpha0)) TeleportToCheckPoint(9);
+
+        if(Input.GetKey(KeyCode.LeftControl))
+        {
+            if (Input.GetKey(KeyCode.Alpha1)) LoadLevel(0);
+            if (Input.GetKey(KeyCode.Alpha2)) LoadLevel(1);
+            if (Input.GetKey(KeyCode.Alpha3)) LoadLevel(2);
+            if (Input.GetKey(KeyCode.Alpha4)) LoadLevel(3);
+        }
     }
     void makeCheckpoints()
     {
@@ -113,4 +122,9 @@ public class LevelManager : MonoBehaviour
         FFMessage<ResetLevel>.SendToLocal(rl);
     }
 
+
+    void LoadLevel(int levelIndex)
+    {
+        SceneManager.LoadScene(levelIndex);
+    }
 }

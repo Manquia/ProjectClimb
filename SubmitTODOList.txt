@@ -1,32 +1,53 @@
-Credits Screen (2 hr)
-- Score collectables
-- Final words
+SHIPPING TODO LIST!!!
 
 Tutorial Segment (4 hr)
 
-
-LEVEL 3 (6 hr)
+LEVEL 3 - The escape (4 hr)
 Fog
 Environment
 - Self distruct warning or Visual
 LEVEL 3
 
--Contextual Action Icon (Grab, nothing (dot), use)
+Credits Screen (1 hr)
+- Final words
 
--POST PROCESSING!!! (Bloom will do wonders!!!)
+- POST PROCESSING!!! (Bloom will do wonders!!!) (.5 hr)
 
-Puzzle Level 2
-- Turn on sound of factory with walker
+Puzzle Level 2 (.5 hr)
+- Turn on sound for moving pillars puzzle
 
-Sound Effects
+Sound Effects (.5 hr)
 - Walking
 
+Lighting pass 
+- Lvl2 (needs more lights) 	(1 hr)
+- Lvl3						(2 hr)
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@POLISH LIKE
+- Contextual Action Icon (Grab, nothing (dot), use)
+- Score collectables on credits screen
 
 @POLISH
+
 - Outline Effect for rope...?
 - Distant factory Noise *** Line of sight sound from fractory!!! to show direction of the noise.
 - Rope Sounds
