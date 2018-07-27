@@ -1942,7 +1942,7 @@ MonoBehaviour:
   velocity: {x: 0, y: 0, z: 0}
   friction: 0
   ropeRotation: 0
-  distBetweenRopeVisuals: 0.5
+  distBetweenRopeVisuals: 0.056
   isStatic: 1
   visualBetweensPrefab: {fileID: 1455767483051634, guid: ae83ec8e87ba68148961df155114ae18,
     type: 2}
@@ -7592,7 +7592,7 @@ MonoBehaviour:
   velocity: {x: 0, y: 0, z: 0}
   friction: 0
   ropeRotation: 0
-  distBetweenRopeVisuals: 0.5
+  distBetweenRopeVisuals: 0.056
   isStatic: 1
   visualBetweensPrefab: {fileID: 1455767483051634, guid: ae83ec8e87ba68148961df155114ae18,
     type: 2}
@@ -7746,7 +7746,7 @@ MonoBehaviour:
   velocity: {x: 0, y: 0, z: 0}
   friction: 0
   ropeRotation: 0
-  distBetweenRopeVisuals: 0.5
+  distBetweenRopeVisuals: 0.056
   isStatic: 1
   visualBetweensPrefab: {fileID: 1455767483051634, guid: ae83ec8e87ba68148961df155114ae18,
     type: 2}

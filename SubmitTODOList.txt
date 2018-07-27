@@ -17,15 +17,16 @@ Controls rework
 - Line of sight sound from fractory!!! to show direction of the noise.
 
 Environment
-- Wind Sound
 - Distant factory Noise
 - Self distruct warning or Visual
 
 Sound Effects
 - Walking
-- Jumping
+
 - Death
+
 - Landing
+- Jumping
 
 - Rope
 -- Grab
@@ -38,3 +39,4 @@ Sound Effects
 Rope Sound Effects
 ++ Wind moving effects Rope swinging sounds
 + Space bar
++ Wind Sound

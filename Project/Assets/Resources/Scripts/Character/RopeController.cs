@@ -257,6 +257,7 @@ public class RopeController : MonoBehaviour
 
     }
 
+    float visualToVisualRotationOffset = 22.5f;
 
     void UpdateRopeVisuals()
     {
@@ -264,7 +265,8 @@ public class RopeController : MonoBehaviour
         var ropeVecNorm = Vector3.Normalize(ropeVec);
 
         // Calculate the first rotation relative to an absolute down
-        var angularRotationOnRope = Quaternion.AngleAxis(ropeRotation, ropeVecNorm) * Quaternion.FromToRotation(Vector3.down, ropeVecNorm);
+        Quaternion AngleFromDown = Quaternion.FromToRotation(Vector3.down, ropeVecNorm);
+        var angularRotationOnRope = Quaternion.AngleAxis(ropeRotation, ropeVecNorm) * AngleFromDown;
 
         if (visualElementRopeEndTop != null)
         {
@@ -277,16 +279,24 @@ public class RopeController : MonoBehaviour
         // Draw visuals along rope
         int indexElement = 0;
         int segmentIndex = 0;
-        for(float distAlongPath = distBetweenRopeVisuals * 0.5f; distAlongPath <= path.PathLength; distAlongPath += distBetweenRopeVisuals, ++indexElement)
+        var elementRotationSingle = Quaternion.AngleAxis(visualToVisualRotationOffset, Vector3.up);
+        Vector3 segmentDir = ropeVecNorm;
+
+        float rotationOffsetAccumulator = 0;
+        for (float distAlongPath = distBetweenRopeVisuals * 0.5f; distAlongPath <= path.PathLength; distAlongPath += distBetweenRopeVisuals, ++indexElement)
         {
+            rotationOffsetAccumulator += visualToVisualRotationOffset;
+            rotationOffsetAccumulator -= Mathf.Floor(rotationOffsetAccumulator / 360.0f) * 360.0f;
+
             // move to next segment for rotation values
-            if(distAlongPath > path.linearDistanceAlongPath[segmentIndex + 1])
+            if (distAlongPath > path.linearDistanceAlongPath[segmentIndex + 1])
             {
                 ++segmentIndex;
-                Vector3 segmentDir = path.points[segmentIndex + 1] - path.points[segmentIndex];
-                var AngleFromDown = Quaternion.FromToRotation(Vector3.down, segmentDir);
-                angularRotationOnRope = Quaternion.AngleAxis(ropeRotation, ropeVecNorm) * AngleFromDown;
+                segmentDir = Vector3.Normalize(path.points[segmentIndex + 1] - path.points[segmentIndex]);
+                AngleFromDown = Quaternion.FromToRotation(Vector3.down, segmentDir);
             }
+
+            angularRotationOnRope = Quaternion.AngleAxis(ropeRotation + rotationOffsetAccumulator, segmentDir) * AngleFromDown;
 
             Transform element;
             if (indexElement == visualElements.Count)
