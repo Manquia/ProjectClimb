@@ -6,12 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/GATPack/CreditsLevel.unity
-    guid: 4eeafbf970463ec4e9b0009faaec2d93
-  - enabled: 1
-    path: Assets/GATPack/DeathLevel.unity
-    guid: 5041682488561084e9a1300eb1a40298
-  - enabled: 1
     path: Assets/GATPack/SplashScreen.unity
     guid: f2b23a0d07677ef45b5924e4d8dc12d8
   - enabled: 1
@@ -20,4 +14,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Resources/Scenes/Level2.unity
     guid: 01f4b6601abf12846acb6a40967e627f
+  - enabled: 1
+    path: Assets/Resources/Scenes/Level3.unity
+    guid: d451a8500815389479f54cae9861fe7f
+  - enabled: 1
+    path: Assets/GATPack/CreditsLevel.unity
+    guid: 4eeafbf970463ec4e9b0009faaec2d93
   m_configObjects: {}

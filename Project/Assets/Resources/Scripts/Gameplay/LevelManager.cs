@@ -21,8 +21,8 @@ public class LevelManager : MonoBehaviour
     void Start()
     {
         checkPointPositions = GetComponent<FFPath>();
-        Debug.Assert(checkPointPositions.points.Length > 1, "We should have atleast 1 checkPoint and 1 level transitions");
-        Debug.Assert(player != null, "We should have a reference to the player so we can reset him");
+        //Debug.Assert(checkPointPositions.points.Length > 1, "We should have atleast 1 checkPoint and 1 level transitions");
+        //Debug.Assert(player != null, "We should have a reference to the player so we can reset him");
 
         currentCheckPointIndex = 0;
 
@@ -56,6 +56,9 @@ public class LevelManager : MonoBehaviour
     }
     void makeCheckpoints()
     {
+        if (checkPointPrefab == null)
+            return;
+
         for (int i = 0; i < checkPointPositions.points.Length - 1; ++i)
         {
             var cpGO = Instantiate(checkPointPrefab);
@@ -69,6 +72,9 @@ public class LevelManager : MonoBehaviour
     }
     void makeLevelTransition()
     {
+        if (levelTransitionPrefab == null)
+            return;
+
         var ltGO = Instantiate(levelTransitionPrefab);
         var ltTrans = ltGO.transform;
         var lt = ltGO.GetComponent<LevelTransition>();
@@ -111,10 +117,14 @@ public class LevelManager : MonoBehaviour
     // Helpers
     void TeleportToCheckPoint(int index)
     {
+        if (checkPointList.Count == 0)
+            return;
+
         index = Mathf.Min(index, checkPointList.Count - 1);
         var cp = checkPointList[index];
 
         player.transform.position = cp.position;
+        ResetLevel();
     }
     void ResetLevel()
     {
