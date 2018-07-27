@@ -17,7 +17,7 @@ public class IK_Snap : MonoBehaviour
         else
         {
             useIK = leftHandIK = rightHandIK = leftFootIK = rightFootIK = active;
-            ResetIKValues();
+            RequestResetPointData = true;
         }
     }
 
@@ -43,7 +43,10 @@ public class IK_Snap : MonoBehaviour
     void Start()
     {
         anim = GetComponent<Animator>();
+    }
 
+    void SaveIKValues()
+    {
         // record animation data from the start so that we can revert back from whatever IK we had...
         {
             IKPoint pt;
@@ -67,8 +70,7 @@ public class IK_Snap : MonoBehaviour
                 startingIKPoints[i] = pt;
             }
         }
-
-
+        savedPointData = true;
     }
 
     void ResetIKValues()
@@ -80,6 +82,7 @@ public class IK_Snap : MonoBehaviour
             anim.SetIKRotation(pt.goal, pt.rot);
             anim.SetIKPosition(pt.goal, pt.pos);
         }
+        RequestResetPointData = false;
     }
 
     // Update is called once per frame
@@ -102,14 +105,21 @@ public class IK_Snap : MonoBehaviour
         public float posWeight;
         public Vector3 pos;
     }
+    bool savedPointData = false;
+    bool RequestResetPointData = true;
     List<IKPoint> startingIKPoints = new List<IKPoint>();
 
     void OnAnimatorIK()
     {
+        if (!savedPointData)
+            SaveIKValues();
+
+        if (RequestResetPointData)
+            ResetIKValues();
+
         if (useIK == false)
             return;
 
-        //Debug.Log("Doing IK");
         if (leftHandIK)
         {
             anim.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1.0f);
