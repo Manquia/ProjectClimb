@@ -1234,7 +1234,7 @@ GameObject:
   - component: {fileID: 4310186371200846}
   - component: {fileID: 82482590969837312}
   m_Layer: 11
-  m_Name: WindNoise
+  m_Name: RopeNoise
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1906,6 +1906,22 @@ GameObject:
   - component: {fileID: 4709118963830930}
   m_Layer: 0
   m_Name: EthanLeftHandMiddle4
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &1623293442934790
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4719895732542420}
+  - component: {fileID: 82374327214053958}
+  m_Layer: 11
+  m_Name: WindNoise
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3546,7 +3562,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4328013450138940}
-  m_RootOrder: 0
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4311065280284632
 Transform:
@@ -3584,8 +3600,9 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 4310186371200846}
+  - {fileID: 4719895732542420}
   - {fileID: 4676372128614744}
+  - {fileID: 4310186371200846}
   m_Father: {fileID: 4000011725226242}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4439,6 +4456,19 @@ Transform:
   m_Father: {fileID: 4680440101306118}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4719895732542420
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1623293442934790}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4328013450138940}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4723093997206542
 Transform:
   m_ObjectHideFlags: 1
@@ -5186,6 +5216,101 @@ AudioListener:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000012287552534}
   m_Enabled: 1
+--- !u!82 &82374327214053958
+AudioSource:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1623293442934790}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!82 &82379775012064096
 AudioSource:
   m_ObjectHideFlags: 1
@@ -6091,7 +6216,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   elements:
-  - toleranceThreshold: 8
+  - name: WindNoise
+    active: 1
+    toleranceThreshold: 2.8
     volumeCurve:
       serializedVersion: 2
       m_Curve:
@@ -6105,22 +6232,31 @@ MonoBehaviour:
         inWeight: 0.33333334
         outWeight: 0.3503928
       - serializedVersion: 3
-        time: 0.36139297
-        value: 0.05121257
-        inSlope: 0.3271715
-        outSlope: 0.3271715
+        time: 0.5955309
+        value: 0.02022415
+        inSlope: 0.52884495
+        outSlope: 0.52884495
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.11350466
+        outWeight: 0.26682737
       - serializedVersion: 3
-        time: 0.9977827
-        value: 0.47017896
-        inSlope: 1.2377445
-        outSlope: 1.2377445
+        time: 0.8169599
+        value: 0.54930496
+        inSlope: 4.0101023
+        outSlope: 4.0101023
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0.09038782
+        inWeight: 0.33333334
+        outWeight: 0.093685046
+      - serializedVersion: 3
+        time: 0.9977827
+        value: 1
+        inSlope: -0.14865673
+        outSlope: -0.14865673
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.18622786
         outWeight: 0.33333334
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -6129,36 +6265,98 @@ MonoBehaviour:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: -0.002216339
-        value: 0
-        inSlope: -0.14638828
-        outSlope: -0.14638828
+        time: 0
+        value: 1
+        inSlope: 0.039739788
+        outSlope: 0.039739788
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.4369629
+        outWeight: 0.06429722
       - serializedVersion: 3
-        time: 0.24642374
-        value: 0.015854781
-        inSlope: 0.79106903
-        outSlope: 0.79106903
+        time: 1.0013428
+        value: 1.2
+        inSlope: 0.32830292
+        outSlope: 0.32830292
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.050589938
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+    clip: {fileID: 8300000, guid: c29f2e53356d7954c8d5b0193486385b, type: 3}
+    src: {fileID: 82374327214053958}
+  - name: RopeNoise
+    active: 0
+    toleranceThreshold: 2.8
+    volumeCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: -0.018679589
+        outSlope: -0.018679589
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.3503928
+      - serializedVersion: 3
+        time: 0.5955309
+        value: 0.02022415
+        inSlope: 0.52884495
+        outSlope: 0.52884495
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.26682737
+      - serializedVersion: 3
+        time: 0.8169599
+        value: 0.54930496
+        inSlope: 4.0101023
+        outSlope: 4.0101023
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.093685046
+      - serializedVersion: 3
+        time: 0.9977827
+        value: 1
+        inSlope: -0.14865673
+        outSlope: -0.14865673
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.18622786
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+    pitchCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
-        value: 1
-        inSlope: 1
-        outSlope: 1
+        value: 1.2
+        inSlope: 0.4929622
+        outSlope: 0.4929622
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0.33333334
+        inWeight: 0.14594173
         outWeight: 0.33333334
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 0
-    clip: {fileID: 8300000, guid: c29f2e53356d7954c8d5b0193486385b, type: 3}
+    clip: {fileID: 8300000, guid: fe02b99638bb9e64881af61500583e10, type: 3}
     src: {fileID: 82482590969837312}
 --- !u!114 &114435423901628492
 MonoBehaviour:

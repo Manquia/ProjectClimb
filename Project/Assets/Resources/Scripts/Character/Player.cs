@@ -1226,6 +1226,10 @@ public class Player : FFComponent
         // inheret whose ever velocity was greater!
         OnRope.rope.velocity = rigid.velocity.magnitude > rc.velocity.magnitude ? rigid.velocity : rc.velocity;
 
+        // dynamic rope sound
+        if (dynAudioPlayer != null)
+            dynAudioPlayer.ToggleElement(true, "RopeNoise");
+
         // turn IK on
         if (ikSnap != null)
             ikSnap.SetIK(true);
@@ -1345,7 +1349,12 @@ public class Player : FFComponent
         }
 
 
-        // turn IK on
+
+        // dynamic rope sound
+        if (dynAudioPlayer != null)
+            dynAudioPlayer.ToggleElement(false, "RopeNoise");
+
+        // turn IK off
         if (ikSnap != null)
             ikSnap.SetIK(false);
 

@@ -8,6 +8,8 @@ public class DynamicAudioPlayer : MonoBehaviour {
     [Serializable]
     public class DynamicAudioElement
     {
+        public string name;
+        public bool active;
         public float toleranceThreshold;
         public AnimationCurve volumeCurve;
         public AnimationCurve pitchCurve;
@@ -34,6 +36,21 @@ public class DynamicAudioPlayer : MonoBehaviour {
         }
 	}
 	
+    public void ToggleElement(bool active, string name)
+    {
+        int indexOfElement = -1;
+        for (int i = 0; i < elements.Length; ++i)
+            if (elements[i].name == name)
+                indexOfElement = i;
+
+        // not found
+        if (indexOfElement == -1)
+            return;
+
+
+        var foundElement = elements[indexOfElement];
+        foundElement.active = active;
+    }
 	// Update is called once per frame
 	void Update ()
     {
@@ -59,6 +76,13 @@ public class DynamicAudioPlayer : MonoBehaviour {
         var src = element.src;
 
         var value = valueRef;
+
+        if(element.active == false)
+        {
+            src.volume = 0.0f;
+            return;
+        }
+
         var samplePoint = value / (element.toleranceThreshold + value);
         
         src.volume = element.volumeCurve.Evaluate(samplePoint);

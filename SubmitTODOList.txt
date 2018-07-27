@@ -12,10 +12,9 @@ Contextual Action Icon (Grab, nothing (dot), use)
 - Add low-poly environmental rocks/bushes to lvl 1
 
 Controls rework
-- Space bar
+- Remove Rope climbing functionality!@!!! TODO SUBMIT
 
-Rope Sound Effects
-- Wind moving effects Rope swinging sounds
+- Line of sight sound from fractory!!! to show direction of the noise.
 
 Environment
 - Wind Sound
@@ -33,4 +32,9 @@ Sound Effects
 -- Release
 -- Pump
 
+
+
 +Grapple Hook Model+Fix guidance on LVL 1 last jump
+Rope Sound Effects
+++ Wind moving effects Rope swinging sounds
++ Space bar
