@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -79,7 +80,7 @@ public class LevelManager : MonoBehaviour
         var ltTrans = ltGO.transform;
         var lt = ltGO.GetComponent<LevelTransition>();
 
-        lt.LevelName = nextLevelName;
+        lt.InitLevelTransition(this);
         ltTrans.position = checkPointPositions.PositionAtPoint(checkPointPositions.points.Length - 1);
     }
 
@@ -133,8 +134,18 @@ public class LevelManager : MonoBehaviour
     }
 
 
+    void LoadLevelOJB(object str_levelName)
+    {
+        SceneManager.LoadScene((string)str_levelName);
+    }
     void LoadLevel(int levelIndex)
     {
         SceneManager.LoadScene(levelIndex);
     }
+    internal void TransitionToNextLevel()
+    {
+        player.Seq_FadeInScreenMasks();
+        player.fadeScreenSeq.Call(LoadLevelOJB, nextLevelName);
+    }
+
 }

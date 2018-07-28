@@ -225,6 +225,16 @@ public class Player : FFComponent
 
         public AudioClip[] jumpSounds;
 
+        public float walkSoundPeriod = 0.2f;
+        public float sprintSoundPeriod = 0.1f;
+        internal float walkSprintSoundTimer = 0;
+        internal int walkSprintSoundSourceIndex = 0;
+        public AudioSource[] walkSprintAudioSources;
+        public AudioClip[] walkSprintAudioClips;
+        public float walkSprintAudioVolumeBase = 0.5f;
+        public float walkSprintAudioVolumeDelta = 0.1f;
+        public float walkSprintAudioPitchDelta = 0.1f;
+
     }
     public Movement movement;
     [System.Serializable]
@@ -403,6 +413,32 @@ public class Player : FFComponent
         }
 
         OnRope.pumpRopeSoundCooldownTimer += Time.deltaTime;
+    }
+
+    private void PlayGroundMovementSound(bool sprinting, float dt)
+    {
+        float period = sprinting ? movement.sprintSoundPeriod : movement.walkSoundPeriod;
+        movement.walkSprintSoundTimer += dt;
+
+        // time to play a sound
+        if (movement.walkSprintSoundTimer > period)
+        {
+            ++movement.walkSprintSoundSourceIndex;
+            movement.walkSprintSoundTimer -= period;
+            int srcIndex = movement.walkSprintSoundSourceIndex % movement.walkSprintAudioSources.Length;
+            var src = movement.walkSprintAudioSources[srcIndex];
+
+            float sterioPan = ((movement.walkSprintSoundSourceIndex % 2) == 1) ? -0.1f : 0.1f;
+            float volume = movement.walkSprintAudioVolumeBase + UnityEngine.Random.Range(-movement.walkSprintAudioVolumeDelta, movement.walkSprintAudioVolumeDelta);
+            float pitch = 1.0f + UnityEngine.Random.Range(-movement.walkSprintAudioPitchDelta, movement.walkSprintAudioPitchDelta);
+
+            src.panStereo = sterioPan;
+            src.volume = volume;
+            src.pitch = pitch;
+            src.PlayOneShot(movement.walkSprintAudioClips.SampleRandom(null));
+
+            movement.walkSprintSoundSourceIndex = srcIndex;
+        }
     }
 
     #region Collisions
@@ -908,9 +944,18 @@ public class Player : FFComponent
         var revRotOfPlane = Quaternion.FromToRotation(Vector3.up, movement.up);
 
         var maxSpeed = moveData.maxSpeed;
+        // sprinting
         if (input.leftShift.Recall(0).down())
         {
             maxSpeed *= movement.runMultiplier;
+
+            if (input.moveDirRel != Vector3.zero && movement.grounded)
+                PlayGroundMovementSound(true, dt);
+        }
+        else
+        {
+            if (input.moveDirRel != Vector3.zero && movement.grounded)
+                PlayGroundMovementSound(false, dt);
         }
 
 
@@ -954,7 +999,8 @@ public class Player : FFComponent
 
     }
 
-    
+
+
     // @TODO make this work with Vec2 for directional move input
     void UpdateRopeActions(float dt)
     {

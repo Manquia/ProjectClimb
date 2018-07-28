@@ -5,11 +5,12 @@ using UnityEngine.SceneManagement;
 
 public class LevelTransition : MonoBehaviour
 {
-    internal string LevelName;
-
-    private void Start()
+    LevelManager levelManager;
+    public void InitLevelTransition(LevelManager lm)
     {
+        levelManager = lm;
     }
+
     private void OnTriggerEnter(Collider other)
     {
         if(other.tag == "Player")
@@ -20,6 +21,6 @@ public class LevelTransition : MonoBehaviour
 
     void LoadNextLevel()
     {
-        SceneManager.LoadScene(LevelName);
+        levelManager.TransitionToNextLevel();
     }
 }

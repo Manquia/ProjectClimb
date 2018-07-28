@@ -5,17 +5,22 @@ using UnityEngine;
 
 public class PillarPuzzle : MonoBehaviour {
 
+    public float speedDelta = 0.6f;
 
     public Transform pillarsRoot;
     struct PillarData
     {
-        public bool state;
-        public float mu;
-        public Transform transform;
+        internal bool state;
+        internal float mu;
+        internal float speed;
+        internal Transform transform;
+        internal AudioSource audioSrc;
     }
 
     bool puzzleIsOn = true;
     PillarData[] data  = new PillarData[9];
+
+    public AudioClip[] PillarMoveSounds;
 
 
     // Use this for initialization
@@ -23,7 +28,6 @@ public class PillarPuzzle : MonoBehaviour {
     {
         SetupStates();
         FFMessageBoard<PlayerInteract.Use>.Connect(OnUse, gameObject);
-		
 	}
 
     private int OnUse(PlayerInteract.Use e)
@@ -45,7 +49,13 @@ public class PillarPuzzle : MonoBehaviour {
             Debug.Assert(pillarsRoot.childCount == 9);
             foreach (Transform child in pillarsRoot)
             {
+                var audioSrc = child.GetComponent<AudioSource>();
                 data[i].transform = child;
+                data[i].speed = 1.0f + UnityEngine.Random.Range(-speedDelta, speedDelta);
+                data[i].audioSrc = audioSrc;
+                audioSrc.clip = PillarMoveSounds.SampleRandom(null);
+                audioSrc.volume = 0.0f;
+                audioSrc.Play();
                 ++i;
             }
         }
@@ -75,14 +85,31 @@ public class PillarPuzzle : MonoBehaviour {
 
     void MovePillars(float dt)
     {
+        const float volumePower = 8.0f;
+        const float pitchPower = 8.0f;
+        const float pitchDelta = 0.3f;
+
         // change mu
         for(int i = 0; i < data.Length; ++i)
         {
+            var audioSrc = data[i].audioSrc;
             float muDelta = (1.0f / pillarMoveTime);
             float dir = ((data[i].state || puzzleIsOn) && !(data[i].state && puzzleIsOn)) ? 1.0f : -1.0f;
 
-            data[i].mu += dt * muDelta * dir;
+            data[i].mu += dt * muDelta * dir * data[i].speed;
             data[i].mu = Mathf.Clamp(data[i].mu, 0.0f, 1.0f);
+
+            // Basic Formula
+            // 1 - (2mu -1)^HighEvenPower
+            float mu = data[i].mu;
+
+            // Range(0, 1) 
+            float volume = 1 - Mathf.Pow(2 * mu - 1, volumePower);
+            // Range(1 - pitchDelta, 1 + pitchDelta) 
+            float pitch = ((1 - Mathf.Pow(2 * mu - 1, pitchPower) * (2* pitchDelta)) - pitchDelta) + 1;
+
+            audioSrc.volume = volume;
+            audioSrc.pitch = pitch;
         }
 
         // update pillar positions

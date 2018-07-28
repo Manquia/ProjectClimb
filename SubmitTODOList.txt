@@ -1,11 +1,8 @@
 SHIPPING TODO LIST!!!
 
-
-Puzzle Level 2 (.5 hr)
-- Turn on sound for moving pillars puzzle
-
-Sound Effects (.5 hr)
-- Walking
+- Add Sound for climbing rope
+- Add sound for Red button on Level 2
+- POST PROCESSING!!! (Bloom will do wonders!!!) (.5 hr)
 
 LEVEL 3 - The escape (4 hr)
 -- CABLE TO CABLE JUMP
@@ -15,22 +12,12 @@ Environment
 LEVEL 3
 
 
-- POST PROCESSING!!! (Bloom will do wonders!!!) (.5 hr)
-
-
 Lighting pass 
-- Lvl2 (needs more lights) 	(1 hr)
-- Lvl3						(2 hr)
+- Lvl3						(0.5 hr)
 
 
-README file (.5 hr)
-- Cheat Codes
-- Controls
-- Misc Notes
-
-
-
-
+Ship Checks
+- Make sure README file gets added into zip
 
 
 
@@ -54,6 +41,7 @@ README file (.5 hr)
 
 @POLISH
 
+Sound Effects (.5 hr) - Walking
 - Outline Effect for rope...?
 - Distant factory Noise *** Line of sight sound from fractory!!! to show direction of the noise.
 - Rope Sounds
@@ -65,7 +53,12 @@ Credits Screen (1 hr)
 
 
 
-
+- Roof of 2nd level is off
++ Make CkeckPoint Colliders larger
++README file (.5 hr)
++- Cheat Codes
++- Controls
++- Misc Notes
 Controls rework
 +Tutorial Segment (4 hr)
 + Remove Rope climbing functionality!@!!! TODO SUBMIT Or Limit it to parts of the rope
