@@ -1,6 +1,11 @@
 SHIPPING TODO LIST!!!
 
 
+Puzzle Level 2 (.5 hr)
+- Turn on sound for moving pillars puzzle
+
+Sound Effects (.5 hr)
+- Walking
 
 LEVEL 3 - The escape (4 hr)
 -- CABLE TO CABLE JUMP
@@ -12,11 +17,6 @@ LEVEL 3
 
 - POST PROCESSING!!! (Bloom will do wonders!!!) (.5 hr)
 
-Puzzle Level 2 (.5 hr)
-- Turn on sound for moving pillars puzzle
-
-Sound Effects (.5 hr)
-- Walking
 
 Lighting pass 
 - Lvl2 (needs more lights) 	(1 hr)

@@ -2,35 +2,79 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using System;
 
 public class HUDContoller : FFComponent {
 
-    public Image fadeImage;
-    public float fadeTime = 1.2f;
+    public float fadeTime = 5.0f;
     public Animator anim;
+
+    public Text helperText;
 
 
     FFAction.ActionSequence fadeSeq;
 	// Use this for initialization
-	void Start () {
+	void Start ()
+    {
+        fadeSeq = action.Sequence();
 
-        //fadeSeq = action.Sequence();
+        if (SceneManager.GetActiveScene().name == "Level1")
+        {
+            FlashHelpText();
+        }
+
+        
         //FadeIn();
     }
 
 
-    // @REPEAT CODE from player
-    void FadeOut()
+    float timeInactive = 0;
+    public float timeInactiveFlashCooldown = 5.3f;
+    bool keyPressedSinceStart = false;
+    private void Update()
     {
-        fadeImage.gameObject.SetActive(true);
-        fadeSeq.Property(new FFRef<Color>(() => fadeImage.color, (v) => fadeImage.color = v),fadeImage.color.MakeOpaque(), FFEase.E_Continuous, fadeTime);
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            TogglePause();
+            fadeSeq.ClearSequence();
+            helperText.gameObject.SetActive(false);
+        }
+
+        if (keyPressedSinceStart == false)
+        {
+            timeInactive += Time.deltaTime;
+            keyPressedSinceStart = Input.anyKey;
+
+            if (timeInactive > timeInactiveFlashCooldown)
+            {
+                timeInactive -= timeInactiveFlashCooldown;
+                FlashHelpText();
+            }
+        }
+    }
+
+    private void FlashHelpText()
+    {
+        FadeIn(helperText);
+        fadeSeq.Call(FadeOut, helperText);
+    }
+
+
+    // @REPEAT CODE from player
+    void FadeOut(object graphic)
+    {
+        Graphic item = (Graphic)graphic;
+        item.gameObject.SetActive(true);
+        fadeSeq.Property(new FFRef<Color>(() => item.color, (v) => item.color = v), item.color.MakeOpaque(), FFEase.E_SmoothEnd, fadeTime);
         fadeSeq.Sync();
     }
-    void FadeIn()
+    void FadeIn(object graphic)
     {
-        fadeSeq.Property(new FFRef<Color>(() => fadeImage.color, (v) => fadeImage.color = v), fadeImage.color.MakeClear(), FFEase.E_Continuous, fadeTime);
+        Graphic item = (Graphic)graphic;
+        fadeSeq.Property(new FFRef<Color>(() => item.color, (v) => item.color = v), item.color.MakeClear(), FFEase.E_SmoothStart, fadeTime);
         fadeSeq.Sync();
-        fadeSeq.Call(DisableGameObject, fadeImage.gameObject);
+        fadeSeq.Call(DisableGameObject, item.gameObject);
         fadeSeq.Sync();
     }
 
@@ -40,16 +84,6 @@ public class HUDContoller : FFComponent {
         gomeObject.SetActive(false);
     }
 	
-	// Update is called once per frame
-	void Update ()
-    {
-
-        if(Input.GetKeyDown(KeyCode.Escape))
-        {
-            TogglePause();
-        }
-		
-	}
 
     bool paused = false;
     public void TogglePause()
