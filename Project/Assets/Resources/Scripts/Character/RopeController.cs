@@ -44,6 +44,7 @@ public class RopeController : MonoBehaviour
     public float ropeRotation = 0.0f;
     public float distBetweenRopeVisuals = 0.1f;
     public bool isStatic = true;
+    public bool isFrozenNoResolve = false;
 
 
 
@@ -195,6 +196,9 @@ public class RopeController : MonoBehaviour
 
     public void UpdateRopeMovement(float dt)
     {
+        if (isFrozenNoResolve)
+            return;
+
         var epsilon = 0.005f;
         var ropeVec = path.PositionAtPoint(1) - path.PositionAtPoint(0);
         var ropeVecNorm = Vector3.Normalize(ropeVec);

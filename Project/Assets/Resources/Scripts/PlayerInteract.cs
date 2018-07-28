@@ -129,7 +129,7 @@ public class PlayerInteract : MonoBehaviour
         //Debug.Log("PlayerInteract.SendUse");
         playerIsUsing.actor = transform;
         playerIsUsing.target = go.transform;
-        FFMessageBoard<Use>.SendAllConnected(playerIsUsing, go);
+        FFMessageBoard<Use>.Send(playerIsUsing, go);
     }
 
     bool LookRaycast(out RaycastHit hit)

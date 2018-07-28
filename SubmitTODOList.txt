@@ -3,21 +3,17 @@ SHIPPING TODO LIST!!!
 - Add Sound for climbing rope
 - Add sound for Red button on Level 2
 - POST PROCESSING!!! (Bloom will do wonders!!!) (.5 hr)
+- Explosion Sound
+- Win level Music
+- Credits Level Mucis
 
-LEVEL 3 - The escape (4 hr)
--- CABLE TO CABLE JUMP
-Fog
-Environment
 - Self distruct warning or Visual
-LEVEL 3
-
-
-Lighting pass 
-- Lvl3						(0.5 hr)
-
 
 Ship Checks
 - Make sure README file gets added into zip
+
+
+
 
 
 

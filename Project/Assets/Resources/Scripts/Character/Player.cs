@@ -485,7 +485,8 @@ public class Player : FFComponent
     void CollisionOnRope(Collision col, CollisionType type, FFRef<float> distOnRope)
     {
         // we don't care if we exited an area for rope collision resolution
-        if (type == CollisionType.Exit || col.contacts.Length == 0)
+        // Also if frozen we don't resolve colisions in any meaningfull way
+        if (type == CollisionType.Exit || col.contacts.Length == 0 || OnRope.rope.isFrozenNoResolve)
             return;
 
         var rope = OnRope.rope;

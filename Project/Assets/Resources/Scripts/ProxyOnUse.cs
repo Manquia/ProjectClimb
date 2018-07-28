@@ -5,7 +5,7 @@ using UnityEngine;
 public class ProxyOnUse : MonoBehaviour {
 
     public bool singleUse = false;
-    bool used = false;
+    internal bool used = false;
     public AudioClip useSound;
 
     public Transform proxyTarget;

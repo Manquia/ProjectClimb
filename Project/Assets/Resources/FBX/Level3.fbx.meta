@@ -111,6 +111,9 @@ ModelImporter:
     100210: Room1
     100212: Window5
     100214: Window6
+    100216: pPlane2
+    100218: Floor
+    100220: Pipe24
     400000: bottom
     400002: CommandCenter
     400004: //RootNode
@@ -219,6 +222,9 @@ ModelImporter:
     400210: Room1
     400212: Window5
     400214: Window6
+    400216: pPlane2
+    400218: Floor
+    400220: Pipe24
     2000000: bottom
     2100000: phong1
     2300000: polySurface1
@@ -323,6 +329,9 @@ ModelImporter:
     2300198: Room1
     2300200: Window5
     2300202: Window6
+    2300204: pPlane2
+    2300206: Floor
+    2300208: Pipe24
     3300000: polySurface1
     3300002: polySurface2
     3300004: polySurface3
@@ -425,6 +434,9 @@ ModelImporter:
     3300198: Room1
     3300200: Window5
     3300202: Window6
+    3300204: pPlane2
+    3300206: Floor
+    3300208: Pipe24
     4300000: polySurface2
     4300002: polySurface3
     4300004: polySurface1
@@ -527,6 +539,9 @@ ModelImporter:
     4300198: Ceiling5
     4300200: Ceiling6
     4300202: Window6
+    4300204: pPlane2
+    4300206: Floor
+    4300208: Pipe24
     6400000: polySurface1
     6400002: polySurface2
     6400004: polySurface3
@@ -629,6 +644,9 @@ ModelImporter:
     6400198: Room1
     6400200: Window5
     6400202: Window6
+    6400204: pPlane2
+    6400206: Floor
+    6400208: Pipe24
     2186277476908879412: ImportLogs
   externalObjects: {}
   materials:

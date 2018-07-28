@@ -11,6 +11,7 @@ public class HUDContoller : FFComponent {
     public Animator anim;
 
     public Text helperText;
+    public Text selfDestructText;
 
 
     FFAction.ActionSequence fadeSeq;
@@ -24,6 +25,7 @@ public class HUDContoller : FFComponent {
             FlashHelpText();
         }
 
+        FFMessage<ResetLevel>.Connect(OnResetLevel);
         
         //FadeIn();
     }
@@ -52,12 +54,39 @@ public class HUDContoller : FFComponent {
                 FlashHelpText();
             }
         }
+
+        // Update destroy time
+        if (selfDestructTimeRemaining > 0.0f)
+        {
+            selfDestructTimeRemaining -= Time.deltaTime;
+            selfDestructTimeRemaining = Math.Max(selfDestructTimeRemaining, 0.0f);
+            selfDestructText.text = "Remaining Time: " + selfDestructTimeRemaining.ToString("###.0");
+        }
+    }
+
+    float selfDestructTimeRemaining = -1.0f;
+    internal void DisplaySelfDestructCountdown(float selfDestructTime)
+    {
+        selfDestructTimeRemaining = selfDestructTime;
+
+        FadeOut(selfDestructText);
+    }
+    private int OnResetLevel(ResetLevel e)
+    {
+        fadeSeq.ClearSequence();
+
+        selfDestructTimeRemaining = -1.0f;
+        selfDestructText.gameObject.SetActive(false);
+        selfDestructText.color = selfDestructText.color.MakeClear();
+
+
+        return 0;
     }
 
     private void FlashHelpText()
     {
-        FadeIn(helperText);
-        fadeSeq.Call(FadeOut, helperText);
+        FadeOut(helperText);
+        fadeSeq.Call(FadeIn, helperText);
     }
 
 
