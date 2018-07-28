@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 #if UNITY_EDITOR
+using UnityEditor;
 #endif
 
 public class Player : FFComponent
@@ -849,7 +850,8 @@ public class Player : FFComponent
     private void CheckLandSounds(float dt)
     {
         // if we arn't on the ground we can't have landed
-        if(movement.grounded == false)    
+        // @BUG here we need to have an additional check @TODO
+        if(!movement.grounded)    
             return;
     
             var velocities = movement.details.velocity;
@@ -1308,7 +1310,12 @@ public class Player : FFComponent
     void LoadLevelOfName(object string_LevelName)
     {
         Time.timeScale = 1.0f;
-        SceneManager.LoadScene((string)string_LevelName);
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+
     }
     #endregion
 
@@ -1534,6 +1541,6 @@ public class Player : FFComponent
     }
 
 
-    #endregion Transitions
+#endregion Transitions
 
 }

@@ -1,8 +1,9 @@
 SHIPPING TODO LIST!!!
 
-Tutorial Segment (4 hr)
+
 
 LEVEL 3 - The escape (4 hr)
+-- CABLE TO CABLE JUMP
 Fog
 Environment
 - Self distruct warning or Visual
@@ -22,6 +23,10 @@ Lighting pass
 - Lvl3						(2 hr)
 
 
+README file (.5 hr)
+- Cheat Codes
+- Controls
+- Misc Notes
 
 
 
@@ -39,6 +44,9 @@ Lighting pass
 
 
 
+
+@Time
++- Tutorial Polish (4 hr)
 
 @POLISH LIKE
 - Contextual Action Icon (Grab, nothing (dot), use)
@@ -59,6 +67,7 @@ Credits Screen (1 hr)
 
 
 Controls rework
++Tutorial Segment (4 hr)
 + Remove Rope climbing functionality!@!!! TODO SUBMIT Or Limit it to parts of the rope
 We already need to do this for the grabbing onto the rope so might just give it 2 limits, top + bot.
 +Menu Level (Optional)
