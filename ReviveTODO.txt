@@ -1,0 +1,9 @@
+Nintendo Review List
+
+Operating System primative
+- Mutex
+- Semephore
+- Signals
+- Events
+- General Programming stuff
+- C/C++

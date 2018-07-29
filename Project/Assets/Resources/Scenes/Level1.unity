@@ -16294,11 +16294,11 @@ MonoBehaviour:
   mass: 1.5
   springForce: 45
   velocity: {x: 0, y: 0, z: 0}
-  friction: 0
+  friction: 1
   ropeRotation: 0
   distBetweenRopeVisuals: 0.056
   isStatic: 1
-  isFrozenNoResolve: 0
+  isFrozenNoResolve: 1
   visualBetweensPrefab: {fileID: 1455767483051634, guid: ae83ec8e87ba68148961df155114ae18,
     type: 2}
   visualEndsPrefab: {fileID: 1918244410186040, guid: a3e498afa66a6254d84b7b82c19deb8a,
