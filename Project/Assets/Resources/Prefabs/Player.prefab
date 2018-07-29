@@ -2933,8 +2933,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000013558513908}
-  m_LocalRotation: {x: -0, y: -0.68555814, z: -0, w: 0.7280179}
-  m_LocalPosition: {x: -3.64, y: -47.9, z: 26.61}
+  m_LocalRotation: {x: 0, y: 0.9692309, z: 0, w: 0.2461533}
+  m_LocalPosition: {x: -23.4, y: -15.7, z: 25.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4869650841716636}
@@ -5395,7 +5395,7 @@ Camera:
   m_HDR: 0
   m_AllowMSAA: 1
   m_AllowDynamicResolution: 0
-  m_ForceIntoRT: 0
+  m_ForceIntoRT: 1
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
@@ -6531,6 +6531,14 @@ MonoBehaviour:
     grabRopeSound: {fileID: 8300000, guid: 1141a853d053a45469da3710371e359b, type: 3}
     releaseRopeSound: {fileID: 8300000, guid: 5f339d6c49a130740b54a53c967e1848, type: 3}
     pumpRopeSound: {fileID: 8300000, guid: 9e7f2f21074b51340a3d6288d7bdeddb, type: 3}
+    ropeClimbSounds:
+    - {fileID: 8300000, guid: 3696bacce4b3d904f9fdea8b402f37ab, type: 3}
+    - {fileID: 8300000, guid: 9df695709d1e23143832268f86cb9623, type: 3}
+    - {fileID: 8300000, guid: 6a11e6a78f15e32499bae44532b0e086, type: 3}
+    - {fileID: 8300000, guid: cc58cf9f1c1746d449bad2bfe7575878, type: 3}
+    - {fileID: 8300000, guid: 2fa839a24b4a6cb4da0eb97ee2c42b49, type: 3}
+    - {fileID: 8300000, guid: 3d3b26b396725ff4c8a4f0e84f1f7d6e, type: 3}
+    ropeClimbSoundCooldown: 1
   movement:
     groundPhysicsMask:
       serializedVersion: 2

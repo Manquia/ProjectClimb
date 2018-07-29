@@ -169,6 +169,9 @@ public class Player : FFComponent
         internal float pumpRopeSoundCooldown = 0.5f;
         internal float pumpRopeSoundCooldownTimer = 0.5f;
 
+        public AudioClip[] ropeClimbSounds;
+        public   float ropeClimbSoundCooldown = 0.5f;
+        internal float ropeClimbSoundCooldownTimer = 0.0f;
     }
     public RopeConnection OnRope;
 
@@ -234,6 +237,7 @@ public class Player : FFComponent
         public float walkSprintAudioVolumeBase = 0.5f;
         public float walkSprintAudioVolumeDelta = 0.1f;
         public float walkSprintAudioPitchDelta = 0.1f;
+
 
     }
     public Movement movement;
@@ -438,6 +442,16 @@ public class Player : FFComponent
             src.PlayOneShot(movement.walkSprintAudioClips.SampleRandom(null));
 
             movement.walkSprintSoundSourceIndex = srcIndex;
+        }
+    }
+    private void PlayRopeClimbSound(float dt)
+    {
+        OnRope.ropeClimbSoundCooldownTimer += dt;
+
+        if(OnRope.ropeClimbSoundCooldownTimer > OnRope.ropeClimbSoundCooldown)
+        {
+            OnRope.ropeClimbSoundCooldownTimer -= OnRope.ropeClimbSoundCooldown;
+            oneShotPlayer.PlayOneShot(OnRope.ropeClimbSounds.SampleRandom(null));
         }
     }
 
@@ -902,21 +916,22 @@ public class Player : FFComponent
         for (uint i = 2; i < velocities.size; ++i)
         {
             // positive when we changed directions up
+            bool wasGoingDown = Vector3.Dot(vel1Norm, Vector3.down) > 0.1f;
             float deltaVel = vel0.y - vel1.y;
 
             bool deltaIsSoft = deltaVel > movement.softLandingVelocityDeltaThreshold;
             bool deltaIsHard = deltaVel > movement.hardLandingVelocityDeltaThreshold;
 
-            if(deltaIsHard)
+            if(deltaIsHard && wasGoingDown)
             {
                 PlayHardLandingSound();
             }
-            else if(deltaIsSoft)
+            else if(deltaIsSoft && wasGoingDown)
             {
                 PlaySoftLandingSound();
             }
 
-            if(deltaIsSoft || deltaIsSoft)
+            if((deltaIsSoft || deltaIsSoft) && wasGoingDown)
             {
                 velocities.Wash(Vector3.zero);
                 break;
@@ -1070,7 +1085,7 @@ public class Player : FFComponent
         if (leanVec != Vector3.zero)
             RopeLean(Vector3.Normalize(leanVec) * leanAmount);
 
-        RopeClimb(climbVec * climbAmount);
+        RopeClimb(climbVec * climbAmount, dt);
 
         // Rotate based on mouse look
         {
@@ -1311,12 +1326,20 @@ public class Player : FFComponent
         }
     }
 
-    void RopeClimb(float amountUp)
+    void RopeClimb(float amountUp, float dt)
     {
+        float oldDist = OnRope.distUpRope;
+
         OnRope.distUpRope = Mathf.Clamp(
             amountUp + OnRope.distUpRope,
             0.0f + OnRope.distUpRopeBotLimit,
             OnRope.rope.GetPath().PathLength - OnRope.distUpRopeTopLimit);
+
+        float newDist = OnRope.distUpRope;
+        if(oldDist != newDist)
+        {
+            PlayRopeClimbSound(dt);
+        }
     }
     void RopeRotateOn(float amountRight)
     {

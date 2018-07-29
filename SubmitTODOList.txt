@@ -1,35 +1,18 @@
-SHIPPING TODO LIST!!!
-
-- Add Sound for climbing rope
-- Add sound for Red button on Level 2
 - POST PROCESSING!!! (Bloom will do wonders!!!) (.5 hr)
-- Explosion Sound
-- Win level Music
-- Credits Level Mucis
 
-- Self distruct warning or Visual
+
 
 Ship Checks
 - Make sure README file gets added into zip
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+- Build lighting
+- Occulsion Map updates
 
 
 @Time
 +- Tutorial Polish (4 hr)
++ Win level Music
++ Credits Level Mucic
++ Splash Screen Music
 
 @POLISH LIKE
 - Contextual Action Icon (Grab, nothing (dot), use)
@@ -44,32 +27,3 @@ Sound Effects (.5 hr) - Walking
 -+ Grab
 -+ Release
 -+ Pump
-Credits Screen (1 hr)
-- Final words
-
-
-
-- Roof of 2nd level is off
-+ Make CkeckPoint Colliders larger
-+README file (.5 hr)
-+- Cheat Codes
-+- Controls
-+- Misc Notes
-Controls rework
-+Tutorial Segment (4 hr)
-+ Remove Rope climbing functionality!@!!! TODO SUBMIT Or Limit it to parts of the rope
-We already need to do this for the grabbing onto the rope so might just give it 2 limits, top + bot.
-+Menu Level (Optional)
-+- Rope
-+ Grab
-+ Release
-+ Pump
-+Grapple Hook Model+Fix guidance on LVL 1 last jump
-Rope Sound Effects
-++ Wind moving effects Rope swinging sounds
-+ Space bar
-+ Wind Sound
-+ Add low-poly environmental rocks/bushes to lvl 1
-+ Death
-+ Landing
-+ Jumping

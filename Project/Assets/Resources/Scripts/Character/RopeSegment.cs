@@ -16,7 +16,7 @@ public class RopeSegment : MonoBehaviour {
     }
     private void OnDestroy()
     {
-        FFMessageBoard<PlayerInteract.Use>.Connect(OnUse, gameObject);
+        FFMessageBoard<PlayerInteract.Use>.Disconnect(OnUse, gameObject);
     }
 
     private int OnUse(PlayerInteract.Use e)

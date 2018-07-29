@@ -29,6 +29,10 @@ public class HUDContoller : FFComponent {
         
         //FadeIn();
     }
+    private void OnDestroy()
+    {
+        FFMessage<ResetLevel>.Disconnect(OnResetLevel);
+    }
 
 
     float timeInactive = 0;

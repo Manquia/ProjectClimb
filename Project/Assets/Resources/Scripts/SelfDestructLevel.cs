@@ -12,6 +12,13 @@ public class SelfDestructLevel : FFComponent
     public AudioSource sirenSource;
     public AudioSource explosionAudioSource;
 
+
+    public Light[] lightsToEnable;
+    public MeshRenderer[] backDropsToLight;
+
+    public Material backDropLightOffMaterial;
+    public Material backDropLightOnMaterial;
+
     public float selfDestructTime = 60.0f;
     public ProxyOnUse button;
 
@@ -21,6 +28,7 @@ public class SelfDestructLevel : FFComponent
 	// Use this for initialization
 	void Start ()
     {
+        Alarm(false);
         FFMessageBoard<PlayerInteract.Use>.Connect(OnUse, gameObject);
         FFMessage<ResetLevel>.Connect(OnResetLevel);
 
@@ -32,11 +40,27 @@ public class SelfDestructLevel : FFComponent
         FFMessage<ResetLevel>.Disconnect(OnResetLevel);
     }
 
+    void Alarm(bool active)
+    {
+        var material = active ? backDropLightOnMaterial : backDropLightOffMaterial;
+
+        // set Lights lights
+        foreach (var light in lightsToEnable)
+        {
+            light.gameObject.SetActive(active);
+        }
+        // set materials
+        foreach (var rend in backDropsToLight)
+        {
+            rend.material = material;
+        }
+    }
+
     private int OnResetLevel(ResetLevel e)
     {
         sirenSource.Stop();
-        destructSeq.ClearSequence();
         button.used = false;
+        Alarm(false);
 
         // Reset stuff here
         return 0;
@@ -50,22 +74,22 @@ public class SelfDestructLevel : FFComponent
 
     void StartSelfDistrucdtSequence()
     {
+        // @ HACK @CLEANUP
+        Alarm(true);
+
         sirenSource.Play();
         playerHUD.DisplaySelfDestructCountdown(selfDestructTime);
+        player.fadeScreenSeq.ClearSequence();
+        player.fadeScreenSeq.Delay(selfDestructTime);
+        player.fadeScreenSeq.Sync();
+        player.fadeScreenSeq.Call(PlayExplosionSound);
+        player.Seq_FadeInScreenMasks(1.4f);
+        player.fadeScreenSeq.Sync();
+        player.fadeScreenSeq.Call(levelManager.ResetPlayer);
+        player.fadeScreenSeq.Delay(0.9f);
+        player.fadeScreenSeq.Sync();
+        player.fadeScreenSeq.Call(player.Seq_FadeOutScreenMasks, 1.3f);
 
-        destructSeq.Delay(selfDestructTime);
-
-        destructSeq.Sync();
-        destructSeq.Call(PlayExplosionSound);
-        destructSeq.Call(player.Seq_FadeInScreenMasks, 0.6f);
-        destructSeq.Delay(0.6f);
-
-        destructSeq.Sync();
-        destructSeq.Delay(0.6f);
-        destructSeq.Call(levelManager.ResetPlayer);
-
-        destructSeq.Sync();
-        destructSeq.Call(player.Seq_FadeInScreenMasks, 0.6f);
     }
 
     void PlayExplosionSound()

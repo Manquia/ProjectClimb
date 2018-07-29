@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class PillarPuzzle : MonoBehaviour {
 
-    public float speedDelta = 0.6f;
+    public float speedDelta = 0.3f;
+    public float baseSpeed = 0.7f;
 
     public Transform pillarsRoot;
     struct PillarData
@@ -29,6 +30,10 @@ public class PillarPuzzle : MonoBehaviour {
         SetupStates();
         FFMessageBoard<PlayerInteract.Use>.Connect(OnUse, gameObject);
 	}
+    private void OnDestroy()
+    {
+        FFMessageBoard<PlayerInteract.Use>.Disconnect(OnUse, gameObject);
+    }
 
     private int OnUse(PlayerInteract.Use e)
     {
@@ -51,7 +56,7 @@ public class PillarPuzzle : MonoBehaviour {
             {
                 var audioSrc = child.GetComponent<AudioSource>();
                 data[i].transform = child;
-                data[i].speed = 1.0f + UnityEngine.Random.Range(-speedDelta, speedDelta);
+                data[i].speed = baseSpeed + UnityEngine.Random.Range(-speedDelta, speedDelta);
                 data[i].audioSrc = audioSrc;
                 audioSrc.clip = PillarMoveSounds.SampleRandom(null);
                 audioSrc.volume = 0.0f;
@@ -87,21 +92,25 @@ public class PillarPuzzle : MonoBehaviour {
     {
         const float volumePower = 8.0f;
         const float pitchPower = 8.0f;
+        const float speedPower = 4.0f;
         const float pitchDelta = 0.3f;
+        const float speedDelta = 0.3f;
 
         // change mu
         for(int i = 0; i < data.Length; ++i)
         {
+            float mu = data[i].mu;
+
             var audioSrc = data[i].audioSrc;
             float muDelta = (1.0f / pillarMoveTime);
             float dir = ((data[i].state || puzzleIsOn) && !(data[i].state && puzzleIsOn)) ? 1.0f : -1.0f;
+            float speed = data[i].speed + ((1 - Mathf.Pow(2 * mu - 1, speedPower) * (2 * speedDelta)) - speedDelta);
 
-            data[i].mu += dt * muDelta * dir * data[i].speed;
+            data[i].mu += dt * muDelta * dir * speed;
             data[i].mu = Mathf.Clamp(data[i].mu, 0.0f, 1.0f);
 
             // Basic Formula
             // 1 - (2mu -1)^HighEvenPower
-            float mu = data[i].mu;
 
             // Range(0, 1) 
             float volume = 1 - Mathf.Pow(2 * mu - 1, volumePower);

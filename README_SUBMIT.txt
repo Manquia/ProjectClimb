@@ -7,7 +7,8 @@ Final Submission
 I got most everything I wanted just not quite all the polish details. 
 
 I added Henry into the credits since he "playtested it" and gave valuable
-feedback in the form of motivation. :) 
+feedback in the form of motivation. :) I plan to use this for a portfolio
+piece so please let me know if you are not ok with his name in there.
 
 Hans Lee is also in the credits. The submitted build is has 1 model
 (the hook on the ropes in the first level) that he created. He also

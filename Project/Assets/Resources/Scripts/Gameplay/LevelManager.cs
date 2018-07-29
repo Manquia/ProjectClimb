@@ -98,6 +98,7 @@ public class LevelManager : MonoBehaviour
         if (IsInDeathPit)
             return;
 
+        player.fadeScreenSeq.ClearSequence();
         IsInDeathPit = true;
         player.Seq_FadeInScreenMasks(0.3f);
         player.fadeScreenSeq.Sync();
@@ -144,6 +145,7 @@ public class LevelManager : MonoBehaviour
     }
     internal void TransitionToNextLevel()
     {
+        player.fadeScreenSeq.ClearSequence();
         player.Seq_FadeInScreenMasks();
         player.fadeScreenSeq.Call(LoadLevelOJB, nextLevelName);
     }
