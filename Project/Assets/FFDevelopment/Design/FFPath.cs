@@ -1024,7 +1024,7 @@ public class FFPath : MonoBehaviour
         n1 = p1;
         mu = 0;
     }
-    private void GetData(float dist, out float mu, out FFVector3 n1, out FFVector3 n2, out FFVector3 p1, out FFVector3 p2)
+    private void GetData(float dist, out float mu, out FFVector3 P0, out FFVector3 P1, out FFVector3 P2, out FFVector3 P3)
     {
         dist = Mathf.Abs(dist);
         if (points.Length > 1)
@@ -1059,8 +1059,6 @@ public class FFPath : MonoBehaviour
             }
 
 
-
-
             if (Circuit) // line loops back to first point from the last point
             {
                 int n2Index = i - 2 < 0 ? points.Length - 1 : i - 2;
@@ -1068,21 +1066,21 @@ public class FFPath : MonoBehaviour
                 int p1Index = i % points.Length;
                 int p2Index = (i + 1) % points.Length;
 
-                n2.x = points[n2Index].x;
-                n2.y = points[n2Index].y;
-                n2.z = points[n2Index].z;
+                P0.x = points[n2Index].x;
+                P0.y = points[n2Index].y;
+                P0.z = points[n2Index].z;
 
-                n1.x = points[n1Index].x;
-                n1.y = points[n1Index].y;
-                n1.z = points[n1Index].z;
+                P1.x = points[n1Index].x;
+                P1.y = points[n1Index].y;
+                P1.z = points[n1Index].z;
 
-                p1.x = points[p1Index].x;
-                p1.y = points[p1Index].y;
-                p1.z = points[p1Index].z;
+                P2.x = points[p1Index].x;
+                P2.y = points[p1Index].y;
+                P2.z = points[p1Index].z;
 
-                p2.x = points[p2Index].x;
-                p2.y = points[p2Index].y;
-                p2.z = points[p2Index].z;
+                P3.x = points[p2Index].x;
+                P3.y = points[p2Index].y;
+                P3.z = points[p2Index].z;
 
 
                 mu = (dist - linearDistanceAlongPath[i - 1]) // dist's length into Interval of points
@@ -1097,21 +1095,21 @@ public class FFPath : MonoBehaviour
                 int p1Index = i;
                 int p2Index = (i + 1) % points.Length;
 
-                n2.x = points[n2Index].x;
-                n2.y = points[n2Index].y;
-                n2.z = points[n2Index].z;
+                P0.x = points[n2Index].x;
+                P0.y = points[n2Index].y;
+                P0.z = points[n2Index].z;
 
-                n1.x = points[n1Index].x;
-                n1.y = points[n1Index].y;
-                n1.z = points[n1Index].z;
+                P1.x = points[n1Index].x;
+                P1.y = points[n1Index].y;
+                P1.z = points[n1Index].z;
 
-                p1.x = points[p1Index].x;
-                p1.y = points[p1Index].y;
-                p1.z = points[p1Index].z;
+                P2.x = points[p1Index].x;
+                P2.y = points[p1Index].y;
+                P2.z = points[p1Index].z;
 
-                p2.x = points[p2Index].x;
-                p2.y = points[p2Index].y;
-                p2.z = points[p2Index].z;
+                P3.x = points[p2Index].x;
+                P3.y = points[p2Index].y;
+                P3.z = points[p2Index].z;
 
 
                 float lengthBetweenPoints = linearDistanceAlongPath[i] - linearDistanceAlongPath[i - 1];
@@ -1129,10 +1127,10 @@ public class FFPath : MonoBehaviour
             }
         }
 
-        p1.x = -0.1f;
-        p1.y = -0.1f;
-        p1.z = -0.1f;
-        n1 = n2 = p2 = p1;
+        P2.x = -0.1f;
+        P2.y = -0.1f;
+        P2.z = -0.1f;
+        P1 = P0 = P3 = P2;
         mu = 0;
     }
         
@@ -1168,32 +1166,32 @@ public class FFPath : MonoBehaviour
     private Vector3 InterpolateCatmullRomPositionAlongPath(float dist)
     {
         float mu;
-        FFVector3 n2, n1, p1, p2;
-        GetData(dist, out mu, out n1, out n2, out p1, out p2);
+        FFVector3 PT0, PT1, PT2, PT3;
+        GetData(dist, out mu, out PT0, out PT1, out PT2, out PT3);
         //PrintData(dist, mu, n1, n2, p1, p2);
 
         //Catmull-Rom Splines
-#region Catmull-Rom Splines
+        #region Catmull-Rom Splines
 
         FFVector3 a0, a1, a2, a3;
         float mu2;
 
         mu2 = mu * mu;
-        a0.x = (-0.5f * n2.x) + (1.5f * n1.x) + (-1.5f * p1.x) + (0.5f * p2.x);
-        a0.y = (-0.5f * n2.y) + (1.5f * n1.y) + (-1.5f * p1.y) + (0.5f * p2.y);
-        a0.z = (-0.5f * n2.z) + (1.5f * n1.z) + (-1.5f * p1.z) + (0.5f * p2.z);
+        a0.x = (-0.5f * PT0.x) + (1.5f * PT1.x) + (-1.5f * PT2.x) + (0.5f * PT3.x);
+        a0.y = (-0.5f * PT0.y) + (1.5f * PT1.y) + (-1.5f * PT2.y) + (0.5f * PT3.y);
+        a0.z = (-0.5f * PT0.z) + (1.5f * PT1.z) + (-1.5f * PT2.z) + (0.5f * PT3.z);
 
-        a1.x = (n2.x) + (-2.5f * n1.x) + (2.0f * p1.x) + (-0.5f * p2.x);
-        a1.y = (n2.y) + (-2.5f * n1.y) + (2.0f * p1.y) + (-0.5f * p2.y);
-        a1.z = (n2.z) + (-2.5f * n1.z) + (2.0f * p1.z) + (-0.5f * p2.z);
+        a1.x = (PT0.x) + (-2.5f * PT1.x) + (2.0f * PT2.x) + (-0.5f * PT3.x);
+        a1.y = (PT0.y) + (-2.5f * PT1.y) + (2.0f * PT2.y) + (-0.5f * PT3.y);
+        a1.z = (PT0.z) + (-2.5f * PT1.z) + (2.0f * PT2.z) + (-0.5f * PT3.z);
 
-        a2.x = (-0.5f * n2.x) + (0.5f * p1.x);
-        a2.y = (-0.5f * n2.y) + (0.5f * p1.y);
-        a2.z = (-0.5f * n2.z) + (0.5f * p1.z);
+        a2.x = (-0.5f * PT0.x) + (0.5f * PT2.x);
+        a2.y = (-0.5f * PT0.y) + (0.5f * PT2.y);
+        a2.z = (-0.5f * PT0.z) + (0.5f * PT2.z);
 
-        a3.x = n1.x;
-        a3.y = n1.y;
-        a3.z = n1.z;
+        a3.x = PT1.x;
+        a3.y = PT1.y;
+        a3.z = PT1.z;
 
         return new Vector3((a0.x * mu * mu2) + (a1.x * mu2) + (a2.x * mu) + (a3.x),
                             (a0.y * mu * mu2) + (a1.y * mu2) + (a2.y * mu) + (a3.y),
@@ -1236,8 +1234,8 @@ public class FFPath : MonoBehaviour
     private Vector3 InterpolateCatmullRomSmoothPositionAlongPath(float dist)
     {
         float mu;
-        FFVector3 n2, n1, p1, p2;
-        GetData(dist, out mu, out n1, out n2, out p1, out p2);
+        FFVector3 PT0, PT1, PT2, PT3;
+        GetData(dist, out mu, out PT0, out PT1, out PT2, out PT3);
 
         mu = -(mu * mu) * (mu - 1.5f) * 2;
         //PrintData(dist, mu, n1, n2, p1, p2);
@@ -1249,21 +1247,21 @@ public class FFPath : MonoBehaviour
         float mu2;
 
         mu2 = mu * mu;
-        a0.x = (-0.5f * n2.x) + (1.5f * n1.x) + (-1.5f * p1.x) + (0.5f * p2.x);
-        a0.y = (-0.5f * n2.y) + (1.5f * n1.y) + (-1.5f * p1.y) + (0.5f * p2.y);
-        a0.z = (-0.5f * n2.z) + (1.5f * n1.z) + (-1.5f * p1.z) + (0.5f * p2.z);
+        a0.x = (-0.5f * PT0.x) + (1.5f * PT1.x) + (-1.5f * PT2.x) + (0.5f * PT3.x);
+        a0.y = (-0.5f * PT0.y) + (1.5f * PT1.y) + (-1.5f * PT2.y) + (0.5f * PT3.y);
+        a0.z = (-0.5f * PT0.z) + (1.5f * PT1.z) + (-1.5f * PT2.z) + (0.5f * PT3.z);
 
-        a1.x = (n2.x) + (-2.5f * n1.x) + (2.0f * p1.x) + (-0.5f * p2.x);
-        a1.y = (n2.y) + (-2.5f * n1.y) + (2.0f * p1.y) + (-0.5f * p2.y);
-        a1.z = (n2.z) + (-2.5f * n1.z) + (2.0f * p1.z) + (-0.5f * p2.z);
+        a1.x = (PT0.x) + (-2.5f * PT1.x) + (2.0f * PT2.x) + (-0.5f * PT3.x);
+        a1.y = (PT0.y) + (-2.5f * PT1.y) + (2.0f * PT2.y) + (-0.5f * PT3.y);
+        a1.z = (PT0.z) + (-2.5f * PT1.z) + (2.0f * PT2.z) + (-0.5f * PT3.z);
 
-        a2.x = (-0.5f * n2.x) + (0.5f * p1.x);
-        a2.y = (-0.5f * n2.y) + (0.5f * p1.y);
-        a2.z = (-0.5f * n2.z) + (0.5f * p1.z);
+        a2.x = (-0.5f * PT0.x) + (0.5f * PT2.x);
+        a2.y = (-0.5f * PT0.y) + (0.5f * PT2.y);
+        a2.z = (-0.5f * PT0.z) + (0.5f * PT2.z);
 
-        a3.x = n1.x;
-        a3.y = n1.y;
-        a3.z = n1.z;
+        a3.x = PT1.x;
+        a3.y = PT1.y;
+        a3.z = PT1.z;
 
         return new Vector3((a0.x * mu * mu2) + (a1.x * mu2) + (a2.x * mu) + (a3.x),
                             (a0.y * mu * mu2) + (a1.y * mu2) + (a2.y * mu) + (a3.y),
